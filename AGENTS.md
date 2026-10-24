@@ -26,3 +26,8 @@ Do not invent fields or endpoints; cite the frontend file for every claim.
 - Each phase ends with runnable verification; run it and show real output.
 - Commit after each phase with a conventional message. Do not push.
 - If blocked or unsure, stop and ask instead of guessing.
+## Status
+- Phase 0-1 DONE (backend/: Nest, Prisma 7 with adapter-pg, health, seed, error envelope, Vitest).
+- Prisma 7: URL in prisma.config.ts, client generated to src/generated/prisma (git-ignored).
+- Testing uses Vitest. backend/.npmrc has legacy-peer-deps=true.
+- Git IS initialized at the repo root. Never run `git init` inside backend/. Do not push; I commit manually.

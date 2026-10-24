@@ -5,6 +5,7 @@ import { LoggerModule } from 'nestjs-pino';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { validateEnv } from './config/env.js';
 import { PrismaModule } from './database/prisma.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 
 @Module({
@@ -56,6 +57,7 @@ import { HealthModule } from './modules/health/health.module.js';
       },
     }),
     PrismaModule,
+    AuthModule,
     HealthModule,
   ],
 })

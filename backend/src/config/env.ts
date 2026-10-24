@@ -27,6 +27,10 @@ export const envSchema = z.object({
   REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
   CORS_ORIGINS: csv,
   MAX_UPLOAD_MB: z.coerce.number().int().positive().default(25),
+  ENABLE_DEMO_LOGIN: z.preprocess(
+    (val) => (val === undefined ? process.env.NODE_ENV !== 'production' : val),
+    z.coerce.boolean(),
+  ),
 });
 
 export type Env = z.infer<typeof envSchema>;

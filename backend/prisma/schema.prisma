@@ -38,6 +38,16 @@ enum WorkspaceRole {
   guest
 }
 
+enum SecurityEventType {
+  failed_login
+  session
+  suspicious
+  password_change
+  role_change
+
+  @@map("security_event_type")
+}
+
 model User {
   id           String   @id
   fullName     String   @map("full_name")
@@ -50,8 +60,11 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   lastActiveAt DateTime @default(now()) @map("last_active_at")
 
-  memberships     WorkspaceMember[]
-  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+  memberships         WorkspaceMember[]
+  ownedWorkspaces     Workspace[]          @relation("WorkspaceOwner")
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  securityEvents      SecurityEvent[]
 
   @@map("users")
 }
@@ -87,4 +100,55 @@ model WorkspaceMember {
   @@unique([workspaceId, userId])
   @@index([userId])
   @@map("workspace_members")
+}
+
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  tokenHash    String    @unique @map("token_hash")
+  familyId     String    @map("family_id")
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  replacedById String?   @map("replaced_by_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  ip           String?
+  userAgent    String?   @map("user_agent")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model SecurityEvent {
+  id                String            @id @default(cuid())
+  type              SecurityEventType
+  descriptionKey    String            @map("description_key")
+  descriptionParams Json?             @map("description_params")
+  ip                String?
+  device            String?
+  userId            String?           @map("user_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  revoked           Boolean?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("security_events")
 }
