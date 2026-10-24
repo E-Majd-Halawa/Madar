@@ -1,0 +1,964 @@
+{
+  "common": {
+    "close": "إغلاق",
+    "dismiss": "تجاهل",
+    "notifications": "الإشعارات",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "next": "التالي",
+    "skip": "تخطي",
+    "finish": "إنهاء",
+    "create": "إنشاء",
+    "undo": "تراجع",
+    "delete": "حذف",
+    "viewAll": "عرض الكل",
+    "search": "بحث",
+    "menu": "القائمة",
+    "optional": "اختياري",
+    "retry": "حاول مرة أخرى",
+    "loading": "جارٍ التحميل",
+    "error": "خطأ"
+  },
+  "messages": {
+    "attachFile": "إرفاق ملف",
+    "conversations": "المحادثات"
+  },
+  "chat": {
+    "emoji": "رموز تعبيرية",
+    "attach": "إرفاق",
+    "voice": "رسالة صوتية"
+  },
+  "ai": {
+    "totalLabel": "إجمالي استخدام الذكاء الاصطناعي",
+    "chatCleared": "تم مسح سجل المحادثة",
+    "clearConfirmTitle": "مسح محادثة الذكاء الاصطناعي",
+    "clearConfirmDesc": "هل أنت متأكد من رغبتك في مسح سجل محادثة الذكاء الاصطناعي الحالي؟",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد"
+  },
+  "dashboard": {
+    "stats": {
+      "label": "إحصاءات النظرة العامة"
+    }
+  },
+  "projects": {
+    "deleteConfirmTitle": "حذف المشروع"
+  },
+  "pwa": {
+    "updateAvailable": "توفرت نسخة جديدة من مدار.",
+    "reload": "إعادة تحميل"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب.",
+    "email": "أدخل بريدًا إلكترونيًا صالحًا.",
+    "nameShort": "أدخل اسمك الكامل.",
+    "usernameShort": "يجب ألا يقل اسم المستخدم عن 3 أحرف.",
+    "usernameChars": "استخدم الحروف والأرقام والنقاط والشرطات فقط.",
+    "passwordWeak": "استخدم 8 أحرف أو أكثر مع ثلاثة من: حرف كبير، رقم، رمز.",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+    "termsRequired": "يجب الموافقة على الشروط للمتابعة.",
+    "titleShort": "أعطِ المهمة عنوانًا (حرفان على الأقل).",
+    "titleLong": "اجعل العنوان أقل من 120 حرفًا."
+  },
+  "auth": {
+    "backToSignIn": "العودة إلى تسجيل الدخول",
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "username": "اسم المستخدم",
+      "confirmPassword": "تأكيد كلمة المرور"
+    },
+    "social": {
+      "or": "أو تابع بالبريد الإلكتروني",
+      "future": "سيتم تفعيل الدخول عبر {{provider}} عند ربط الخادم."
+    },
+    "strength": {
+      "label": "قوة كلمة المرور",
+      "level0": "فارغة",
+      "level1": "ضعيفة",
+      "level2": "مقبولة",
+      "level3": "جيدة",
+      "level4": "قوية",
+      "rule_length": "8 أحرف أو أكثر",
+      "rule_upper": "حرف كبير",
+      "rule_number": "رقم",
+      "rule_symbol": "رمز"
+    },
+    "login": {
+      "title": "أهلًا بعودتك",
+      "subtitle": "سجّل الدخول لمتابعة مساحة عملك.",
+      "submit": "تسجيل الدخول",
+      "remember": "تذكرني",
+      "forgot": "نسيت كلمة المرور؟",
+      "noAccount": "جديد في مدار؟",
+      "demoOnly": "بيانات تجريبية"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "subtitle": "ابدأ بتنظيم عملك في أقل من دقيقة.",
+      "submit": "إنشاء الحساب",
+      "haveAccount": "لديك حساب بالفعل؟",
+      "success": "تم إنشاء الحساب. لنجهّز مساحة عملك.",
+      "terms": "أوافق على شروط الخدمة وسياسة الخصوصية."
+    },
+    "forgot": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني وسنرسل لك التعليمات.",
+      "submit": "إرسال رابط الاستعادة",
+      "sentTitle": "تحقق من بريدك",
+      "sentBody": "إذا كان هناك حساب لـ {{email}} فسيصلك رابط الاستعادة قريبًا.",
+      "openReset": "فتح صفحة الاستعادة",
+      "mockHint": "الوضع التجريبي بلا صندوق بريد، لذا يحل هذا الزر محل الرابط المرسل."
+    },
+    "reset": {
+      "title": "اختر كلمة مرور جديدة",
+      "subtitle": "اجعلها قوية وفريدة.",
+      "newPassword": "كلمة المرور الجديدة",
+      "submit": "تحديث كلمة المرور",
+      "doneTitle": "تم تحديث كلمة المرور",
+      "doneBody": "يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة."
+    }
+  },
+  "onboarding": {
+    "step": "الخطوة {{current}} من {{total}}",
+    "welcome": {
+      "title": "مرحبًا، {{name}}",
+      "body": "لنُهيّئ مدار ليناسب طريقة عملك. يستغرق الأمر دقيقة تقريبًا وكل خطوة اختيارية."
+    },
+    "usage": {
+      "title": "فيمَ ستستخدم مدار؟",
+      "hint": "اختر ما ينطبق عليك.",
+      "personal": "الإنتاجية الشخصية",
+      "study": "الدراسة",
+      "work": "العمل",
+      "freelance": "العمل الحر",
+      "team": "مشاريع الفريق"
+    },
+    "workspace": {
+      "title": "اختر نوع مساحة العمل",
+      "personal": "شخصية",
+      "personalBody": "مساحة خاصة بمهامك وأهدافك.",
+      "team": "فريق",
+      "teamBody": "شارك المشاريع والمحادثات والملفات مع زملائك."
+    },
+    "theme": {
+      "title": "اختر السمة",
+      "hint": "يمكنك تغييرها في أي وقت من الإعدادات."
+    },
+    "language": {
+      "title": "اختر لغتك",
+      "hint": "العربية تحوّل الواجهة بالكامل إلى اليمين لليسار."
+    },
+    "timezone": {
+      "title": "منطقتك الزمنية",
+      "hint": "تُستخدم للتذكيرات ومواعيد الاستحقاق والتقويم."
+    },
+    "hours": {
+      "title": "ساعات العمل",
+      "start": "البداية",
+      "end": "النهاية",
+      "days": "أيام العمل"
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "level": "كم تريد أن نراسلك؟",
+      "all": "كل شيء",
+      "important": "المهم فقط",
+      "none": "لا شيء",
+      "email": "إشعارات البريد",
+      "push": "إشعارات الدفع"
+    },
+    "done": {
+      "title": "مساحة عملك جاهزة.",
+      "body": "تم حفظ تفضيلاتك. يمكنك تعديلها لاحقًا من الإعدادات.",
+      "cta": "الانتقال إلى لوحة التحكم"
+    }
+  },
+  "weekdays": {
+    "0": "أحد",
+    "1": "اثنين",
+    "2": "ثلاثاء",
+    "3": "أربعاء",
+    "4": "خميس",
+    "5": "جمعة",
+    "6": "سبت"
+  },
+  "nav": {
+    "myTasks": "مهامي",
+    "today": "اليوم",
+    "upcoming": "القادمة",
+    "calendar": "التقويم",
+    "kanban": "كانبان",
+    "projects": "المشاريع",
+    "focus": "التركيز",
+    "chat": "الدردشة",
+    "messages": "الرسائل",
+    "files": "الملفات",
+    "notifications": "الإشعارات",
+    "analytics": "التحليلات",
+    "ai": "المساعد الذكي",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "help": "المساعدة",
+    "logout": "تسجيل الخروج",
+    "home": "الرئيسية",
+    "tasks": "المهام",
+    "more": "المزيد",
+    "primary": "التنقل الرئيسي",
+    "mobile": "التنقل على الجوال",
+    "members": "الأعضاء",
+    "activity": "النشاط",
+    "dashboard": "لوحة التحكم"
+  },
+  "shell": {
+    "workspace": "مساحة العمل",
+    "switchWorkspace": "تبديل مساحة العمل",
+    "searchPlaceholder": "ابحث أو نفّذ أمرًا…",
+    "demoBanner": "الوضع التجريبي — تُحفظ التغييرات على هذا الجهاز فقط.",
+    "exitDemo": "الخروج من العرض",
+    "personal": "شخصية",
+    "team": "فريق",
+    "members": "{{count}} أعضاء",
+    "account": "قائمة الحساب",
+    "skipToContent": "تخطَّ إلى المحتوى",
+    "offline": "أنت غير متصل.",
+    "comingSoon": "{{feature}} تصل في المرحلة {{phase}}.",
+    "comingSoonBody": "هذا القسم مرتبط بالفعل بالتنقل والحماية والمتاجر المشتركة؛ وتُبنى واجهته الكاملة في المرحلة {{phase}}."
+  },
+  "dashboard": {
+    "greeting": "{{part}} الخير، {{name}}",
+    "morning": "صباح",
+    "afternoon": "مساء",
+    "evening": "مساء",
+    "subtitle": "هذه حالة العمل في {{workspace}}.",
+    "stats": {
+      "total": "إجمالي المهام",
+      "completed": "المكتملة",
+      "inProgress": "قيد التنفيذ",
+      "overdue": "المتأخرة",
+      "rate": "نسبة الإنجاز",
+      "projects": "المشاريع النشطة",
+      "today": "تقدم اليوم",
+      "week": "أُنجزت هذا الأسبوع",
+      "focus": "التركيز هذا الأسبوع"
+    },
+    "quick": {
+      "newTask": "مهمة جديدة",
+      "newProject": "مشروع جديد",
+      "focus": "ابدأ التركيز",
+      "calendar": "افتح التقويم",
+      "chat": "افتح الدردشة"
+    },
+    "widgets": {
+      "today": "مهام اليوم",
+      "upcoming": "القادمة",
+      "activity": "النشاط الأخير",
+      "projects": "المشاريع النشطة",
+      "productivity": "الإنتاجية الأسبوعية",
+      "priority": "توزيع الأولويات",
+      "focusStats": "إحصاءات التركيز",
+      "team": "نشاط الفريق"
+    },
+    "empty": {
+      "today": "أنجزت كل شيء.",
+      "todayBody": "لا شيء مستحق اليوم. استمتع بالهدوء أو خطط مسبقًا.",
+      "upcoming": "لا شيء مجدول.",
+      "projects": "أنشئ مشروعك الأول.",
+      "activity": "لا نشاط بعد."
+    },
+    "chart": {
+      "completed": "مكتملة",
+      "focus": "التركيز (دقيقة)"
+    },
+    "focusTotal": "إجمالي هذا الأسبوع",
+    "focusSessions": "{{count}} جلسات",
+    "focusAvg": "متوسط الجلسة",
+    "focusBest": "أفضل يوم",
+    "dueIn": "تستحق بعد {{count}} يوم",
+    "dueToday": "تستحق اليوم",
+    "dueTomorrow": "تستحق غدًا",
+    "overdueBy": "متأخرة {{count}} يوم",
+    "noDate": "بلا موعد",
+    "tasksCount": "{{done}}/{{total}} مهام",
+    "teamEmpty": "لا نشاط للفريق بعد.",
+    "error": "تعذّر تحميل بيانات مساحة العمل.",
+    "demoNote": "البيانات التجريبية تُولَّد نسبةً إلى اليوم لتبدو حديثة دائمًا."
+  },
+  "tasks": {
+    "new": "مهمة جديدة",
+    "newBody": "دوّنها الآن وحسّنها لاحقًا.",
+    "title": "العنوان",
+    "titlePlaceholder": "ما الذي يجب إنجازه؟",
+    "priority": "الأولوية",
+    "dueDate": "تاريخ الاستحقاق",
+    "project": "المشروع",
+    "noProject": "بدون مشروع",
+    "create": "إنشاء المهمة",
+    "created": "تم إنشاء المهمة",
+    "completed": "اكتملت المهمة",
+    "complete": "إكمال",
+    "reopened": "أُعيد فتح المهمة",
+    "deleted": "حُذفت المهمة",
+    "tags": "الوسوم",
+    "dueOverdue": "متأخرة",
+    "dueToday": "مستحقة اليوم",
+    "dueDateLabel": "الاستحقاق",
+    "subtasksProgress": "{{completed}}/{{total}} مهام فرعية",
+    "commentsCount": "{{count}} تعليقات",
+    "trackedTime": "الوقت المتتبع",
+    "assignedTo": "مسندة إلى",
+    "unassigned": "غير مسندة",
+    "count": "{{count}} مهام",
+    "recurrence": "التكرار",
+    "recurrenceOptions": {
+      "none": "بدون",
+      "daily": "يومي",
+      "weekly": "أسبوعي",
+      "monthly": "شهري"
+    },
+    "markDone": "تحديد «{{title}}» كمكتملة",
+    "markOpen": "تحديد «{{title}}» كغير مكتملة",
+    "priorities": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "urgent": "عاجلة"
+    },
+    "statuses": {
+      "backlog": "قائمة الانتظار",
+      "todo": "للتنفيذ",
+      "in_progress": "قيد التنفيذ",
+      "review": "مراجعة",
+      "completed": "مكتملة",
+      "archived": "مؤرشفة"
+    },
+    "kanban": {
+      "title": "لوحة كانبان",
+      "board": "اللوحة",
+      "dragHandle": "اسحب لإعادة الترتيب",
+      "subtitle": "تصوّر سير العمل، واسحب البطاقات بين المراحل، وحافظ على زخم الإنجاز.",
+      "columns": {
+        "backlog": "قائمة الانتظار",
+        "todo": "للتنفيذ",
+        "in_progress": "قيد التنفيذ",
+        "review": "مراجعة",
+        "completed": "مكتمل"
+      },
+      "quickAdd": "إضافة مهمة",
+      "addCard": "إضافة بطاقة",
+      "empty": "لا توجد مهام هنا",
+      "emptyDrop": "أفلت البطاقة هنا"
+    },
+    "views": {
+      "all": "جميع المهام",
+      "today": "اليوم",
+      "upcoming": "القادمة",
+      "list": "عرض القائمة",
+      "table": "عرض الجدول",
+      "viewMode": "وضع العرض"
+    },
+    "filter": {
+      "search": "ابحث في المهام بالعنوان أو الوصف أو الوسم...",
+      "filters": "الفلاتر",
+      "allPriorities": "كل الأولويات",
+      "allProjects": "كل المشاريع",
+      "allAssignees": "كل المسؤولين",
+      "allStatuses": "كل الحالات",
+      "unassigned": "غير معيّن",
+      "clear": "مسح التصفية",
+      "noResults": "لا توجد مهام تطابق عوامل التصفية",
+      "noResultsBody": "جرّب تغيير كلمات البحث أو معايير الحالة والأولوية."
+    },
+    "sort": {
+      "sortBy": "الترتيب حسب",
+      "dueDate": "تاريخ الاستحقاق",
+      "priority": "الأولوية",
+      "title": "العنوان",
+      "createdAt": "تاريخ الإنشاء",
+      "ascending": "تصاعدي",
+      "descending": "تنازلي"
+    },
+    "bulk": {
+      "selected": "تم تحديد {{count}}",
+      "markComplete": "تحديد كمكتمل",
+      "moveTo": "نقل إلى...",
+      "delete": "حذف المحدد",
+      "clearSelection": "إلغاء التحديد"
+    },
+    "drawer": {
+      "details": "تفاصيل المهمة",
+      "description": "الوصف",
+      "descPlaceholder": "أضف وصفاً أكثر تفصيلاً...",
+      "subtasks": "المهام الفرعية",
+      "subtasksProgress": "تم إنجاز {{done}} من {{total}}",
+      "newSubtaskPlaceholder": "أضف مهمة فرعية واضغط Enter...",
+      "timeTracking": "تتبع الوقت",
+      "estimate": "المقدّر",
+      "tracked": "الفعلي",
+      "logTime": "تسجيل وقت",
+      "addMinutes": "إضافة دقائق",
+      "comments": "التعليقات",
+      "activity": "النشاط",
+      "addComment": "اكتب تعليقاً...",
+      "postComment": "نشر التعليق",
+      "noComments": "لا توجد تعليقات بعد. ابدأ المحادثة!",
+      "noActivity": "لا يوجد نشاط حديث لهذه المهمة.",
+      "assignee": "المسؤول",
+      "unassigned": "غير معيّن",
+      "tags": "الوسوم",
+      "addTag": "إضافة وسم",
+      "confirmDelete": "هل أنت متأكد من حذف هذه المهمة؟",
+      "delete": "حذف المهمة"
+    },
+    "today": {
+      "title": "مهام اليوم",
+      "subtitle": "ركّز على الأعمال ذات التأثير العالي المقررة لليوم والمهام المتأخرة.",
+      "progress": "تم إنجاز {{done}} من أصل {{total}} مهام اليوم ({{pct}}%)",
+      "empty": "أنت على موعد مع كل شيء اليوم!",
+      "emptyBody": "لا توجد مهام مجدولة لليوم. أنشئ مهمة جديدة أو اختر من قائمة الانتظار.",
+      "overdueSection": "متأخرة",
+      "todaySection": "تستحق اليوم",
+      "completedSection": "أُنجزت اليوم",
+      "quickAdd": "أضف مهمة سريعة لليوم..."
+    },
+    "upcoming": {
+      "title": "المهام القادمة",
+      "subtitle": "خطط مسبقاً وتتبّع التسليمات المجدولة خلال الأيام والأسابيع القادمة.",
+      "tomorrow": "غداً",
+      "thisWeek": "خلال هذا الأسبوع",
+      "nextWeek": "الأسبوع القادم",
+      "later": "لاحقاً",
+      "noDate": "بدون تاريخ استحقاق",
+      "empty": "لا توجد مهام قادمة مجدولة."
+    }
+  },
+  "projects": {
+    "title": "المشاريع",
+    "subtitle": "إدارة مبادرات مساحة العمل، متابعة التقدم، التعاون وتحقيق الأهداف.",
+    "new": "مشروع جديد",
+    "newBody": "حدّد الأهداف، عيّن أعضاء الفريق، وضع الجداول الزمنية.",
+    "edit": "تعديل المشروع",
+    "editBody": "تحديث نطاق المشروع ومواعيده وأعضائه وحالته.",
+    "delete": "حذف المشروع",
+    "deleteConfirm": "هل أنت متأكد من حذف «{{name}}»؟ ستبقى المهام التابعة ولكن سيتم إلغاء ربطها.",
+    "deleted": "تم حذف المشروع",
+    "created": "تم إنشاء المشروع",
+    "updated": "تم تحديث المشروع",
+    "search": "ابحث في المشاريع بالاسم أو الوصف...",
+    "filterStatus": "الحالة",
+    "allStatuses": "كل الحالات",
+    "sortBy": "الترتيب حسب",
+    "views": {
+      "grid": "شبكة",
+      "table": "جدول",
+      "timeline": "مخطط زمني"
+    },
+    "sort": {
+      "name": "الاسم",
+      "dueDate": "تاريخ الاستحقاق",
+      "progress": "نسبة الإنجاز",
+      "createdAt": "تاريخ الإنشاء"
+    },
+    "empty": "لا توجد مشاريع",
+    "emptyBody": "أنشئ مشروعك الأول لبدء تنظيم المهام وتحقيق الإنجازات.",
+    "statuses": {
+      "planning": "تخطيط",
+      "active": "نشط",
+      "on_hold": "متوقف",
+      "completed": "مكتمل",
+      "archived": "مؤرشف"
+    },
+    "form": {
+      "name": "اسم المشروع",
+      "namePlaceholder": "مثال: تطوير تطبيق الجوال",
+      "description": "الوصف",
+      "descPlaceholder": "ما هو هدف ونطاق هذا المشروع؟",
+      "status": "الحالة",
+      "color": "لون المشروع",
+      "startDate": "تاريخ البدء",
+      "dueDate": "تاريخ الاستحقاق",
+      "members": "أعضاء الفريق المعيّنون",
+      "owner": "قائد / مالك المشروع",
+      "save": "حفظ المشروع"
+    },
+    "card": {
+      "progress": "التقدم",
+      "tasksCount": "{{done}} من {{total}} مهام",
+      "dueIn": "يستحق بعد {{count}} يوم",
+      "dueToday": "يستحق اليوم",
+      "dueTomorrow": "يستحق غداً",
+      "overdue": "متأخر {{count}} يوم",
+      "noDueDate": "بلا موعد استحقاق",
+      "members": "{{count}} أعضاء",
+      "open": "فتح مساحة المشروع"
+    },
+    "workspace": {
+      "back": "كل المشاريع",
+      "tabs": {
+        "overview": "نظرة عامة",
+        "tasks": "المهام وكانبان",
+        "timeline": "الخط الزمني",
+        "members": "الأعضاء",
+        "activity": "النشاط",
+        "files": "الملفات والوثائق"
+      },
+      "overview": {
+        "stats": {
+          "completion": "نسبة الإنجاز",
+          "tasksTotal": "إجمالي المهام",
+          "completed": "المكتملة",
+          "inProgress": "قيد التنفيذ",
+          "daysLeft": "الأيام المتبقية"
+        },
+        "about": "عن هذا المشروع",
+        "timelinePreview": "مراحل التقدم",
+        "recentActivity": "نشاط المشروع الأخير",
+        "noActivity": "لا يوجد نشاط مسجّل لهذا المشروع حتى الآن."
+      },
+      "tasks": {
+        "viewKanban": "لوحة كانبان",
+        "viewList": "قائمة المهام",
+        "newTask": "إضافة مهمة للمشروع",
+        "empty": "لا توجد مهام في هذا المشروع بعد.",
+        "emptyBody": "أنشئ مهاماً للبدء في متابعة تقدم هذا المشروع."
+      },
+      "members": {
+        "title": "فريق المشروع",
+        "subtitle": "المتعاونون في هذا المشروع وتوزيع مهامهم.",
+        "addMember": "إضافة عضو",
+        "remove": "إزالة",
+        "tasksAssigned": "{{count}} مهام مسندة",
+        "ownerBadge": "مالك المشروع",
+        "empty": "لم يُعيّن أي أعضاء بعد."
+      },
+      "files": {
+        "title": "الملفات والوثائق",
+        "subtitle": "رفع والوصول إلى مواصفات المشروع وتصميماته وأصوله.",
+        "upload": "رفع ملف",
+        "uploadModalTitle": "رفع أصل للمشروع",
+        "fileName": "اسم الملف",
+        "fileType": "نوع الملف",
+        "fileTypes": {
+          "document": "وثيقة",
+          "design": "تصميم",
+          "code": "كود/بيانات",
+          "image": "صورة",
+          "other": "أخرى"
+        },
+        "folders": {
+          "all": "جميع المجلدات",
+          "Design Assets": "أصول التصميم",
+          "Specifications": "المواصفات",
+          "Source Code": "الكود البرمجي",
+          "Deliverables": "التسليمات",
+          "Contracts & Legal": "العقود والشؤون القانونية"
+        },
+        "foldersTitle": "المجلد",
+        "storageUsage": "استخدام التخزين",
+        "used": "مستخدمة",
+        "limit": "الحد",
+        "searchPlaceholder": "البحث في الملفات...",
+        "listView": "عرض القائمة",
+        "gridView": "عرض الشبكة",
+        "preview": "معاينة",
+        "size": "الحجم",
+        "uploader": "رفع بواسطة",
+        "project": "المشروع",
+        "date": "التاريخ",
+        "empty": "لم يتم رفع ملفات بعد.",
+        "emptyBody": "شارك المخططات ووثائق المتطلبات والأصول مع فريق المشروع.",
+        "deleteConfirm": "هل أنت متأكد من حذف هذا الملف؟",
+        "download": "تنزيل",
+        "uploaded": "رُفع في {{date}}"
+      }
+    }
+  },
+  "calendar": {
+    "title": "التقويم والجدول الزمني",
+    "subtitle": "استعرض المهام والتسليمات ومواعيد المشاريع عبر خطك الزمني.",
+    "views": {
+      "month": "الشهر",
+      "week": "الأسبوع",
+      "day": "اليوم",
+      "agenda": "الأجندة"
+    },
+    "today": "اليوم",
+    "filter": {
+      "allProjects": "كل المشاريع",
+      "allPriorities": "كل الأولويات",
+      "allAssignees": "كل المسؤولين",
+      "allTypes": "كل الأنواع",
+      "tasksOnly": "المهام فقط",
+      "projectsOnly": "مواعيد المشاريع فقط"
+    },
+    "quickAdd": {
+      "title": "مهمة سريعة ليوم {{date}}",
+      "subtitle": "أضف مهمة مجدولة مباشرة لهذا التاريخ.",
+      "taskTitle": "عنوان المهمة",
+      "taskTitlePlaceholder": "ما الذي ترغب في جدولته؟",
+      "create": "جدولة المهمة"
+    },
+    "agenda": {
+      "empty": "لا توجد مهام أو مواعيد مجدولة لهذه الفترة.",
+      "emptyBody": "انقر فوق أي تاريخ أو زر «مهمة جديدة» لجدولة المهام."
+    },
+    "moreEvents": "+{{count}} إضافية"
+  },
+  "timeline": {
+    "title": "مخطط جانت الزمني",
+    "subtitle": "تصوّر مراحل المشروع ومسارات المهام في لمحة بصرية.",
+    "start": "البدء",
+    "due": "الاستحقاق",
+    "duration": "{{count}} يوم",
+    "progress": "{{pct}}% مكتمل",
+    "milestone": "مرحلة رئيسية",
+    "tasksProgression": "سير تقدم المهام"
+  },
+  "activity": {
+    "task_created": "أنشأ المهمة",
+    "task_updated": "حدّث المهمة",
+    "task_completed": "أكمل المهمة",
+    "project_created": "أنشأ المشروع",
+    "member_invited": "دعا",
+    "message_sent": "نشر في",
+    "role_changed": "غيّر دور",
+    "user_suspended": "علّق حساب",
+    "settings_changed": "غيّر إعداد",
+    "refreshed": "تم تحديث سجل النشاط",
+    "exported": "تم تصدير أحداث النشاط إلى ملف CSV",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "thisWeek": "هذا الأسبوع",
+    "older": "أقدم",
+    "actionCompleted": "أكمل مهمة",
+    "actionCreatedTask": "أنشأ مهمة",
+    "actionUpdatedTask": "حدّث مهمة",
+    "actionCreatedProject": "أنشأ مشروعاً",
+    "actionUploadedFile": "رفع ملفاً",
+    "actionDeletedFile": "حذف ملفاً",
+    "actionCommented": "علّق",
+    "actionInvited": "دعا عضواً",
+    "actionRoleChanged": "غيّر الدور",
+    "actionSettingsChanged": "غيّر الإعدادات",
+    "actionActivity": "نشاط",
+    "subtitle": "سجل التدقيق الفوري لأحداث مساحة العمل، إجراءات الأمان، وتقدم المهام.",
+    "refresh": "تحديث",
+    "exportCsv": "تصدير CSV",
+    "totalEvents": "إجمالي الأحداث",
+    "tasksCompleted": "المهام المكتملة",
+    "filesShared": "الملفات المشاركة",
+    "activeContributors": "المساهمون النشطون",
+    "searchPlaceholder": "البحث في سجل النشاط حسب المنفذ أو الإجراء...",
+    "allTime": "كل الأوقات",
+    "past24h": "آخر 24 ساعة",
+    "past7days": "آخر 7 أيام",
+    "past30days": "آخر 30 يوماً",
+    "comments": "التعليقات",
+    "emptyTitle": "لا توجد أنشطة مسجلة",
+    "noMatch": "لم يتم العثور على أحداث نشاط مطابقة",
+    "emptyBody": "ستظهر هنا الإجراءات التي يقوم بها أعضاء مساحة العمل."
+  },
+  "search": {
+    "title": "بحث",
+    "subtitle": "ابحث في المهام والمشاريع والأشخاص والرسائل والملفات والأحداث في مساحة عملك.",
+    "placeholder": "ابحث عن أي شيء…",
+    "open": "فتح",
+    "results": "نتائج البحث",
+    "noResults": "لا توجد نتائج",
+    "noResultsBody": "لا نتائج لـ \"{{query}}\". جرّب كلمات مختلفة.",
+    "recent": "عمليات البحث الأخيرة",
+    "clearRecent": "مسح",
+    "emptyHint": "ابدأ الكتابة للبحث في مساحة عملك.",
+    "filterByCategory": "تصفية حسب الفئة",
+    "categories": {
+      "all": "الكل",
+      "tasks": "المهام",
+      "projects": "المشاريع",
+      "people": "الأشخاص",
+      "messages": "الرسائل",
+      "files": "الملفات",
+      "events": "الأحداث"
+    }
+  },
+  "cmd": {
+    "paletteLabel": "لوحة الأوامر",
+    "resultsLabel": "الأوامر والنتائج",
+    "placeholder": "ابحث أو نفّذ أمرًا…",
+    "noResults": "لا توجد أوامر أو نتائج.",
+    "navigate": "تنقّل",
+    "select": "اختر",
+    "run": "تشغيل",
+    "createTask": "إنشاء مهمة: {{title}}",
+    "createProject": "إنشاء مشروع: {{name}}",
+    "applyTheme": "تطبيق السمة: {{theme}}",
+    "themeApplied": "تم تطبيق السمة \"{{theme}}\"",
+    "toggle3d": "{{state}} التأثيرات ثلاثية الأبعاد",
+    "enable": "تفعيل",
+    "disable": "تعطيل",
+    "3dEnabled": "تم تفعيل التأثيرات ثلاثية الأبعاد",
+    "3dDisabled": "تم تعطيل التأثيرات ثلاثية الأبعاد",
+    "switchLanguage": "تغيير اللغة إلى {{lang}}",
+    "languageChanged": "تم تغيير اللغة",
+    "logout": "تسجيل الخروج",
+    "markAllRead": "تحديد جميع الإشعارات كمقروءة",
+    "allRead": "تم تحديد جميع الإشعارات كمقروءة",
+    "showShortcuts": "عرض اختصارات لوحة المفاتيح"
+  },
+  "shortcuts": {
+    "title": "اختصارات لوحة المفاتيح",
+    "singleKeyNote": "اختصارات المفتاح الواحد (N، P، F، C، G، /، ؟) تُعطَّل أثناء الكتابة في حقول النص.",
+    "showHelp": "اختصارات لوحة المفاتيح",
+    "groups": {
+      "navigation": "التنقل",
+      "tasks": "المهام والمشاريع",
+      "interface": "الواجهة",
+      "palette": "لوحة الأوامر"
+    },
+    "navDashboard": "الانتقال إلى لوحة التحكم",
+    "navTasks": "الانتقال إلى مهامي",
+    "navCalendar": "الانتقال إلى التقويم",
+    "navChat": "الانتقال إلى الدردشة",
+    "navFocus": "الانتقال إلى التركيز",
+    "navProjects": "الانتقال إلى المشاريع",
+    "navSettings": "الانتقال إلى الإعدادات",
+    "navAnalytics": "الانتقال إلى التحليلات",
+    "navAi": "الانتقال إلى المساعد الذكي",
+    "newTask": "مهمة جديدة",
+    "newProject": "مشروع جديد",
+    "focusSearch": "التركيز على البحث",
+    "openPalette": "فتح لوحة الأوامر",
+    "logout": "تسجيل الخروج",
+    "toggleTheme": "تغيير السمة",
+    "toggle3d": "تبديل التأثيرات ثلاثية الأبعاد",
+    "switchArabic": "التبديل إلى العربية",
+    "switchEnglish": "التبديل إلى الإنجليزية",
+    "markAllRead": "تحديد جميع الإشعارات كمقروءة"
+  },
+  "ai": {
+    "title": "مساعد الذكاء الاصطناعي",
+    "subtitle": "محرك ذكاء محاكى لتفكيك المهام والجدولة.",
+    "simPill": "المساعد المحلي · محاكى، سيتم دمج المزود لاحقاً",
+    "ready": "النواة جاهزة",
+    "thinking": "النواة تفكر…",
+    "answering": "النواة تجيب",
+    "total": "المجموع {{time}}",
+    "buffer": "{{time}} هامش في نافذة وقتك {{window}}",
+    "overWindow": "{{time}} فوق نافذة وقتك {{window}}",
+    "regenerate": "إعادة توليد",
+    "addPlanToTasks": "إضافة الخطة إلى مهامي",
+    "added": "تمت الإضافة ✓",
+    "tasksAdded": "تمت إضافة {{count}} مهام إلى اليوم",
+    "tasksAdded_one": "تمت إضافة مهمة واحدة إلى اليوم",
+    "tasksAdded_plural": "تمت إضافة {{count}} مهام إلى اليوم",
+    "tasksAdded_other": "تمت إضافة {{count}} مهام إلى اليوم",
+    "regenerated": "تمت إعادة توليد الخطة بتقديرات جديدة",
+    "moveToTomorrow": "نقل إلى غد",
+    "movedToTomorrow": "تم نقل «{{title}}» إلى غد",
+    "applyAll": "تطبيق الكل",
+    "addSubtasks": "إضافة المهام الفرعية",
+    "subtasksAdded": "تمت إضافة {{count}} مهام فرعية",
+    "placeholder": "اسأل عن يومك، مهامك، أو خطتك…",
+    "send": "إرسال",
+    "dockTitle": "مهامي · اليوم",
+    "dockMeta": "{{count}} مهمة · {{time}}",
+    "dockMeta_one": "مهمة واحدة · {{time}}",
+    "dockMeta_plural": "{{count}} مهام · {{time}}",
+    "dockMeta_other": "{{count}} مهام · {{time}}",
+    "chips": {
+      "plan": "لدي 3 ساعات اليوم وأحتاج لإتمام واجهة برمجة تطبيقات Node.js",
+      "overdue": "ما هي المهام المتأخرة؟",
+      "breakdown": "قسّم: بناء المصادقة"
+    }
+  },
+  "hero": {
+    "badge": "إدارة المهام والمشاريع للأفراد والفرق"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة تفضيلات حسابك، المظهر، الأمان، والتكاملات.",
+    "tabs": {
+      "account": "الحساب",
+      "appearance": "المظهر",
+      "notifications": "الإشعارات",
+      "privacy": "الخصوصية",
+      "security": "الأمان والتحقق بخطوتين",
+      "language": "اللغة والمنطقة",
+      "integrations": "التكاملات",
+      "productivity": "الإنتاجية",
+      "accessibility": "إمكانية الوصول",
+      "data": "البيانات والتصدير",
+      "shortcuts": "اختصارات لوحة المفاتيح"
+    },
+    "account": {
+      "title": "معلومات الحساب",
+      "subtitle": "تحديث هويتك الشخصية وعنوان بريدك الإلكتروني.",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "save": "حفظ التغييرات",
+      "updated": "تم تحديث الحساب"
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "subtitle": "اختر متى وكيف تريد تلقي الإشعارات.",
+      "email": "إشعارات البريد الإلكتروني",
+      "emailDesc": "تلقي الملخصات الأسبوعية وإشعارات تعيين المهام الهامة عبر البريد الإلكتروني.",
+      "push": "إشعارات المتصفح الفورية",
+      "pushDesc": "عرض تنبيهات سطح المكتب عند استحقاق المهام أو استلام رسالة."
+    },
+    "privacy": {
+      "title": "إسقاطات الخصوصية",
+      "subtitle": "إدارة ظهورك وحالة نشاطك عبر مساحات العمل.",
+      "profileVisible": "ظهور الملف الشخصي للعامة",
+      "profileVisibleDesc": "السماح لأعضاء مساحة العمل بالعثور على بطاقة ملفك الشخصي.",
+      "onlineStatus": "إظهار حالة الاتصال",
+      "onlineStatusDesc": "عرض مؤشر الاتصال الأخضر عندما تكون نشطاً.",
+      "readReceipts": "إيصالات قراءة الدردشة",
+      "readReceiptsDesc": "السماح للآخرين برؤية متى قرأت رسائلهم.",
+      "typingIndicators": "مؤشرات الكتابة",
+      "typingIndicatorsDesc": "إظهار متى تقوم بكتابة رسالة في الدردشة."
+    },
+    "security": {
+      "title": "مركز الأمان والجلسات",
+      "subtitle": "مراقبة الأجهزة النشطة وتحديث كلمة المرور الخاصة بك.",
+      "currentSession": "جلسة المتصفح الحالية (Windows · Chrome)",
+      "ipActive": "عنوان IP: 192.168.1.54 · نشط الآن",
+      "thisDevice": "هذا الجهاز",
+      "twoFactor": "التحقق الثنائي (2FA)",
+      "twoFactorDesc": "إضافة طبقة أمان إضافية باستخدام تطبيق مصادقة.",
+      "changePassword": "تغيير كلمة المرور",
+      "demoRestricted": "وضع العرض التوضيحي: تعديل كلمة المرور محاكي ومحمي.",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "updatePassword": "تحديث كلمة المرور",
+      "passwordMismatch": "عدم تطابق كلمة المرور: كلمات المرور الجديدة غير متطابقة.",
+      "passwordUpdated": "تم تحديث كلمة المرور",
+      "demoPasswordError": "وضع العرض التوضيحي مقيد: تعطيل تغيير كلمة المرور."
+    },
+    "integrations": {
+      "title": "التكاملات المتصلة",
+      "subtitle": "ربط الأدوات والخدمات الخارجية لمزامنة المهام وأحداث التقويم.",
+      "githubName": "GitHub",
+      "githubDesc": "مزامنة طلبات السحب ونشاط الالتزام مع المهام.",
+      "slackName": "Slack",
+      "slackDesc": "إرسال إشعارات المهام إلى القنوات.",
+      "googleCalendarName": "Google Calendar",
+      "googleCalendarDesc": "مزامنة أحداث التقويم في الاتجاهين.",
+      "notionName": "Notion",
+      "notionDesc": "استيراد الصفحات والمستندات إلى مساحة العمل.",
+      "figmaName": "Figma",
+      "figmaDesc": "معاينة ملفات التصميم مباشرة في بطاقات المهام.",
+      "jiraName": "Jira",
+      "jiraDesc": "ترحيل المشاكل ولوحات المشاريع.",
+      "connected": "متصل",
+      "disconnected": "غير متصل",
+      "connect": "اتصال",
+      "disconnect": "فصل",
+      "updated": "تم تحديث التكامل: {{key}}"
+    },
+    "productivity": {
+      "title": "الإنتاجية وساعات العمل",
+      "subtitle": "تكوين ساعات العمل الافتراضية وفترات تركيز بومودورو.",
+      "workStart": "وقت بدء العمل",
+      "workEnd": "وقت انتهاء العمل"
+    },
+    "accessibility": {
+      "title": "إمكانية الوصول والتنقل",
+      "subtitle": "تخصيص حدود التركيز، إعدادات الحركة، واختصارات لوحة المفاتيح.",
+      "highContrast": "حدود تركيز عالية التباين",
+      "highContrastDesc": "التركيز على إبراز خطوط تركيز التنقل بلوحة المفاتيح.",
+      "disableSingleKey": "تعطيل الاختصارات ذات المفتاح الواحد",
+      "disableSingleKeyDesc": "منع المفاتيح الفردية مثل N أو P من تشغيل الإجراءات أثناء الكتابة."
+    },
+    "data": {
+      "title": "تصدير بياناتك",
+      "subtitle": "تنزيل نسخة احتياطية كاملة من مهامك، مشاريعك، وتفضيلاتك.",
+      "exportJson": "تصدير كـ JSON",
+      "exportCsv": "تصدير كـ CSV",
+      "exportComplete": "اكتمل التصدير ({{format}})",
+      "deleteTitle": "حذف الحساب",
+      "deleteSubtitle": "حذف حسابك نهائياً وجميع البيانات المرتبطة به. لا يمكن التراجع عن هذا الإجراء.",
+      "demoDeleteError": "وضع العرض التوضيحي مقيد: تم تعطيل حذف الحساب.",
+      "verifyFailed": "فشل التحقق: البريد الإلكتروني غير متطابق.",
+      "deleteConfirmLabel": "اكتب بريدك الإلكتروني ({{email}}) للتأكيد",
+      "deleteButton": "حذف الحساب نهائياً",
+      "deleted": "تم حذف الحساب"
+    }
+  },
+  "focus": {
+    "title": "مؤقت التركيز",
+    "subtitle": "جلسات تركيز بومودورو، أصوات محيطية، وحظر المشتتات.",
+    "doNotDisturb": "عدم الإزعاج",
+    "fullscreen": "ملء الشاشة",
+    "exitFullscreen": "إنهاء ملء الشاشة",
+    "modeLabel": "{{name}} ({{minutes}})",
+    "modes": {
+      "focus": "تركيز",
+      "shortBreak": "استراحة قصيرة",
+      "longBreak": "استراحة طويلة"
+    },
+    "presetsLabel": "الإعدادات المسبقة",
+    "customDuration": "مخصص",
+    "hours": "ساعات",
+    "minutes": "دقائق",
+    "hourShort": "س",
+    "minuteShort": "د",
+    "start": "بدء",
+    "pause": "إيقاف مؤقت",
+    "reset": "إعادة ضبط",
+    "targetTask": "المهمة المستهدفة",
+    "noTask": "لم يتم اختيار مهمة",
+    "selectTask": "اختر مهمة...",
+    "ambient": "الأصوات المحيطية",
+    "presets": {
+      "silence": "صمت",
+      "rain": "مطر",
+      "forest": "غابة",
+      "lofi": "لوفي",
+      "whitenoise": "ضوضاء بيضاء"
+    },
+    "summary": "ملخص اليوم",
+    "sessions": "الجلسات",
+    "streak": "السلسلة",
+    "completedToast": "اكتملت جلسة التركيز!",
+    "viewStats": "عرض الإحصاءات",
+    "nextSessionNotice": "تم تحديث المدة. ستطبق في الجلسة القادمة.",
+    "duration": {
+      "minutes_one": "{{count}} دقيقة",
+      "minutes_other": "{{count}} دقائق",
+      "hours_one": "{{count}} ساعة",
+      "hours_other": "{{count}} ساعات",
+      "hoursMinutes": "{{hours}} ساعة و{{minutes}} دقيقة"
+    }
+  },
+  "analytics": {
+    "title": "تحليلات الإنتاجية",
+    "subtitle": "مقاييس واتجاهات شاملة عبر مشاريع ومهام مساحة العمل الخاصة بك.",
+    "timeframe": {
+      "7": "آخر 7 أيام",
+      "30": "آخر 30 يوماً",
+      "90": "آخر 90 يوماً"
+    },
+    "exportCsv": "تصدير CSV",
+    "completed": "المكتملة",
+    "successRate": "معدل النجاح",
+    "avgCompletion": "متوسط الإكمال",
+    "focusSessions": "جلسات التركيز",
+    "focusHours": "ساعات التركيز",
+    "overdueTasks": "المهام المتأخرة",
+    "vsLast": "+12% مقارنة بالسابق",
+    "optimal": "مثالي",
+    "fastTurnaround": "سرعة إنجاز عالية",
+    "deepWork": "عمل عميق",
+    "totalLogged": "إجمالي المسجل",
+    "actionNeeded": "إجراء مطلوب",
+    "velocityTitle": "سرعة المهام اليومية",
+    "velocitySubtitle": "المهام المكتملة يومياً خلال الفترة المحددة.",
+    "focusMinutesTitle": "دقائق التركيز يومياً",
+    "focusMinutesSubtitle": "مدة العمل العميق اليومية بالدقائق.",
+    "projectsStatusTitle": "حالة مشاريع مساحة العمل",
+    "projectsStatusSubtitle": "المعالم النشطة وتخصيص الأعضاء.",
+    "teamMembers": "أعضاء الفريق: {{count}} نشط",
+    "loadError": "تعذّر تحميل بيانات التحليلات.",
+    "exportSuccess": "تم تصدير ملف CSV للتحليلات بنجاح."
+  }
+}

@@ -1,0 +1,509 @@
+<title>TaskFlow AI Core</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: orb stage on top, conversation + floating plan cards in the main column, "My tasks" dock on the right. Dark-first by design (TaskFlow identity). */
+:root {
+  --bg: #06090a;
+  --bg-2: #0a1012;
+  --surface: rgba(16, 24, 22, 0.66);
+  --surface-solid: #0e1614;
+  --line: rgba(255, 255, 255, 0.09);
+  --fg: #e9f2ee;
+  --muted: #8b9c95;
+  --accent: #2ee59d;
+  --accent-rgb: 46 229 157;
+  --cyan: #38d4e8;
+  --warn: #f2b14c;
+  --danger: #ff7a7a;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background:
+    radial-gradient(900px 500px at 50% -80px, rgb(var(--accent-rgb) / 0.10), transparent 70%),
+    radial-gradient(700px 420px at 100% 40%, rgba(56, 212, 232, 0.05), transparent 70%),
+    var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 20px 48px;
+  min-height: 100%;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.wrap { max-width: 1180px; margin-inline: auto; }
+
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
+.brand i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px 2px rgb(var(--accent-rgb) / 0.7); }
+.sim { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+@media (max-width: 920px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Orb stage */
+.stage { position: relative; height: 290px; margin-bottom: 4px; }
+#orb, .orb-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orb-fallback { display: none; place-items: center; }
+.orb-fallback span { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #b8ffe0, var(--accent) 35%, #0a6b4a 75%); box-shadow: 0 0 80px 10px rgb(var(--accent-rgb) / 0.45); animation: breathe 3.4s ease-in-out infinite; }
+.no-webgl #orb { display: none; }
+.no-webgl .orb-fallback { display: grid; }
+@keyframes breathe { 50% { transform: scale(1.07); } }
+.status { position: absolute; inset-inline: 0; bottom: 6px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.status b { color: var(--accent); font-weight: 500; }
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0 26px; }
+.chip { background: var(--surface); border: 1px solid var(--line); padding: 8px 14px; border-radius: 999px; font-size: 13.5px; transition: border-color .2s, box-shadow .2s, transform .2s; backdrop-filter: blur(10px); }
+.chip:hover { border-color: rgb(var(--accent-rgb) / 0.55); box-shadow: 0 0 22px -4px rgb(var(--accent-rgb) / 0.45); transform: translateY(-1px); }
+
+/* Conversation */
+.thread { display: flex; flex-direction: column; gap: 22px; }
+.exchange { display: flex; flex-direction: column; gap: 16px; }
+.exchange + .exchange { border-top: 1px solid var(--line); padding-top: 22px; }
+.msg-user { align-self: flex-end; max-width: min(520px, 88%); background: rgb(var(--accent-rgb) / 0.12); border: 1px solid rgb(var(--accent-rgb) / 0.28); padding: 10px 14px; border-radius: 16px 16px 4px 16px; }
+.msg-ai { display: flex; flex-direction: column; gap: 14px; }
+.ai-head { display: flex; align-items: center; gap: 10px; }
+.mini-orb { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c9ffe8, var(--accent) 45%, #0a6b4a); box-shadow: 0 0 14px rgb(var(--accent-rgb) / 0.6); flex: none; }
+.ai-text { color: var(--fg); max-width: 62ch; min-height: 1.5em; }
+.caret::after { content: ""; display: inline-block; width: 7px; height: 1em; margin-inline-start: 2px; vertical-align: -2px; background: var(--accent); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* 3D plan cards */
+.deck { perspective: 1300px; perspective-origin: 50% 30%; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; transform-style: preserve-3d; }
+@media (max-width: 620px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card-wrap { transform-style: preserve-3d; animation: cardIn .7s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 110ms); }
+@keyframes cardIn { from { opacity: 0; transform: translateZ(-220px) translateY(30px) rotateX(18deg); } to { opacity: 1; transform: none; } }
+.card {
+  --rx: 0deg; --ry: 0deg; --lift: 0px;
+  position: relative; height: 100%;
+  background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015) 55%), var(--surface);
+  border: 1px solid var(--line); border-radius: 18px; padding: 16px 16px 14px;
+  backdrop-filter: blur(14px);
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--lift));
+  transition: transform .18s ease-out, box-shadow .3s, border-color .3s;
+  box-shadow: 0 18px 40px -22px rgba(0,0,0,.9);
+  transform-style: preserve-3d;
+}
+.card:hover { --lift: 26px; border-color: rgb(var(--accent-rgb) / 0.5); box-shadow: 0 30px 50px -24px rgba(0,0,0,.95), 0 0 34px -6px rgb(var(--accent-rgb) / 0.4); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; transform: translateZ(18px); }
+.card h4 { margin: 0; font-family: var(--font-display); font-size: 17px; line-height: 1.25; letter-spacing: -0.01em; }
+.time { font-family: var(--font-mono); font-size: 13px; color: var(--accent); white-space: nowrap; background: rgb(var(--accent-rgb) / 0.1); border: 1px solid rgb(var(--accent-rgb) / 0.25); padding: 2px 9px; border-radius: 999px; }
+.why { margin: 8px 0 12px; color: var(--muted); font-size: 13px; transform: translateZ(10px); }
+.meter { height: 4px; border-radius: 4px; background: rgba(255,255,255,0.07); overflow: hidden; }
+.meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--cyan)); border-radius: 4px; transition: width .35s; }
+.adjust { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.adjust button { width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); line-height: 1; }
+.adjust button:hover { border-color: rgb(var(--accent-rgb) / 0.5); color: var(--accent); }
+.badge-done { position: absolute; top: 12px; inset-inline-end: 12px; display: none; font-size: 11px; font-family: var(--font-mono); color: #06210f; background: var(--accent); padding: 2px 8px; border-radius: 999px; }
+.card.added { opacity: 0.55; }
+.card.added .badge-done { display: block; }
+.card.added .time { visibility: hidden; }
+.card.added .adjust button { pointer-events: none; opacity: .4; }
+
+.summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); backdrop-filter: blur(12px); }
+.summary .total { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.summary .sub { color: var(--muted); font-size: 13px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: rgba(255,255,255,0.05); padding: 9px 14px; border-radius: 12px; font-weight: 500; transition: transform .12s, box-shadow .25s, border-color .25s; }
+.btn:hover { border-color: rgb(var(--accent-rgb) / 0.5); }
+.btn:active { transform: scale(0.97); }
+.btn.primary { background: var(--accent); color: #04140d; border-color: transparent; font-weight: 600; box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / 0.5); }
+.btn.primary:hover { box-shadow: 0 0 28px 2px rgb(var(--accent-rgb) / 0.45); }
+.btn[disabled] { opacity: .55; pointer-events: none; }
+
+/* Overdue / subtasks lists */
+.list { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); animation: cardIn .6s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 90ms); }
+.row .t { min-width: 0; }
+.row .t b { display: block; font-weight: 500; }
+.row .t small { color: var(--muted); }
+.late { font-family: var(--font-mono); font-size: 12px; color: var(--danger); background: rgba(255,122,122,.1); border: 1px solid rgba(255,122,122,.3); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+
+/* Composer */
+.composer { margin: 4px auto 0; max-width: 760px; display: flex; gap: 8px; padding: 8px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); backdrop-filter: blur(16px); transition: border-color .25s, box-shadow .25s; }
+.composer:focus-within { border-color: rgb(var(--accent-rgb) / 0.55); box-shadow: 0 0 34px -8px rgb(var(--accent-rgb) / 0.5); }
+.composer input { flex: 1; min-width: 0; background: transparent; border: 0; color: var(--fg); font: inherit; padding: 8px 10px; }
+.composer input:focus { outline: none; }
+.composer input::placeholder { color: var(--muted); }
+
+/* Dock */
+.dock { position: sticky; top: 16px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); padding: 16px; backdrop-filter: blur(14px); }
+.dock h3 { margin: 0 0 2px; font-family: var(--font-display); font-size: 17px; }
+.dock p { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; font-family: var(--font-mono); }
+.dock ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dock li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,0.03); font-size: 14px; }
+.dock li small { font-family: var(--font-mono); color: var(--muted); white-space: nowrap; }
+.dock li.new { border-color: rgb(var(--accent-rgb) / 0.5); animation: land .8s cubic-bezier(.2,.8,.2,1) both; }
+.dock li.new small { color: var(--accent); }
+@keyframes land { from { opacity: 0; transform: translateY(-26px) scale(1.05); box-shadow: 0 0 30px rgb(var(--accent-rgb) / 0.6); } to { opacity: 1; transform: none; } }
+
+.toast { position: fixed; inset-inline: 16px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: calc(100% - 32px); background: var(--surface-solid); border: 1px solid rgb(var(--accent-rgb) / 0.5); padding: 10px 16px; border-radius: 14px; box-shadow: 0 0 30px -6px rgb(var(--accent-rgb) / 0.5); display: flex; gap: 12px; align-items: center; transform: translateY(16px); opacity: 0; pointer-events: none; transition: .3s; }
+.toast.on { transform: none; opacity: 1; pointer-events: auto; }
+.toast button { background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-wrap, .row { animation: none; }
+  .orb-fallback span { animation: none; }
+  .caret::after { animation: none; }
+  .card { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <div class="bar">
+    <div class="brand"><i></i>TaskFlow 3D <span style="color:var(--muted);font-weight:500">/ AI</span></div>
+    <span class="sim">Local assistant · simulated, provider integration later</span>
+  </div>
+
+  <div class="grid">
+    <main>
+      <div class="stage" id="stage">
+        <canvas id="orb" aria-hidden="true"></canvas>
+        <div class="orb-fallback" aria-hidden="true"><span></span></div>
+        <div class="status" id="status" aria-live="polite">Core <b>ready</b></div>
+      </div>
+
+      <form class="composer" id="form" autocomplete="off">
+        <input id="q" type="text" placeholder="Ask about your day, tasks, or plan…" aria-label="Message the assistant">
+        <button class="btn primary" type="submit">Send</button>
+      </form>
+      <div class="chips" id="chips"></div>
+      <div class="thread" id="thread" aria-live="polite"></div>
+    </main>
+
+    <aside class="dock" aria-label="My tasks today">
+      <h3>My tasks · Today</h3>
+      <p id="dockMeta">2 tasks · 40m</p>
+      <ul id="dockList"></ul>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"><span id="toastText"></span><button id="toastUndo" hidden>Undo</button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Orb (Three.js) ---------- */
+  var state = { mode: 'idle' };
+  var stage = document.getElementById('stage');
+  var canvas = document.getElementById('orb');
+  var orb = null;
+
+  function initOrb() {
+    try {
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
+      camera.position.z = 5;
+      var group = new THREE.Group();
+      scene.add(group);
+
+      var uniforms = {
+        uTime: { value: 0 }, uThink: { value: 0 }, uGlow: { value: 1 },
+        uColor: { value: new THREE.Color(0x2ee59d) }, uColor2: { value: new THREE.Color(0x0b5c6b) }
+      };
+      var core = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 64, 64),
+        new THREE.ShaderMaterial({
+          uniforms: uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+          vertexShader: 'uniform float uTime; uniform float uThink; varying vec3 vN; varying vec3 vP; void main(){ vN = normalize(normalMatrix * normal); vec3 p = position; float d = sin(p.x*3.0+uTime*2.0)*sin(p.y*3.0+uTime*1.7)*sin(p.z*3.0+uTime*2.3); p += normal * d * 0.10 * uThink; vP = p; gl_Position = projectionMatrix * modelViewMatrix * vec4(p,1.0); }',
+          fragmentShader: 'uniform vec3 uColor; uniform vec3 uColor2; uniform float uTime; uniform float uGlow; varying vec3 vN; varying vec3 vP; void main(){ float f = pow(1.0 - max(dot(normalize(vN), vec3(0.0,0.0,1.0)), 0.0), 2.0); float band = 0.5 + 0.5*sin(vP.y*6.0 - uTime*1.5); vec3 col = mix(uColor2, uColor, clamp(f + band*0.3, 0.0, 1.0)); float a = clamp(0.28 + f*0.95*uGlow, 0.0, 1.0); gl_FragColor = vec4(col*(0.55 + f*uGlow), a); }'
+        })
+      );
+      group.add(core);
+
+      var shell = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1.35, 2),
+        new THREE.MeshBasicMaterial({ color: 0x38d4e8, wireframe: true, transparent: true, opacity: 0.16 })
+      );
+      group.add(shell);
+
+      function ring(r, tilt, color) {
+        var m = new THREE.Mesh(new THREE.TorusGeometry(r, 0.008, 8, 160), new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.55 }));
+        m.rotation.x = tilt; group.add(m); return m;
+      }
+      var r1 = ring(1.75, 1.2, 0x2ee59d), r2 = ring(2.05, 0.5, 0x38d4e8);
+
+      var N = 520, pos = new Float32Array(N * 3);
+      for (var i = 0; i < N; i++) {
+        var u = Math.random(), v = Math.random(), th = 2 * Math.PI * u, ph = Math.acos(2 * v - 1), r = 1.7 + Math.random() * 1.3;
+        pos[i*3] = r * Math.sin(ph) * Math.cos(th); pos[i*3+1] = r * Math.sin(ph) * Math.sin(th) * 0.8; pos[i*3+2] = r * Math.cos(ph);
+      }
+      var pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      var pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0x9dfcd2, size: 0.028, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false }));
+      group.add(pts);
+
+      function resize() {
+        var w = stage.clientWidth, h = stage.clientHeight;
+        renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+      }
+      resize();
+      if (window.ResizeObserver) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+
+      var mx = 0, my = 0;
+      window.addEventListener('pointermove', function (e) {
+        var r = stage.getBoundingClientRect();
+        mx = ((e.clientX - r.left) / r.width - 0.5) * 2; my = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      }, { passive: true });
+
+      var speed = 1, think = 0, glow = 1, scale = 1, clock = new THREE.Clock(), visible = true;
+      if (window.IntersectionObserver) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }).observe(stage);
+
+      function frame() {
+        requestAnimationFrame(frame);
+        if (!visible) return;
+        var dt = Math.min(clock.getDelta(), 0.05), t0 = uniforms.uTime.value;
+        var target = state.mode === 'thinking' ? { s: 8, k: 1, g: 2, sc: 1.14 } : state.mode === 'answering' ? { s: 2.6, k: 0.4, g: 1.4, sc: 1.07 } : { s: 1, k: 0, g: 1, sc: 1 + Math.sin(t0 * 1.4) * 0.025 };
+        if (reduce) { target.s = 0.3; target.k = 0; }
+        var ease = state.mode === 'thinking' ? 0.14 : 0.07;
+        speed += (target.s - speed) * ease; think += (target.k - think) * ease; glow += (target.g - glow) * ease; scale += (target.sc - scale) * 0.1;
+        /* shader time also speeds up, so the surface ripple and light band race while thinking */
+        var t = uniforms.uTime.value += dt * (1 + (speed - 1) * 0.7);
+        uniforms.uThink.value = think; uniforms.uGlow.value = glow;
+        group.scale.setScalar(scale);
+        shell.rotation.y += dt * 0.25 * speed; shell.rotation.x += dt * 0.1 * speed;
+        r1.rotation.z += dt * 0.5 * speed; r2.rotation.z -= dt * 0.35 * speed;
+        pts.rotation.y += dt * 0.06 * speed;
+        group.rotation.y += ((mx * 0.45) - group.rotation.y) * 0.05;
+        group.rotation.x += ((my * 0.25) - group.rotation.x) * 0.05;
+        renderer.render(scene, camera);
+      }
+      frame();
+      return true;
+    } catch (e) { return false; }
+  }
+  if (!window.THREE || !initOrb()) stage.classList.add('no-webgl');
+
+  var statusEl = document.getElementById('status');
+  function setMode(m) {
+    state.mode = m;
+    statusEl.innerHTML = m === 'thinking' ? 'Core <b>thinking…</b>' : m === 'answering' ? 'Core <b>answering</b>' : 'Core <b>ready</b>';
+  }
+
+  /* ---------- Helpers ---------- */
+  function h(tag, attrs, kids) {
+    var el = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'class') el.className = attrs[k]; else if (k === 'text') el.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), attrs[k]); else el.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (c) { if (c) el.appendChild(c); });
+    return el;
+  }
+  function fmt(m) { var hh = Math.floor(m / 60), mm = m % 60; return (hh ? hh + 'h ' : '') + (mm || !hh ? mm + 'm' : '').trim(); }
+
+  var toastEl = document.getElementById('toast'), toastText = document.getElementById('toastText'), toastUndo = document.getElementById('toastUndo'), toastTimer;
+  function toast(msg, undo) {
+    toastText.textContent = msg; toastUndo.hidden = !undo; toastUndo.onclick = function () { undo(); toastEl.classList.remove('on'); };
+    toastEl.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, 5000);
+  }
+
+  /* ---------- Dock (My tasks) ---------- */
+  var dockTasks = [{ t: 'Review PR #214', m: 25 }, { t: 'Update sprint notes', m: 15 }];
+  var dockList = document.getElementById('dockList'), dockMeta = document.getElementById('dockMeta');
+  function renderDock(newCount) {
+    dockList.innerHTML = '';
+    dockTasks.forEach(function (x, i) {
+      var isNew = newCount && i >= dockTasks.length - newCount;
+      dockList.appendChild(h('li', { class: isNew ? 'new' : '', style: isNew ? 'animation-delay:' + (i - (dockTasks.length - newCount)) * 120 + 'ms' : '' }, [
+        h('span', { text: x.t }), h('small', { text: (x.ai ? 'AI · ' : '') + fmt(x.m) })
+      ]));
+    });
+    var tot = dockTasks.reduce(function (a, b) { return a + b.m; }, 0);
+    dockMeta.textContent = dockTasks.length + ' tasks · ' + fmt(tot);
+  }
+
+  /* ---------- Knowledge (mock engine) ---------- */
+  var PLAN = [
+    { t: 'Review authentication', m: 35, why: 'Everything else depends on it, and 2 tasks are blocked by it.' },
+    { t: 'Finish API routes', m: 70, why: 'Highest-effort item, best done while focus is fresh.' },
+    { t: 'Test endpoints', m: 40, why: 'Catches regressions before docs are written.' },
+    { t: 'Documentation', m: 20, why: 'Lowest risk, fits the end of the session.' }
+  ];
+  var OVERDUE = [
+    { t: 'Set up PostgreSQL migrations', d: 3, why: 'Blocks "Seed demo data".' },
+    { t: 'Write onboarding copy', d: 2, why: 'Needed for Friday review.' },
+    { t: 'Fix kanban drag glitch', d: 1, why: 'Reported by 2 teammates.' }
+  ];
+  var SUBS = ['Create login UI', 'Create register UI', 'Add Zod validation', 'Connect mock auth service', 'Test auth flows'];
+
+  /* ---------- Rendering ---------- */
+  var thread = document.getElementById('thread');
+  var busy = false;
+
+  /* Newest exchange goes on top, directly under the orb and composer. */
+  function newExchange(text) {
+    var ex = h('div', { class: 'exchange' }, [h('div', { class: 'msg-user', text: text })]);
+    thread.insertBefore(ex, thread.firstChild);
+    return ex;
+  }
+
+  function typeInto(el, text, done) {
+    if (reduce) { el.textContent = text; done && done(); return; }
+    var i = 0; el.classList.add('caret');
+    (function step() { el.textContent = text.slice(0, ++i); if (i < text.length) setTimeout(step, 14); else { el.classList.remove('caret'); done && done(); } })();
+  }
+
+  function tilt(card) {
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.setProperty('--ry', (x * 9).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-y * 9).toFixed(2) + 'deg');
+    });
+    card.addEventListener('pointerleave', function () { card.style.setProperty('--ry', '0deg'); card.style.setProperty('--rx', '0deg'); });
+  }
+
+  function planBlock(items, avail, introText, animate) {
+    var block = h('div', { class: 'msg-ai' });
+    var text = h('div', { class: 'ai-text' });
+    block.appendChild(h('div', { class: 'ai-head' }, [h('span', { class: 'mini-orb' }), h('b', { text: 'TaskFlow AI' })]));
+    block.appendChild(text);
+    var deck = h('div', { class: 'deck' }), cards = h('div', { class: 'cards' }); deck.appendChild(cards);
+    var sum = h('div', { class: 'summary' }), totalEl = h('div', { class: 'total' }), subEl = h('div', { class: 'sub' });
+    var addBtn = h('button', { class: 'btn primary', type: 'button', text: 'Add Plan to My Tasks' });
+    var regen = h('button', { class: 'btn', type: 'button', text: 'Regenerate' });
+    sum.appendChild(h('div', {}, [totalEl, subEl])); sum.appendChild(h('div', { class: 'actions' }, [regen, addBtn]));
+    block.appendChild(deck); block.appendChild(sum);
+
+    var data = items.map(function (x) { return { t: x.t, m: x.m, why: x.why }; }), added = false, cardEls = [];
+
+    function totals() {
+      var tot = data.reduce(function (a, b) { return a + b.m; }, 0);
+      totalEl.textContent = 'Total ' + fmt(tot);
+      var left = avail - tot;
+      subEl.textContent = left >= 0 ? fmt(left) + ' buffer in your ' + fmt(avail) + ' window' : fmt(-left) + ' over your ' + fmt(avail) + ' window';
+      subEl.style.color = left >= 0 ? '' : 'var(--warn)';
+      cardEls.forEach(function (c, i) { c.meter.style.width = Math.min(100, data[i].m / 90 * 100) + '%'; c.time.textContent = fmt(data[i].m); c.mins.textContent = fmt(data[i].m); });
+    }
+    data.forEach(function (it, i) {
+      var time = h('span', { class: 'time' }), meter = h('i'), mins = h('span');
+      var minus = h('button', { type: 'button', 'aria-label': 'Less time for ' + it.t, text: '−', onclick: function () { it.m = Math.max(5, it.m - 5); totals(); } });
+      var plus = h('button', { type: 'button', 'aria-label': 'More time for ' + it.t, text: '+', onclick: function () { it.m += 5; totals(); } });
+      var card = h('div', { class: 'card' }, [
+        h('span', { class: 'badge-done', text: 'Added' }),
+        h('div', { class: 'card-top' }, [h('h4', { text: it.t }), time]),
+        h('p', { class: 'why', text: it.why }),
+        h('div', { class: 'meter' }, [meter]),
+        h('div', { class: 'adjust' }, [minus, mins, plus])
+      ]);
+      tilt(card);
+      var wrap = h('div', { class: 'card-wrap', style: '--i:' + i }, [card]);
+      if (!animate) wrap.style.animation = 'none';
+      cards.appendChild(wrap); cardEls.push({ card: card, meter: meter, time: time, mins: mins });
+    });
+    totals();
+
+    addBtn.onclick = function () {
+      if (added) return; added = true;
+      var before = dockTasks.length;
+      data.forEach(function (d) { dockTasks.push({ t: d.t, m: d.m, ai: true }); });
+      renderDock(data.length);
+      cardEls.forEach(function (c) { c.card.classList.add('added'); });
+      addBtn.textContent = 'Added ✓'; addBtn.disabled = true; regen.disabled = true;
+      toast(data.length + ' tasks added to Today', function () {
+        dockTasks.splice(before, data.length); renderDock(0); added = false;
+        cardEls.forEach(function (c) { c.card.classList.remove('added'); });
+        addBtn.textContent = 'Add Plan to My Tasks'; addBtn.disabled = false; regen.disabled = false;
+      });
+    };
+    regen.onclick = function () {
+      var jitter = [-10, -5, 0, 5, 10];
+      data.forEach(function (d, i) { d.m = Math.max(10, items[i].m + jitter[Math.floor(Math.random() * jitter.length)]); });
+      totals(); toast('Plan regenerated with new estimates');
+    };
+    if (animate) typeInto(text, introText); else text.textContent = introText;
+    return block;
+  }
+
+  function overdueBlock() {
+    var block = h('div', { class: 'msg-ai' }), text = h('div', { class: 'ai-text' });
+    block.appendChild(h('div', { class: 'ai-head' }, [h('span', { class: 'mini-orb' }), h('b', { text: 'TaskFlow AI' })]));
+    block.appendChild(text);
+    typeInto(text, 'You have 3 overdue tasks. I suggest moving them to tomorrow, starting with the one that blocks others.');
+    var list = h('div', { class: 'list' }), btns = [];
+    OVERDUE.forEach(function (o, i) {
+      var b = h('button', { class: 'btn', type: 'button', text: 'Move to tomorrow', onclick: function () { b.textContent = 'Moved ✓'; b.disabled = true; toast('"' + o.t + '" moved to tomorrow'); } });
+      btns.push(b);
+      list.appendChild(h('div', { class: 'row', style: '--i:' + i }, [h('div', { class: 't' }, [h('b', { text: o.t }), h('small', { text: o.why })]), h('span', { class: 'late', text: o.d + 'd late' }), b]));
+    });
+    block.appendChild(list);
+    block.appendChild(h('div', { class: 'actions' }, [h('button', { class: 'btn primary', type: 'button', text: 'Apply all', onclick: function () { btns.forEach(function (b) { b.click(); }); } })]));
+    return block;
+  }
+
+  function subtasksBlock() {
+    var block = h('div', { class: 'msg-ai' }), text = h('div', { class: 'ai-text' });
+    block.appendChild(h('div', { class: 'ai-head' }, [h('span', { class: 'mini-orb' }), h('b', { text: 'TaskFlow AI' })]));
+    block.appendChild(text);
+    typeInto(text, 'I split "Build authentication" into 5 subtasks. Untick any you don’t want.');
+    var list = h('div', { class: 'list' }), checks = [];
+    SUBS.forEach(function (s, i) {
+      var id = 'sub' + Date.now() + i, cb = h('input', { type: 'checkbox', id: id, checked: 'checked' }); cb.checked = true; checks.push(cb);
+      list.appendChild(h('label', { class: 'row', for: id, style: '--i:' + i }, [h('div', { class: 't' }, [h('b', { text: s })]), cb]));
+    });
+    block.appendChild(list);
+    var go = h('button', { class: 'btn primary', type: 'button', text: 'Add subtasks', onclick: function () {
+      var n = checks.filter(function (c) { return c.checked; }).length; go.textContent = n + ' subtasks added ✓'; go.disabled = true; toast(n + ' subtasks added to "Build authentication"');
+    } });
+    block.appendChild(h('div', { class: 'actions' }, [go]));
+    return block;
+  }
+
+  function fallbackBlock() {
+    var block = h('div', { class: 'msg-ai' }), text = h('div', { class: 'ai-text' });
+    block.appendChild(h('div', { class: 'ai-head' }, [h('span', { class: 'mini-orb' }), h('b', { text: 'TaskFlow AI' })]));
+    block.appendChild(text);
+    typeInto(text, 'I can plan your day, find overdue work, or break a task into subtasks. Try one of the suggestions above.');
+    return block;
+  }
+
+  /* ---------- Intent + flow ---------- */
+  function respond(q) {
+    var s = q.toLowerCase();
+    if (/overdue|late|متأخر/.test(s)) return overdueBlock();
+    if (/break|subtask|split|قسّ|قسم/.test(s)) return subtasksBlock();
+    if (/hour|plan|api|schedule|day|ساع|خطة/.test(s)) {
+      var m = s.match(/(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h|ساع)/), avail = m ? Math.round(parseFloat(m[1]) * 60) : 180, used = 0, pick = [];
+      PLAN.forEach(function (p) { if (used + p.m <= avail) { used += p.m; pick.push(p); } });
+      if (!pick.length) pick = [PLAN[0]];
+      return planBlock(pick, avail, 'Here is a plan for your ' + fmt(avail) + '. I ordered it by what unblocks other work first.', true);
+    }
+    return fallbackBlock();
+  }
+
+  function ask(q) {
+    q = q.trim(); if (!q || busy) return; busy = true;
+    var ex = newExchange(q);
+    var wait = h('div', { class: 'msg-ai' }, [h('div', { class: 'ai-head' }, [h('span', { class: 'mini-orb' }), h('span', { class: 'ai-text caret', text: 'Thinking' })])]);
+    ex.appendChild(wait);
+    setMode('thinking');
+    setTimeout(function () {
+      setMode('answering');
+      ex.removeChild(wait);
+      var block = respond(q); ex.appendChild(block);
+      setTimeout(function () { setMode('idle'); busy = false; }, 1600);
+    }, reduce ? 200 : 2000);
+  }
+
+  var CHIPS = ['I have 3 hours today and need to finish my Node.js API', 'What is overdue?', 'Break down: Build authentication'];
+  var chips = document.getElementById('chips');
+  CHIPS.forEach(function (c) { chips.appendChild(h('button', { class: 'chip', type: 'button', text: c, onclick: function () { ask(c); } })); });
+  document.getElementById('form').addEventListener('submit', function (e) { e.preventDefault(); var i = document.getElementById('q'); ask(i.value); i.value = ''; });
+
+  /* Initial state: the spec's example conversation is already on screen */
+  var ex0 = newExchange(CHIPS[0]);
+  ex0.appendChild(planBlock(PLAN, 180, 'Here is a plan for your 3h. I ordered it by what unblocks other work first.', true));
+  renderDock(0);
+})();
+</script>

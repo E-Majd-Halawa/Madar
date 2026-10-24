@@ -1,0 +1,183 @@
+@import '@fontsource/ibm-plex-sans-arabic/arabic.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Design tokens: colors are RGB triplets so alpha modifiers work ---------- */
+:root {
+  --danger: 244 63 94;
+  --warning: 245 158 11;
+  --success: 16 185 129;
+}
+
+:root,
+[data-theme='midnight'] {
+  color-scheme: dark;
+  --bg: 7 9 13;
+  --surface: 14 18 25;
+  --surface-2: 21 27 37;
+  --border: 255 255 255;
+  --fg: 236 240 244;
+  --muted: 145 158 173;
+  --accent: 16 185 129;
+  --accent-2: 34 211 238;
+  --accent-fg: 3 12 9;
+  --glow: 0.5;
+}
+
+[data-theme='obsidian'] {
+  color-scheme: dark;
+  --bg: 4 4 5;
+  --surface: 11 11 13;
+  --surface-2: 19 19 22;
+  --border: 255 255 255;
+  --fg: 240 240 242;
+  --muted: 150 150 160;
+  --accent: 52 211 153;
+  --accent-2: 96 165 250;
+  --accent-fg: 3 12 9;
+  --glow: 0.4;
+}
+
+[data-theme='emerald'] {
+  color-scheme: dark;
+  --bg: 4 14 11;
+  --surface: 8 24 19;
+  --surface-2: 13 35 28;
+  --border: 200 255 235;
+  --fg: 230 246 240;
+  --muted: 130 170 156;
+  --accent: 52 211 153;
+  --accent-2: 45 212 191;
+  --accent-fg: 2 15 10;
+  --glow: 0.65;
+}
+
+[data-theme='ocean'] {
+  color-scheme: dark;
+  --bg: 5 12 20;
+  --surface: 9 21 34;
+  --surface-2: 14 31 49;
+  --border: 190 225 255;
+  --fg: 230 240 250;
+  --muted: 135 160 185;
+  --accent: 34 211 238;
+  --accent-2: 59 130 246;
+  --accent-fg: 2 12 18;
+  --glow: 0.6;
+}
+
+[data-theme='aurora'] {
+  color-scheme: dark;
+  --bg: 9 8 18;
+  --surface: 16 14 32;
+  --surface-2: 24 21 46;
+  --border: 220 210 255;
+  --fg: 238 236 250;
+  --muted: 150 145 180;
+  --accent: 52 211 153;
+  --accent-2: 167 139 250;
+  --accent-fg: 3 12 9;
+  --glow: 0.6;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: 244 247 249;
+  --surface: 255 255 255;
+  --surface-2: 236 241 245;
+  --border: 15 23 42;
+  --fg: 15 23 42;
+  --muted: 90 105 125;
+  --accent: 5 150 105;
+  --accent-2: 8 145 178;
+  --accent-fg: 255 255 255;
+  --glow: 0.25;
+}
+
+/* 3D effects switched off -> calmer glow everywhere (must stay after theme blocks) */
+[data-fx='off'] {
+  --glow: 0.15;
+}
+
+@layer base {
+  * {
+    @apply border-border/10;
+  }
+  html {
+    background: rgb(var(--bg));
+    scroll-padding-top: 5rem;
+  }
+  html:not([data-motion='off']) {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    min-height: 100dvh;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgb(var(--accent) / 0.3);
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgb(var(--surface) / 0.62);
+    border: 1px solid rgb(var(--border) / 0.1);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: inset 0 1px 0 0 rgb(var(--border) / 0.06), 0 24px 48px -28px rgb(0 0 0 / 0.5);
+  }
+  .bg-ambient {
+    background:
+      radial-gradient(60rem 40rem at 12% -10%, rgb(var(--accent) / calc(var(--glow) * 0.2)), transparent 60%),
+      radial-gradient(50rem 35rem at 92% 0%, rgb(var(--accent-2) / calc(var(--glow) * 0.14)), transparent 55%);
+  }
+}
+
+/* Animation intensity "off" (or OS reduced-motion) kills CSS motion globally */
+[data-motion='off'] *,
+[data-motion='off'] *::before,
+[data-motion='off'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--border) / 0.2) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--border) / 0.2);
+  border-radius: 3px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--border) / 0.4);
+  background-clip: content-box;
+}
+.scrollbar-thin::-webkit-scrollbar-corner {
+  background: transparent;
+}

@@ -1,0 +1,964 @@
+{
+  "common": {
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "notifications": "Notifications",
+    "cancel": "Cancel",
+    "save": "Save",
+    "next": "Next",
+    "skip": "Skip",
+    "finish": "Finish",
+    "create": "Create",
+    "undo": "Undo",
+    "delete": "Delete",
+    "viewAll": "View all",
+    "search": "Search",
+    "menu": "Menu",
+    "optional": "Optional",
+    "retry": "Try again",
+    "loading": "Loading",
+    "error": "Error"
+  },
+  "messages": {
+    "attachFile": "Attach File",
+    "conversations": "Conversations"
+  },
+  "chat": {
+    "emoji": "Emoji",
+    "attach": "Attach",
+    "voice": "Voice note"
+  },
+  "ai": {
+    "totalLabel": "Total AI tokens / usage",
+    "chatCleared": "Chat history cleared",
+    "clearConfirmTitle": "Clear AI Conversation",
+    "clearConfirmDesc": "Are you sure you want to clear the current AI chat history?",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "dashboard": {
+    "stats": {
+      "label": "Overview Statistics"
+    }
+  },
+  "projects": {
+    "deleteConfirmTitle": "Delete Project"
+  },
+  "pwa": {
+    "updateAvailable": "A new version of Madar is available.",
+    "reload": "Reload"
+  },
+  "validation": {
+    "required": "This field is required.",
+    "email": "Enter a valid email address.",
+    "nameShort": "Enter your full name.",
+    "usernameShort": "Username must be at least 3 characters.",
+    "usernameChars": "Use letters, numbers, dots, dashes or underscores.",
+    "passwordWeak": "Use 8+ characters with at least three of: uppercase, number, symbol.",
+    "passwordMismatch": "Passwords do not match.",
+    "termsRequired": "You must accept the terms to continue.",
+    "titleShort": "Give the task a title (2+ characters).",
+    "titleLong": "Keep the title under 120 characters."
+  },
+  "auth": {
+    "backToSignIn": "Back to sign in",
+    "fields": {
+      "fullName": "Full name",
+      "username": "Username",
+      "confirmPassword": "Confirm password"
+    },
+    "social": {
+      "or": "or continue with email",
+      "future": "{{provider}} sign-in will be enabled when the backend is connected."
+    },
+    "strength": {
+      "label": "Password strength",
+      "level0": "Empty",
+      "level1": "Weak",
+      "level2": "Fair",
+      "level3": "Good",
+      "level4": "Strong",
+      "rule_length": "8+ characters",
+      "rule_upper": "Uppercase letter",
+      "rule_number": "A number",
+      "rule_symbol": "A symbol"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue to your workspace.",
+      "submit": "Sign in",
+      "remember": "Remember me",
+      "forgot": "Forgot password?",
+      "noAccount": "New to Madar?",
+      "demoOnly": "Demo credentials"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Start organizing your work in under a minute.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "success": "Account created. Let's set up your workspace.",
+      "terms": "I agree to the Terms of Service and Privacy Policy."
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send reset instructions.",
+      "submit": "Send reset link",
+      "sentTitle": "Check your inbox",
+      "sentBody": "If an account exists for {{email}}, a reset link is on its way.",
+      "openReset": "Open reset page",
+      "mockHint": "Demo mode has no inbox, so this button stands in for the emailed link."
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "subtitle": "Make it strong and unique.",
+      "newPassword": "New password",
+      "submit": "Update password",
+      "doneTitle": "Password updated",
+      "doneBody": "You can now sign in with your new password."
+    }
+  },
+  "onboarding": {
+    "step": "Step {{current}} of {{total}}",
+    "welcome": {
+      "title": "Welcome, {{name}}",
+      "body": "Let's tailor Madar to the way you work. It takes about a minute, and every step is optional."
+    },
+    "usage": {
+      "title": "What are you using Madar for?",
+      "hint": "Pick all that apply.",
+      "personal": "Personal productivity",
+      "study": "Study",
+      "work": "Work",
+      "freelance": "Freelancing",
+      "team": "Team projects"
+    },
+    "workspace": {
+      "title": "Choose your workspace type",
+      "personal": "Personal",
+      "personalBody": "A private space for your own tasks and goals.",
+      "team": "Team",
+      "teamBody": "Share projects, chat and files with collaborators."
+    },
+    "theme": {
+      "title": "Choose a theme",
+      "hint": "You can change this any time in Settings."
+    },
+    "language": {
+      "title": "Choose your language",
+      "hint": "Arabic switches the whole interface to right-to-left."
+    },
+    "timezone": {
+      "title": "Your timezone",
+      "hint": "Used for reminders, due times and your calendar."
+    },
+    "hours": {
+      "title": "Working hours",
+      "start": "Start",
+      "end": "End",
+      "days": "Working days"
+    },
+    "notifications": {
+      "title": "Notification preferences",
+      "level": "How much do you want to hear from us?",
+      "all": "Everything",
+      "important": "Important only",
+      "none": "Nothing",
+      "email": "Email notifications",
+      "push": "Push notifications"
+    },
+    "done": {
+      "title": "Your workspace is ready.",
+      "body": "Your preferences are saved. You can adjust them later in Settings.",
+      "cta": "Go to dashboard"
+    }
+  },
+  "weekdays": {
+    "0": "Sun",
+    "1": "Mon",
+    "2": "Tue",
+    "3": "Wed",
+    "4": "Thu",
+    "5": "Fri",
+    "6": "Sat"
+  },
+  "nav": {
+    "myTasks": "My Tasks",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "calendar": "Calendar",
+    "kanban": "Kanban",
+    "projects": "Projects",
+    "focus": "Focus",
+    "chat": "Chat",
+    "messages": "Messages",
+    "files": "Files",
+    "notifications": "Notifications",
+    "analytics": "Analytics",
+    "ai": "AI Assistant",
+    "profile": "Profile",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Log out",
+    "home": "Home",
+    "tasks": "Tasks",
+    "more": "More",
+    "primary": "Main navigation",
+    "mobile": "Mobile navigation",
+    "members": "Members",
+    "activity": "Activity",
+    "dashboard": "Dashboard"
+  },
+  "shell": {
+    "workspace": "Workspace",
+    "switchWorkspace": "Switch workspace",
+    "searchPlaceholder": "Search or run a command…",
+    "demoBanner": "Demo Mode — changes are saved on this device only.",
+    "exitDemo": "Exit demo",
+    "personal": "Personal",
+    "team": "Team",
+    "members": "{{count}} members",
+    "account": "Account menu",
+    "skipToContent": "Skip to content",
+    "offline": "You're offline.",
+    "comingSoon": "{{feature}} arrives in phase {{phase}}.",
+    "comingSoonBody": "This area is already wired into navigation, guards and the shared stores; the full interface is built in phase {{phase}}."
+  },
+  "dashboard": {
+    "greeting": "Good {{part}}, {{name}}",
+    "morning": "morning",
+    "afternoon": "afternoon",
+    "evening": "evening",
+    "subtitle": "Here's where things stand in {{workspace}}.",
+    "stats": {
+      "total": "Total tasks",
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "overdue": "Overdue",
+      "rate": "Completion rate",
+      "projects": "Active projects",
+      "today": "Today's progress",
+      "week": "Done this week",
+      "focus": "Focus this week"
+    },
+    "quick": {
+      "newTask": "New task",
+      "newProject": "New project",
+      "focus": "Start focus",
+      "calendar": "Open calendar",
+      "chat": "Open chat"
+    },
+    "widgets": {
+      "today": "Today's tasks",
+      "upcoming": "Upcoming",
+      "activity": "Recent activity",
+      "projects": "Active projects",
+      "productivity": "Weekly productivity",
+      "priority": "Priority distribution",
+      "focusStats": "Focus statistics",
+      "team": "Team activity"
+    },
+    "empty": {
+      "today": "You're all caught up.",
+      "todayBody": "Nothing is due today. Enjoy the calm or plan ahead.",
+      "upcoming": "Nothing scheduled.",
+      "projects": "Create your first project.",
+      "activity": "No activity yet."
+    },
+    "chart": {
+      "completed": "Completed",
+      "focus": "Focus (min)"
+    },
+    "focusTotal": "Total this week",
+    "focusSessions": "{{count}} sessions",
+    "focusAvg": "Average session",
+    "focusBest": "Best day",
+    "dueIn": "Due in {{count}}d",
+    "dueToday": "Due today",
+    "dueTomorrow": "Due tomorrow",
+    "overdueBy": "Overdue {{count}}d",
+    "noDate": "No due date",
+    "tasksCount": "{{done}}/{{total}} tasks",
+    "teamEmpty": "No team activity yet.",
+    "error": "We couldn't load your workspace data.",
+    "demoNote": "Demo data is generated relative to today, so it always looks current."
+  },
+  "tasks": {
+    "new": "New task",
+    "newBody": "Capture it now, refine it later.",
+    "title": "Title",
+    "titlePlaceholder": "What needs to be done?",
+    "priority": "Priority",
+    "dueDate": "Due date",
+    "project": "Project",
+    "noProject": "No project",
+    "create": "Create task",
+    "created": "Task created",
+    "completed": "Task completed",
+    "complete": "Complete",
+    "reopened": "Task reopened",
+    "deleted": "Task deleted",
+    "tags": "Tags",
+    "dueOverdue": "Overdue",
+    "dueToday": "Due Today",
+    "dueDateLabel": "Due",
+    "subtasksProgress": "{{completed}}/{{total}} subtasks",
+    "commentsCount": "{{count}} comments",
+    "trackedTime": "Tracked time",
+    "assignedTo": "Assigned to",
+    "unassigned": "Unassigned",
+    "count": "{{count}} tasks",
+    "recurrence": "Recurrence",
+    "recurrenceOptions": {
+      "none": "None",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "markDone": "Mark “{{title}}” as done",
+    "markOpen": "Mark “{{title}}” as not done",
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "statuses": {
+      "backlog": "Backlog",
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "review": "Review",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "kanban": {
+      "title": "Kanban Board",
+      "board": "Board",
+      "dragHandle": "Drag to reorder",
+      "subtitle": "Visualize workflows, drag cards between stages, and keep momentum high.",
+      "columns": {
+        "backlog": "Backlog",
+        "todo": "To Do",
+        "in_progress": "In Progress",
+        "review": "Review",
+        "completed": "Done"
+      },
+      "quickAdd": "Add task",
+      "addCard": "Add card",
+      "empty": "No tasks here",
+      "emptyDrop": "Drop card here"
+    },
+    "views": {
+      "all": "All Tasks",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "list": "List view",
+      "table": "Table view",
+      "viewMode": "View mode"
+    },
+    "filter": {
+      "search": "Search tasks by title, description or tag...",
+      "filters": "Filters",
+      "allPriorities": "All Priorities",
+      "allProjects": "All Projects",
+      "allAssignees": "All Assignees",
+      "allStatuses": "All Statuses",
+      "unassigned": "Unassigned",
+      "clear": "Clear filters",
+      "noResults": "No tasks match your filters",
+      "noResultsBody": "Try changing your search terms, status or priority filters."
+    },
+    "sort": {
+      "sortBy": "Sort by",
+      "dueDate": "Due date",
+      "priority": "Priority",
+      "title": "Title",
+      "createdAt": "Created",
+      "ascending": "Ascending",
+      "descending": "Descending"
+    },
+    "bulk": {
+      "selected": "{{count}} selected",
+      "markComplete": "Mark done",
+      "moveTo": "Move to...",
+      "delete": "Delete selected",
+      "clearSelection": "Clear"
+    },
+    "drawer": {
+      "details": "Task Details",
+      "description": "Description",
+      "descPlaceholder": "Add a more detailed description...",
+      "subtasks": "Subtasks",
+      "subtasksProgress": "{{done}} of {{total}} done",
+      "newSubtaskPlaceholder": "Add a subtask and press enter...",
+      "timeTracking": "Time Tracking",
+      "estimate": "Estimated",
+      "tracked": "Tracked",
+      "logTime": "Log Time",
+      "addMinutes": "Add minutes",
+      "comments": "Comments",
+      "activity": "Activity",
+      "addComment": "Write a comment...",
+      "postComment": "Post comment",
+      "noComments": "No comments yet. Start the conversation!",
+      "noActivity": "No recent activity for this task.",
+      "assignee": "Assignee",
+      "unassigned": "Unassigned",
+      "tags": "Tags",
+      "addTag": "Add tag",
+      "confirmDelete": "Are you sure you want to delete this task?",
+      "delete": "Delete task"
+    },
+    "today": {
+      "title": "Today's Tasks",
+      "subtitle": "Focus on high-impact work scheduled for today and overdue tasks.",
+      "progress": "{{done}} of {{total}} tasks completed today ({{pct}}%)",
+      "empty": "All caught up for today!",
+      "emptyBody": "No tasks are scheduled for today. Create a task or pick from your backlog.",
+      "overdueSection": "Overdue",
+      "todaySection": "Due Today",
+      "completedSection": "Completed Today",
+      "quickAdd": "Quickly add a task for today..."
+    },
+    "upcoming": {
+      "title": "Upcoming Tasks",
+      "subtitle": "Plan ahead and track scheduled deliverables across upcoming days and weeks.",
+      "tomorrow": "Tomorrow",
+      "thisWeek": "Later This Week",
+      "nextWeek": "Next Week",
+      "later": "Later",
+      "noDate": "No Due Date",
+      "empty": "No upcoming tasks scheduled."
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage workspace initiatives, track progress, collaborate and meet milestones.",
+    "new": "New Project",
+    "newBody": "Set goals, assign team members, and define timelines.",
+    "edit": "Edit Project",
+    "editBody": "Update project scope, dates, members, and status.",
+    "delete": "Delete Project",
+    "deleteConfirm": "Are you sure you want to delete “{{name}}”? Linked tasks will remain but become unlinked.",
+    "deleted": "Project deleted",
+    "created": "Project created",
+    "updated": "Project updated",
+    "search": "Search projects by name or description...",
+    "filterStatus": "Status",
+    "allStatuses": "All Statuses",
+    "sortBy": "Sort by",
+    "views": {
+      "grid": "Grid",
+      "table": "Table",
+      "timeline": "Timeline"
+    },
+    "sort": {
+      "name": "Name",
+      "dueDate": "Due date",
+      "progress": "Progress",
+      "createdAt": "Created date"
+    },
+    "empty": "No projects found",
+    "emptyBody": "Create your first project to start organizing tasks and hitting milestones.",
+    "statuses": {
+      "planning": "Planning",
+      "active": "Active",
+      "on_hold": "On Hold",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "form": {
+      "name": "Project name",
+      "namePlaceholder": "e.g. Mobile App Redesign",
+      "description": "Description",
+      "descPlaceholder": "What is the objective and scope of this project?",
+      "status": "Status",
+      "color": "Project Color",
+      "startDate": "Start Date",
+      "dueDate": "Due Date",
+      "members": "Assigned Team Members",
+      "owner": "Project Lead / Owner",
+      "save": "Save Project"
+    },
+    "card": {
+      "progress": "Progress",
+      "tasksCount": "{{done}} of {{total}} tasks",
+      "dueIn": "Due in {{count}}d",
+      "dueToday": "Due today",
+      "dueTomorrow": "Due tomorrow",
+      "overdue": "Overdue by {{count}}d",
+      "noDueDate": "No due date",
+      "members": "{{count}} members",
+      "open": "Open Project"
+    },
+    "workspace": {
+      "back": "All Projects",
+      "tabs": {
+        "overview": "Overview",
+        "tasks": "Tasks & Kanban",
+        "timeline": "Timeline",
+        "members": "Members",
+        "activity": "Activity",
+        "files": "Files & Assets"
+      },
+      "overview": {
+        "stats": {
+          "completion": "Completion",
+          "tasksTotal": "Total Tasks",
+          "completed": "Completed",
+          "inProgress": "In Progress",
+          "daysLeft": "Days Left"
+        },
+        "about": "About this project",
+        "timelinePreview": "Milestone Progress",
+        "recentActivity": "Recent Project Activity",
+        "noActivity": "No recent activity recorded for this project."
+      },
+      "tasks": {
+        "viewKanban": "Kanban Board",
+        "viewList": "Task List",
+        "newTask": "Add Task to Project",
+        "empty": "No tasks in this project yet.",
+        "emptyBody": "Create tasks to start tracking progress on this project."
+      },
+      "members": {
+        "title": "Project Team",
+        "subtitle": "People collaborating on this project and their assigned work.",
+        "addMember": "Add Member",
+        "remove": "Remove",
+        "tasksAssigned": "{{count}} tasks assigned",
+        "ownerBadge": "Project Owner",
+        "empty": "No members assigned yet."
+      },
+      "files": {
+        "title": "Files & Documentation",
+        "subtitle": "Upload and access project specifications, mockups, and assets.",
+        "upload": "Upload File",
+        "uploadModalTitle": "Upload Project Asset",
+        "fileName": "File Name",
+        "fileType": "File Type",
+        "fileTypes": {
+          "document": "Document",
+          "design": "Design",
+          "code": "Code/Data",
+          "image": "Image",
+          "other": "Other"
+        },
+        "folders": {
+          "all": "All Folders",
+          "Design Assets": "Design Assets",
+          "Specifications": "Specifications",
+          "Source Code": "Source Code",
+          "Deliverables": "Deliverables",
+          "Contracts & Legal": "Contracts & Legal"
+        },
+        "foldersTitle": "Folders",
+        "storageUsage": "Storage Usage",
+        "used": "used",
+        "limit": "limit",
+        "searchPlaceholder": "Search files...",
+        "listView": "List view",
+        "gridView": "Grid view",
+        "preview": "Preview",
+        "size": "Size",
+        "uploader": "Uploaded by",
+        "project": "Project",
+        "date": "Date",
+        "empty": "No files uploaded yet.",
+        "emptyBody": "Share wireframes, PRDs, and assets with your project team.",
+        "deleteConfirm": "Are you sure you want to delete this file?",
+        "download": "Download",
+        "uploaded": "Uploaded {{date}}"
+      }
+    }
+  },
+  "calendar": {
+    "title": "Calendar & Schedule",
+    "subtitle": "Inspect tasks, deliverables, and project deadlines across your timeline.",
+    "views": {
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "agenda": "Agenda"
+    },
+    "today": "Today",
+    "filter": {
+      "allProjects": "All Projects",
+      "allPriorities": "All Priorities",
+      "allAssignees": "All Assignees",
+      "allTypes": "All Types",
+      "tasksOnly": "Tasks Only",
+      "projectsOnly": "Project Deadlines Only"
+    },
+    "quickAdd": {
+      "title": "Quick Task for {{date}}",
+      "subtitle": "Add a task directly scheduled for this date.",
+      "taskTitle": "Task Title",
+      "taskTitlePlaceholder": "What needs to be scheduled?",
+      "create": "Schedule Task"
+    },
+    "agenda": {
+      "empty": "No scheduled tasks or deadlines for this period.",
+      "emptyBody": "Click any date or 'New Task' to schedule items."
+    },
+    "moreEvents": "+{{count}} more"
+  },
+  "timeline": {
+    "title": "Project Timeline & Gantt",
+    "subtitle": "Visualize deliverables, phases, and task timelines at a glance.",
+    "start": "Start",
+    "due": "Due",
+    "duration": "{{count}} days",
+    "progress": "{{pct}}% completed",
+    "milestone": "Milestone",
+    "tasksProgression": "Tasks Progression"
+  },
+  "activity": {
+    "task_created": "created task",
+    "task_updated": "updated task",
+    "task_completed": "completed task",
+    "project_created": "created project",
+    "member_invited": "invited",
+    "message_sent": "posted in",
+    "role_changed": "changed role",
+    "user_suspended": "suspended",
+    "settings_changed": "changed setting",
+    "refreshed": "Activity log refreshed",
+    "exported": "Activity events exported to CSV",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "older": "Older",
+    "actionCompleted": "Completed task",
+    "actionCreatedTask": "Created task",
+    "actionUpdatedTask": "Updated task",
+    "actionCreatedProject": "Created project",
+    "actionUploadedFile": "Uploaded file",
+    "actionDeletedFile": "Deleted file",
+    "actionCommented": "Commented",
+    "actionInvited": "Invited member",
+    "actionRoleChanged": "Changed role",
+    "actionSettingsChanged": "Changed settings",
+    "actionActivity": "Activity",
+    "subtitle": "Real-time audit log of workspace events, security actions, and task progression.",
+    "refresh": "Refresh",
+    "exportCsv": "Export CSV",
+    "totalEvents": "Total Events",
+    "tasksCompleted": "Tasks Completed",
+    "filesShared": "Files Shared",
+    "activeContributors": "Active Contributors",
+    "searchPlaceholder": "Search activity log by actor, action, or target...",
+    "allTime": "All Time",
+    "past24h": "Past 24 Hours",
+    "past7days": "Past 7 Days",
+    "past30days": "Past 30 Days",
+    "comments": "Comments",
+    "emptyTitle": "No activity recorded",
+    "noMatch": "No matching activity events found",
+    "emptyBody": "Actions taken by workspace members will appear here."
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Search tasks, projects, people, messages, files and events across your workspace.",
+    "placeholder": "Search anything…",
+    "open": "Open",
+    "results": "Search results",
+    "noResults": "No results found",
+    "noResultsBody": "No results for \"{{query}}\". Try different keywords.",
+    "recent": "Recent searches",
+    "clearRecent": "Clear",
+    "emptyHint": "Start typing to search across your workspace.",
+    "filterByCategory": "Filter by category",
+    "categories": {
+      "all": "All",
+      "tasks": "Tasks",
+      "projects": "Projects",
+      "people": "People",
+      "messages": "Messages",
+      "files": "Files",
+      "events": "Events"
+    }
+  },
+  "cmd": {
+    "paletteLabel": "Command palette",
+    "resultsLabel": "Commands and results",
+    "placeholder": "Search or run a command…",
+    "noResults": "No commands or results found.",
+    "navigate": "Navigate",
+    "select": "Select",
+    "run": "run",
+    "createTask": "Create task: {{title}}",
+    "createProject": "Create project: {{name}}",
+    "applyTheme": "Apply theme: {{theme}}",
+    "themeApplied": "Theme \"{{theme}}\" applied",
+    "toggle3d": "{{state}} 3D effects",
+    "enable": "Enable",
+    "disable": "Disable",
+    "3dEnabled": "3D effects enabled",
+    "3dDisabled": "3D effects disabled",
+    "switchLanguage": "Switch language to {{lang}}",
+    "languageChanged": "Language changed",
+    "logout": "Log out",
+    "markAllRead": "Mark all notifications as read",
+    "allRead": "All notifications marked as read",
+    "showShortcuts": "Show keyboard shortcuts"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "singleKeyNote": "Single-key shortcuts (N, P, F, C, G, /, ?) are disabled while typing in text fields.",
+    "showHelp": "Keyboard shortcuts",
+    "groups": {
+      "navigation": "Navigation",
+      "tasks": "Tasks & Projects",
+      "interface": "Interface",
+      "palette": "Command Palette"
+    },
+    "navDashboard": "Go to Dashboard",
+    "navTasks": "Go to My Tasks",
+    "navCalendar": "Go to Calendar",
+    "navChat": "Go to Chat",
+    "navFocus": "Go to Focus",
+    "navProjects": "Go to Projects",
+    "navSettings": "Go to Settings",
+    "navAnalytics": "Go to Analytics",
+    "navAi": "Go to AI Assistant",
+    "newTask": "New task",
+    "newProject": "New project",
+    "focusSearch": "Focus search",
+    "openPalette": "Open command palette",
+    "logout": "Log out",
+    "toggleTheme": "Change theme",
+    "toggle3d": "Toggle 3D effects",
+    "switchArabic": "Switch to Arabic",
+    "switchEnglish": "Switch to English",
+    "markAllRead": "Mark all notifications read"
+  },
+  "ai": {
+    "title": "AI Assistant",
+    "subtitle": "Simulated intelligence engine for task breakdown and scheduling.",
+    "simPill": "Local assistant · simulated, provider integration later",
+    "ready": "Core ready",
+    "thinking": "Core thinking…",
+    "answering": "Core answering",
+    "total": "Total {{time}}",
+    "buffer": "{{time}} buffer in your {{window}} window",
+    "overWindow": "{{time}} over your {{window}} window",
+    "regenerate": "Regenerate",
+    "addPlanToTasks": "Add Plan to My Tasks",
+    "added": "Added ✓",
+    "tasksAdded": "{{count}} task added to Today",
+    "tasksAdded_one": "{{count}} task added to Today",
+    "tasksAdded_plural": "{{count}} tasks added to Today",
+    "tasksAdded_other": "{{count}} tasks added to Today",
+    "regenerated": "Plan regenerated with new estimates",
+    "moveToTomorrow": "Move to tomorrow",
+    "movedToTomorrow": "“{{title}}” moved to tomorrow",
+    "applyAll": "Apply all",
+    "addSubtasks": "Add subtasks",
+    "subtasksAdded": "{{count}} subtasks added",
+    "placeholder": "Ask about your day, tasks, or plan…",
+    "send": "Send",
+    "dockTitle": "My tasks · Today",
+    "dockMeta": "{{count}} task · {{time}}",
+    "dockMeta_one": "{{count}} task · {{time}}",
+    "dockMeta_plural": "{{count}} tasks · {{time}}",
+    "dockMeta_other": "{{count}} tasks · {{time}}",
+    "chips": {
+      "plan": "I have 3 hours today and need to finish my Node.js API",
+      "overdue": "What is overdue?",
+      "breakdown": "Break down: Build authentication"
+    }
+  },
+  "hero": {
+    "badge": "Task and project management for individuals and teams"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences, appearance, security, and integrations.",
+    "tabs": {
+      "account": "Account",
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "privacy": "Privacy",
+      "security": "Security & 2FA",
+      "language": "Language & Region",
+      "integrations": "Integrations",
+      "productivity": "Productivity",
+      "accessibility": "Accessibility",
+      "data": "Data & Export",
+      "shortcuts": "Keyboard Shortcuts"
+    },
+    "account": {
+      "title": "Account Information",
+      "subtitle": "Update your profile identity and email address.",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "save": "Save Changes",
+      "updated": "Account updated"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "subtitle": "Choose when and how you want to be notified.",
+      "email": "Email Notifications",
+      "emailDesc": "Receive weekly digests and important task assignment notices via email.",
+      "push": "Browser Push Notifications",
+      "pushDesc": "Show desktop popups when tasks are due or when you receive a message."
+    },
+    "privacy": {
+      "title": "Privacy Controls",
+      "subtitle": "Manage your visibility and activity status across workspaces.",
+      "profileVisible": "Public Profile Visibility",
+      "profileVisibleDesc": "Allow workspace members to find your profile card.",
+      "onlineStatus": "Show Online Status",
+      "onlineStatusDesc": "Display green online indicator when you are active.",
+      "readReceipts": "Chat Read Receipts",
+      "readReceiptsDesc": "Let others see when you have read their messages.",
+      "typingIndicators": "Typing Indicators",
+      "typingIndicatorsDesc": "Show when you are composing a message in chat."
+    },
+    "security": {
+      "title": "Security Center & Sessions",
+      "subtitle": "Monitor active devices and update your password.",
+      "currentSession": "Current Browser Session (Windows · Chrome)",
+      "ipActive": "IP Address: 192.168.1.54 · Active now",
+      "thisDevice": "This Device",
+      "twoFactor": "Two-Factor Authentication (2FA)",
+      "twoFactorDesc": "Add an extra layer of security using an authenticator app.",
+      "changePassword": "Change Password",
+      "demoRestricted": "Demo Mode: Password modification is simulated and protected.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "updatePassword": "Update Password",
+      "passwordMismatch": "Password mismatch: New passwords do not match.",
+      "passwordUpdated": "Password updated",
+      "demoPasswordError": "Demo Mode Restricted: Changing password is disabled."
+    },
+    "integrations": {
+      "title": "Connected Integrations",
+      "subtitle": "Connect external tools and services to synchronize tasks and calendar events.",
+      "githubName": "GitHub",
+      "githubDesc": "Sync PRs and commit activity to tasks.",
+      "slackName": "Slack",
+      "slackDesc": "Send task notifications to channels.",
+      "googleCalendarName": "Google Calendar",
+      "googleCalendarDesc": "Two-way calendar event sync.",
+      "notionName": "Notion",
+      "notionDesc": "Import pages and docs into workspace.",
+      "figmaName": "Figma",
+      "figmaDesc": "Preview design files directly in task cards.",
+      "jiraName": "Jira",
+      "jiraDesc": "Migrate issues and project boards.",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "updated": "Integration updated: {{key}}"
+    },
+    "productivity": {
+      "title": "Productivity & Working Hours",
+      "subtitle": "Configure default working hours and Pomodoro focus intervals.",
+      "workStart": "Work Start Time",
+      "workEnd": "Work End Time"
+    },
+    "accessibility": {
+      "title": "Accessibility & Navigation",
+      "subtitle": "Customize focus rings, motion settings, and keyboard shortcuts.",
+      "highContrast": "High Contrast Focus Rings",
+      "highContrastDesc": "Emphasize keyboard navigation focus outlines.",
+      "disableSingleKey": "Disable Single-Key Shortcuts",
+      "disableSingleKeyDesc": "Prevent single keys like N or P from triggering actions while typing."
+    },
+    "data": {
+      "title": "Export Your Data",
+      "subtitle": "Download a complete backup of your tasks, projects, and preferences.",
+      "exportJson": "Export as JSON",
+      "exportCsv": "Export as CSV",
+      "exportComplete": "Export complete ({{format}})",
+      "deleteTitle": "Delete Account",
+      "deleteSubtitle": "Permanently delete your account and all associated data. This action cannot be undone.",
+      "demoDeleteError": "Demo Mode Restricted: Account deletion disabled.",
+      "verifyFailed": "Verification failed: Email does not match.",
+      "deleteConfirmLabel": "Type your email ({{email}}) to confirm",
+      "deleteButton": "Permanently Delete Account",
+      "deleted": "Account deleted"
+    }
+  },
+  "focus": {
+    "title": "Focus Timer",
+    "subtitle": "Pomodoro focus sessions, ambient sounds, and distraction blocking.",
+    "doNotDisturb": "Do Not Disturb",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit Fullscreen",
+    "modeLabel": "{{name}} ({{minutes}})",
+    "modes": {
+      "focus": "Focus",
+      "shortBreak": "Short Break",
+      "longBreak": "Long Break"
+    },
+    "presetsLabel": "Presets",
+    "customDuration": "Custom",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "hourShort": "h",
+    "minuteShort": "m",
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset",
+    "targetTask": "Target Task",
+    "noTask": "No task selected",
+    "selectTask": "Select task...",
+    "ambient": "Ambient Sounds",
+    "presets": {
+      "silence": "Silence",
+      "rain": "Rain",
+      "forest": "Forest",
+      "lofi": "Lofi",
+      "whitenoise": "White Noise"
+    },
+    "summary": "Today's Summary",
+    "sessions": "Sessions",
+    "streak": "Streak",
+    "completedToast": "Focus session completed!",
+    "viewStats": "View Stats",
+    "nextSessionNotice": "Duration updated. Will apply to the next session.",
+    "duration": {
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursMinutes": "{{hours}} hour {{minutes}} minutes"
+    }
+  },
+  "analytics": {
+    "title": "Productivity Analytics",
+    "subtitle": "Comprehensive metrics and trends across your workspace projects and tasks.",
+    "timeframe": {
+      "7": "Last 7 Days",
+      "30": "Last 30 Days",
+      "90": "Last 90 Days"
+    },
+    "exportCsv": "Export CSV",
+    "completed": "Completed",
+    "successRate": "Success Rate",
+    "avgCompletion": "Avg Completion",
+    "focusSessions": "Focus Sessions",
+    "focusHours": "Focus Hours",
+    "overdueTasks": "Overdue Tasks",
+    "vsLast": "+12% vs last",
+    "optimal": "Optimal",
+    "fastTurnaround": "Fast turnaround",
+    "deepWork": "Deep work",
+    "totalLogged": "Total logged",
+    "actionNeeded": "Action needed",
+    "velocityTitle": "Daily Task Velocity",
+    "velocitySubtitle": "Completed tasks per day over the selected window.",
+    "focusMinutesTitle": "Focus Minutes per Day",
+    "focusMinutesSubtitle": "Daily deep work duration in minutes.",
+    "projectsStatusTitle": "Workspace Projects Status",
+    "projectsStatusSubtitle": "Active milestones and member allocations.",
+    "teamMembers": "Team members: {{count}} active",
+    "loadError": "Failed to load analytics data.",
+    "exportSuccess": "Analytics CSV exported successfully."
+  }
+}

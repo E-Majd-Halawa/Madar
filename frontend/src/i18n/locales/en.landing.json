@@ -1,0 +1,236 @@
+{
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "security": "Security",
+    "openApp": "Open app",
+    "menu": "Open menu",
+    "closeMenu": "Close menu",
+    "toggleTheme": "Switch between light and dark theme",
+    "otherLanguage": "العربية"
+  },
+  "hero": {
+    "badge": "Task and project management for individuals and teams",
+    "title": "Keep your work in orbit.",
+    "subtitle": "One workspace for tasks, projects, calendar, and focus.",
+    "primary": "Get started",
+    "indicator": "Built for focused individuals and modern teams."
+  },
+  "preview": {
+    "title": "See a day in Madar",
+    "subtitle": "These panels are live. Complete a task, move a card, start a timer.",
+    "tabs": {
+      "tasks": "Tasks",
+      "board": "Board",
+      "focus": "Focus"
+    },
+    "workspace": "Demo Workspace",
+    "tasks": {
+      "heading": "Today",
+      "progress": "{{done}} / {{total}} completed",
+      "items": {
+        "a": "Review authentication flow",
+        "b": "Finish API routes",
+        "c": "Write endpoint tests",
+        "d": "Update documentation",
+        "e": "Deploy to staging"
+      }
+    },
+    "board": {
+      "columns": {
+        "todo": "To Do",
+        "doing": "In Progress",
+        "done": "Done"
+      },
+      "move": "Move {{title}} to the next column",
+      "cards": {
+        "a": "Design login screen",
+        "b": "Build REST endpoints",
+        "c": "Set up CI pipeline",
+        "d": "Write release notes"
+      }
+    },
+    "focus": {
+      "session": "Focus session",
+      "task": "Finish API routes",
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset",
+      "completed": "{{count}} sessions completed"
+    }
+  },
+  "why": {
+    "title": "One workspace instead of six tabs",
+    "subtitle": "Madar replaces the stack of tools teams juggle every day.",
+    "items": {
+      "unified": {
+        "title": "Everything connected",
+        "desc": "Tasks, projects, calendar, files and chat share one data model, so nothing gets copied between tools."
+      },
+      "focus": {
+        "title": "Built for deep work",
+        "desc": "A focus mode with timers and time tracking shows where your hours actually go."
+      },
+      "team": {
+        "title": "Made for teams",
+        "desc": "Workspaces, roles and permissions keep large teams organized and safe."
+      },
+      "api": {
+        "title": "Ready for your backend",
+        "desc": "Every screen talks to a service layer, so a real API drops in without a rewrite."
+      }
+    }
+  },
+  "features": {
+    "title": "Everything a team needs to ship",
+    "subtitle": "Nine tools, one interface.",
+    "items": {
+      "tasks": {
+        "title": "Task management",
+        "desc": "Capture work in seconds and keep every detail attached to it.",
+        "b1": "Subtasks, checklists and recurring tasks",
+        "b2": "Dependencies with blocked-by warnings",
+        "b3": "Built-in time tracking"
+      },
+      "projects": {
+        "title": "Project management",
+        "desc": "See progress across every project at a glance.",
+        "b1": "Milestones and deadlines",
+        "b2": "Members and roles per project",
+        "b3": "Project timelines"
+      },
+      "kanban": {
+        "title": "Kanban boards",
+        "desc": "Drag work between stages and watch progress update.",
+        "b1": "Smooth drag and drop",
+        "b2": "Priorities, assignees and tags",
+        "b3": "Changes save instantly"
+      },
+      "calendar": {
+        "title": "Calendar",
+        "desc": "Plan by day, week or month, and drag tasks to reschedule.",
+        "b1": "Month, week, day and agenda views",
+        "b2": "Deadlines and dependencies in view",
+        "b3": "Filter by project or priority"
+      },
+      "focus": {
+        "title": "Focus mode",
+        "desc": "Pomodoro sessions in a calm, immersive space.",
+        "b1": "Focus, short break and long break timers",
+        "b2": "Pick the task you are working on",
+        "b3": "Session history and statistics"
+      },
+      "team": {
+        "title": "Team collaboration",
+        "desc": "Invite people, assign work and control who can do what.",
+        "b1": "Workspaces with role-based access",
+        "b2": "Invitations and a member directory",
+        "b3": "Activity feed for every workspace"
+      },
+      "analytics": {
+        "title": "Analytics",
+        "desc": "Understand your output with charts that answer real questions.",
+        "b1": "Completion rate and most productive days",
+        "b2": "Focus time and time tracking",
+        "b3": "7, 30 and 90 day ranges"
+      },
+      "chat": {
+        "title": "Chat",
+        "desc": "Channels and direct messages next to the work they are about.",
+        "b1": "Channels, threads and reactions",
+        "b2": "Mentions and file attachments",
+        "b3": "Moderation tools for admins"
+      },
+      "ai": {
+        "title": "AI assistant",
+        "desc": "Turn a vague goal into a plan for today.",
+        "b1": "Break large tasks into subtasks",
+        "b2": "Suggest priorities and schedules",
+        "b3": "Add the plan to your tasks in one click"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Connect the tools you already use",
+    "subtitle": "Integrations arrive with the backend. Today Madar runs fully on its own.",
+    "planned": "Planned"
+  },
+  "security": {
+    "title": "Security and control built in",
+    "subtitle": "Permissions are enforced in the interface and designed to be enforced again by your API.",
+    "items": {
+      "rbac": {
+        "title": "Role-based access",
+        "desc": "Four roles with explicit permissions, from User to Super Admin."
+      },
+      "audit": {
+        "title": "Audit logs",
+        "desc": "Every sensitive action records who did what, and when."
+      },
+      "twofa": {
+        "title": "Two-factor authentication",
+        "desc": "Protect accounts with a second step at sign-in."
+      },
+      "sessions": {
+        "title": "Session control",
+        "desc": "Review devices and sign out sessions you do not recognize."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Simple pricing",
+    "subtitle": "Start free. Upgrade when your team grows.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlyNote": "2 months free",
+    "billing": "Billing period",
+    "perMonth": "per month",
+    "perUserMonth": "per user / month",
+    "popular": "Most popular",
+    "note": "Prices are illustrative in this demo.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "desc": "For personal productivity",
+        "cta": "Start for Free",
+        "b1": "Unlimited personal tasks",
+        "b2": "3 projects",
+        "b3": "Focus mode and calendar",
+        "b4": "Community chat"
+      },
+      "pro": {
+        "name": "Pro",
+        "desc": "For freelancers and power users",
+        "cta": "Start Pro trial",
+        "b1": "Unlimited projects",
+        "b2": "Timeline and Gantt",
+        "b3": "Analytics and time tracking",
+        "b4": "AI assistant"
+      },
+      "team": {
+        "name": "Team",
+        "desc": "For teams that ship together",
+        "cta": "Start Team trial",
+        "b1": "Everything in Pro",
+        "b2": "Roles and permissions",
+        "b3": "Audit logs and security center",
+        "b4": "Priority support"
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to get started?",
+    "subtitle": "Sign in or create your account to begin.",
+    "primary": "Get started"
+  },
+  "footer": {
+    "tagline": "One workspace for tasks, projects, calendar, and focus.",
+    "product": "Product",
+    "account": "Account",
+    "rights": "© {{year}} {{brand}}. All rights reserved."
+  },
+  "demo": {
+    "entering": "Opening the demo workspace",
+    "failed": "The demo could not be opened."
+  }
+}
