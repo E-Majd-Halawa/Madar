@@ -1,0 +1,90 @@
+// Madar (مدار) — initial schema (Phase 1)
+// Only users, workspaces and workspace membership for now.
+// Source of truth: frontend/src/types/index.ts and frontend/src/types/members.ts
+// Mapped to snake_case tables per frontend/docs/backend/02-data-model.md §2–3.3
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  user
+  moderator
+  admin
+  super_admin
+}
+
+enum UserStatus {
+  active
+  suspended
+  invited
+}
+
+enum WorkspaceType {
+  personal
+  team
+}
+
+enum WorkspaceRole {
+  owner
+  admin
+  member
+  guest
+}
+
+model User {
+  id           String   @id
+  fullName     String   @map("full_name")
+  username     String   @unique
+  email        String   @unique
+  role         Role     @default(user)
+  status       UserStatus @default(active)
+  avatarUrl    String?  @map("avatar_url")
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  lastActiveAt DateTime @default(now()) @map("last_active_at")
+
+  memberships     WorkspaceMember[]
+  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+
+  @@map("users")
+}
+
+model Workspace {
+  id          String        @id
+  name        String
+  description String
+  type        WorkspaceType
+  ownerId     String        @map("owner_id")
+  color       String
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  members WorkspaceMember[]
+
+  @@index([ownerId])
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String        @map("workspace_id")
+  userId      String        @map("user_id")
+  role        WorkspaceRole @default(member)
+  department  String?
+  status      UserStatus    @default(active)
+  joinedAt    DateTime      @default(now()) @map("joined_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@map("workspace_members")
+}
