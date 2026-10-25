@@ -1,20 +1,25 @@
 import {
   ConflictException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import argon2 from 'argon2';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { PrismaService } from '../../database/prisma.service.js';
 import type {
+  AuthSession,
+  AuthTokens,
   LoginInput,
   RegisterInput,
-} from '../../../../frontend/src/api/contracts/auth.ts';
-import type { AuthSession, AuthTokens, User } from '../../../../frontend/src/types/index.ts';
+} from '../../common/contracts/api.contracts.js';
+import { toUserDto } from '../../common/mappers/user.mapper.js';
+import { PrismaService } from '../../database/prisma.service.js';
+import { LockoutService } from './lockout.service.js';
 
 @Injectable()
 export class AuthService {
@@ -24,31 +29,8 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly lockout: LockoutService,
   ) {}
-
-  private formatUser(user: {
-    id: string;
-    fullName: string;
-    username: string;
-    email: string;
-    role: string;
-    status: string;
-    avatarUrl: string | null;
-    createdAt: Date;
-    lastActiveAt: Date;
-  }): User {
-    return {
-      id: user.id,
-      fullName: user.fullName,
-      username: user.username,
-      email: user.email,
-      role: user.role as User['role'],
-      status: user.status as User['status'],
-      avatarUrl: user.avatarUrl ?? undefined,
-      createdAt: user.createdAt.toISOString(),
-      lastActiveAt: user.lastActiveAt.toISOString(),
-    };
-  }
 
   private parseTtlMs(ttlStr: string): number {
     const match = ttlStr.match(/^(\d+)([smhd])$/);
@@ -82,7 +64,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(
       { sub: userId, role, sid: familyId },
-      { expiresIn: accessTtl as any },
+      { expiresIn: accessTtl as JwtSignOptions['expiresIn'] },
     );
 
     const refreshTtlDays =
@@ -121,6 +103,18 @@ export class AuthService {
     userAgent?: string,
   ): Promise<AuthSession> {
     const email = input.email.trim().toLowerCase();
+    const ipKey = ip ?? 'unknown';
+
+    if (await this.lockout.isLockedOut(email, ipKey)) {
+      throw new HttpException(
+        {
+          code: 'too_many_attempts',
+          message: 'Too many failed login attempts. Try again later.',
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -131,29 +125,16 @@ export class AuthService {
     });
 
     if (!user) {
-      await this.prisma.securityEvent.create({
-        data: {
-          type: 'failed_login',
-          descriptionKey: 'security.failed_login',
-          descriptionParams: { email },
-          ip,
-          device: userAgent,
-        },
-      });
+      await this.lockout.recordFailure(email, ipKey, userAgent);
       throw genericError;
     }
 
-    const passwordValid = await argon2.verify(user.passwordHash, input.password);
+    const passwordValid = await argon2.verify(
+      user.passwordHash,
+      input.password,
+    );
     if (!passwordValid) {
-      await this.prisma.securityEvent.create({
-        data: {
-          type: 'failed_login',
-          descriptionKey: 'security.failed_login',
-          userId: user.id,
-          ip,
-          device: userAgent,
-        },
-      });
+      await this.lockout.recordFailure(email, ipKey, userAgent, user.id);
       throw genericError;
     }
 
@@ -163,6 +144,8 @@ export class AuthService {
         message: 'This account is suspended.',
       });
     }
+
+    await this.lockout.reset(email, ipKey);
 
     await this.prisma.user.update({
       where: { id: user.id },
@@ -174,7 +157,7 @@ export class AuthService {
       user.id,
       user.role,
       familyId,
-      ip,
+      ipKey,
       userAgent,
     );
 
@@ -183,13 +166,13 @@ export class AuthService {
         type: 'session',
         descriptionKey: 'security.new_session',
         userId: user.id,
-        ip,
+        ip: ipKey,
         device: userAgent,
       },
     });
 
     return {
-      user: this.formatUser(user),
+      user: toUserDto(user),
       tokens: {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
@@ -217,8 +200,8 @@ export class AuthService {
       });
     }
 
-    const existingUsername = await this.prisma.user.findUnique({
-      where: { username },
+    const existingUsername = await this.prisma.user.findFirst({
+      where: { username: { equals: username, mode: 'insensitive' } },
     });
     if (existingUsername) {
       throw new ConflictException({
@@ -230,7 +213,9 @@ export class AuthService {
     const passwordHash = await argon2.hash(input.password, {
       type: argon2.argon2id,
     });
-    const userId = `u-${Date.now().toString(36)}`;
+    // The frontend mock uses timestamps; a UUID avoids collisions and keeps
+    // the `u-` prefix convention used by the seed data.
+    const userId = `u-${randomUUID()}`;
     const now = new Date();
 
     const user = await this.prisma.user.create({
@@ -272,11 +257,12 @@ export class AuthService {
     });
 
     const familyId = randomUUID();
+    const ipKey = ip ?? 'unknown';
     const tokens = await this.issueTokens(
       userId,
       user.role,
       familyId,
-      ip,
+      ipKey,
       userAgent,
     );
 
@@ -285,13 +271,13 @@ export class AuthService {
         type: 'session',
         descriptionKey: 'security.new_session',
         userId,
-        ip,
+        ip: ipKey,
         device: userAgent,
       },
     });
 
     return {
-      user: this.formatUser(user),
+      user: toUserDto(user),
       tokens: {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
@@ -322,16 +308,17 @@ export class AuthService {
     }
 
     const familyId = randomUUID();
+    const ipKey = ip ?? 'unknown';
     const tokens = await this.issueTokens(
       demoUser.id,
       demoUser.role,
       familyId,
-      ip,
+      ipKey,
       userAgent,
     );
 
     return {
-      user: this.formatUser(demoUser),
+      user: toUserDto(demoUser),
       tokens: {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
@@ -346,9 +333,7 @@ export class AuthService {
     ip?: string,
     userAgent?: string,
   ): Promise<AuthTokens> {
-    const tokenHash = createHash('sha256')
-      .update(refreshToken)
-      .digest('hex');
+    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
 
     const storedToken = await this.prisma.refreshToken.findUnique({
       where: { tokenHash },
@@ -364,7 +349,7 @@ export class AuthService {
       throw expiredError;
     }
 
-    // Reuse detection
+    // Reuse detection: a revoked token means the family may be compromised.
     if (storedToken.revokedAt !== null) {
       await this.prisma.refreshToken.updateMany({
         where: { familyId: storedToken.familyId, revokedAt: null },
@@ -377,7 +362,7 @@ export class AuthService {
           descriptionKey: 'security.refresh_reuse',
           descriptionParams: { familyId: storedToken.familyId },
           userId: storedToken.userId,
-          ip,
+          ip: ip ?? 'unknown',
           device: userAgent,
         },
       });
@@ -393,14 +378,14 @@ export class AuthService {
       });
     }
 
-    // Rotation: create new token in the same family, mark old token as revoked
+    // Rotation: create a new token in the same family, revoke the old one.
     const accessTtl = this.configService.get<string>('JWT_ACCESS_TTL') || '15m';
     const accessTtlMs = this.parseTtlMs(accessTtl);
     const expiresAt = Date.now() + accessTtlMs;
 
     const accessToken = this.jwtService.sign(
       { sub: user.id, role: user.role, sid: storedToken.familyId },
-      { expiresIn: accessTtl as any },
+      { expiresIn: accessTtl as JwtSignOptions['expiresIn'] },
     );
 
     const refreshTtlDays =
@@ -410,9 +395,7 @@ export class AuthService {
     );
 
     const newRawToken = randomBytes(32).toString('hex');
-    const newTokenHash = createHash('sha256')
-      .update(newRawToken)
-      .digest('hex');
+    const newTokenHash = createHash('sha256').update(newRawToken).digest('hex');
 
     const newTokenRecord = await this.prisma.refreshToken.create({
       data: {
@@ -420,7 +403,7 @@ export class AuthService {
         tokenHash: newTokenHash,
         familyId: storedToken.familyId,
         expiresAt: refreshExpiresAt,
-        ip,
+        ip: ip ?? 'unknown',
         userAgent,
       },
     });
@@ -442,9 +425,7 @@ export class AuthService {
 
   async logout(refreshToken?: string): Promise<void> {
     if (!refreshToken) return;
-    const tokenHash = createHash('sha256')
-      .update(refreshToken)
-      .digest('hex');
+    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
     await this.prisma.refreshToken.updateMany({
       where: { tokenHash, revokedAt: null },
       data: { revokedAt: new Date() },
@@ -470,17 +451,16 @@ export class AuthService {
         },
       });
 
-      const isDev = this.configService.get<string>('NODE_ENV') !== 'production';
+      const isDev =
+        this.configService.get<string>('NODE_ENV') === 'development';
       const webUrl =
         this.configService.get<string>('PUBLIC_WEB_URL') ||
         'http://localhost:5173';
       const resetLink = `${webUrl}/reset-password?token=${rawToken}`;
 
       if (isDev) {
-        this.logger.log(`Password reset link for ${trimmedEmail}: ${resetLink}`);
-      } else {
         this.logger.log(
-          `Password reset token requested for user ID: ${user.id}`,
+          `Password reset link for ${trimmedEmail}: ${resetLink}`,
         );
       }
     }

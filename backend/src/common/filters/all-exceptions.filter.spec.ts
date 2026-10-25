@@ -4,7 +4,7 @@ import type { Request, Response } from 'express';
 import { describe, expect, it, vi } from 'vitest';
 import { AllExceptionsFilter } from './all-exceptions.filter.js';
 
-function createHost(request: Partial<Request>): {
+function createHost(request: Partial<Request> & { requestId?: string }): {
   host: ArgumentsHost;
   status: ReturnType<typeof vi.fn>;
   json: ReturnType<typeof vi.fn>;

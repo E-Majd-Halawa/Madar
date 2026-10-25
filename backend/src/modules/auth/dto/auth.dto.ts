@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import { createZodDto } from '../../../common/pipes/zod-validation.pipe.js';
 
-const emailSchema = z.string().trim().min(1, 'Email is required').email('Invalid email address');
+const emailSchema = z
+  .string()
+  .trim()
+  .min(1, 'Email is required')
+  .email('Invalid email address');
 const passwordSchema = z.string().min(1, 'Password is required');
 
 export const loginSchema = z.object({
@@ -12,16 +16,22 @@ export const loginSchema = z.object({
 
 export class LoginDto extends createZodDto(loginSchema) {}
 
-const strongPasswordSchema = z
+/**
+ * Mirrors frontend/src/schemas/auth.ts: 8+ characters and at least 3 of the
+ * 4 rules (length, uppercase, number, symbol).
+ */
+export const strongPasswordSchema = z
   .string()
-  .min(8, 'Password must be at least 8 characters')
-  .refine(
-    (v) =>
-      /[A-Z]/.test(v) &&
-      /\d/.test(v) &&
-      /[^A-Za-z0-9]/.test(v),
-    'Password must contain uppercase letter, number, and symbol',
-  );
+  .min(1, 'Password is required')
+  .refine((value) => {
+    const satisfied = [
+      value.length >= 8,
+      /[A-Z]/.test(value),
+      /\d/.test(value),
+      /[^A-Za-z0-9]/.test(value),
+    ].filter(Boolean).length;
+    return satisfied >= 3 && value.length >= 8;
+  }, 'Password must be at least 8 characters and satisfy 3 of: uppercase, number, symbol');
 
 export const registerSchema = z.object({
   fullName: z.string().trim().min(2, 'Full name must be at least 2 characters'),

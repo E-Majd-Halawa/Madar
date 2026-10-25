@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
@@ -30,7 +30,7 @@ const STATUS_CODES: Record<number, string> = {
   [HttpStatus.CONFLICT]: 'conflict',
   [HttpStatus.PAYLOAD_TOO_LARGE]: 'payload_too_large',
   [HttpStatus.UNPROCESSABLE_ENTITY]: 'unprocessable_entity',
-  [HttpStatus.TOO_MANY_REQUESTS]: 'rate_limited',
+  [HttpStatus.TOO_MANY_REQUESTS]: 'too_many_requests',
   [HttpStatus.INTERNAL_SERVER_ERROR]: 'internal_error',
   [HttpStatus.SERVICE_UNAVAILABLE]: 'service_unavailable',
 };

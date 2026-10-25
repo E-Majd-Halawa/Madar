@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import type { ArgumentMetadata } from '@nestjs/common';
-import type { ZodTypeAny } from 'zod';
+import type { ZodTypeAny, z } from 'zod';
 
 export const ZOD_SCHEMA = 'madar:zodSchema';
 
 export interface ZodDtoClass<T extends ZodTypeAny> {
-  new (): unknown;
+  new (): z.infer<T>;
   [ZOD_SCHEMA]: T;
 }
 
