@@ -1,6 +1,5 @@
 import type { AuthService } from '@/api/contracts';
 import { mockAuthService } from '@/api/mock/mockAuthService';
+import { httpAuthService } from '@/api/adapters/http/httpAuthService';
 
-// Swap point: when VITE_API_URL is set, export a REST adapter built on
-// '@/api/adapters/http/httpClient' instead. UI code never changes.
-export const authService: AuthService = mockAuthService;
+export const authService: AuthService = import.meta.env.VITE_API_URL ? httpAuthService : mockAuthService;

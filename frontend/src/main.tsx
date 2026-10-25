@@ -6,8 +6,10 @@ import './i18n';
 import { App } from './app/App';
 import { enforceRememberMe } from './store/authStore';
 import { registerServiceWorker } from './utils/registerServiceWorker';
+import { setupTokenProvider } from './utils/setupTokenProvider';
 
 enforceRememberMe();
+setupTokenProvider();
 registerServiceWorker();
 
 try {
