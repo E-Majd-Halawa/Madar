@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/ButtonLink';
 import { HERO_TIMELINE } from '@/constants/heroTimeline';
 import { ROUTES } from '@/constants/routes';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { useMotion } from '@/hooks/useMotion';
 import { resolveDirection, useSettingsStore } from '@/store/settingsStore';
 
@@ -20,6 +21,7 @@ const reveal: Variants = {
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const { enabled } = useMotion();
   const language = useSettingsStore((s) => s.language);
   const direction = useSettingsStore((s) => s.direction);
@@ -48,12 +50,29 @@ export function HeroSection() {
   const state = intro === 'pending' ? 'hidden' : 'visible';
 
   return (
-    <section ref={section} className="relative -mt-16 h-[100svh] min-h-[640px] overflow-hidden">
-      <HeroVisual progress={scrollYProgress} onIntro={handleIntro} isRtl={isRtl} />
+    <section
+      ref={section}
+      className={
+        isMobile
+          ? 'relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden'
+          : 'relative -mt-16 h-[100svh] min-h-[640px] overflow-hidden'
+      }
+    >
+      {isMobile ? (
+        <div className="relative w-full" style={{ height: 'clamp(260px, 42svh, 400px)' }}>
+          <HeroVisual progress={scrollYProgress} onIntro={handleIntro} isRtl={isRtl} isMobile />
+        </div>
+      ) : (
+        <HeroVisual progress={scrollYProgress} onIntro={handleIntro} isRtl={isRtl} />
+      )}
 
       <motion.div
         style={{ opacity: textOpacity, y: textY }}
-        className="pointer-events-none relative z-10 mx-auto flex h-full max-w-7xl items-end px-6 pb-20 pt-24 justify-start lg:items-center lg:pb-0"
+        className={
+          isMobile
+            ? 'relative z-10 mt-3 shrink-0 px-4 pb-6'
+            : 'pointer-events-none relative z-10 mx-auto flex h-full max-w-7xl items-end px-6 pb-20 pt-24 justify-start lg:items-center lg:pb-0'
+        }
       >
         <div className="pointer-events-auto max-w-xl text-start">
           <motion.div variants={reveal} initial="hidden" animate={state} custom={delayFor(HERO_TIMELINE.headline - 0.1, 0)}>

@@ -28,3 +28,11 @@ export function detectTier(): QualityTier {
 }
 
 export const lowerTier = (tier: QualityTier): QualityTier => (tier === 'high' ? 'medium' : 'low');
+
+/** Mobile-only canvas pixel ratio: sharp but capped, lower on very low-memory devices. */
+export function getMobileDpr(): number {
+  const pixelRatio = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1;
+  const memory = typeof navigator === 'undefined' ? undefined : (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  if (memory !== undefined && memory <= 2) return 1.25;
+  return Math.min(pixelRatio, 2);
+}

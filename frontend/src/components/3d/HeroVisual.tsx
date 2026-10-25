@@ -17,13 +17,15 @@ export interface HeroVisualProps {
   onIntro: (intro: Exclude<HeroIntro, 'pending'>) => void;
   /** Whether the layout is currently in RTL / Arabic mode */
   isRtl?: boolean;
+  /** Mobile-only layout and rendering adjustments */
+  isMobile?: boolean;
 }
 
 /**
  * Chooses between the 3D scene and the 2D fallback and keeps the 3D one cheap:
  * rendering pauses off-screen, and quality steps down automatically on slow devices.
  */
-export function HeroVisual({ progress, onIntro, isRtl: isRtlProp }: HeroVisualProps) {
+export function HeroVisual({ progress, onIntro, isRtl: isRtlProp, isMobile = false }: HeroVisualProps) {
   const language = useSettingsStore((s) => s.language);
   const direction = useSettingsStore((s) => s.direction);
   const isRtl = isRtlProp ?? (resolveDirection(language, direction) === 'rtl');
@@ -68,6 +70,7 @@ export function HeroVisual({ progress, onIntro, isRtl: isRtlProp }: HeroVisualPr
               onCreated={handleCreated}
               onDecline={() => setTier(lowerTier)}
               isRtl={isRtl}
+              isMobile={isMobile}
             />
           </Suspense>
         </SceneErrorBoundary>

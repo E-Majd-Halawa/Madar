@@ -1,10 +1,11 @@
 import { ContactShadows, Environment, Lightformer, PerformanceMonitor } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import type { MotionValue } from 'framer-motion';
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Box3, Vector3, type Group } from 'three';
 import { HERO_TIMELINE } from '@/constants/heroTimeline';
-import { QUALITY, type QualityTier } from '@/utils/quality';
-import { CameraRig } from './CameraRig';
+import { getMobileDpr, QUALITY, type QualityTier } from '@/utils/quality';
+import { CameraRig, type SceneBounds } from './CameraRig';
 import { CalendarObject } from './objects/CalendarObject';
 import { ClockObject, FolderObject, NotificationBubble } from './objects/DeskObjects';
 import { GeometricShape, GlassSphere, NodeCluster, UiPanel } from './objects/Decor';
@@ -43,11 +44,25 @@ function Lights() {
   );
 }
 
-function SceneContent() {
+function SceneContent({ isMobile }: { isMobile: boolean }) {
   const { tier, isRtl } = useScene();
   const extras = QUALITY[tier].extras;
   const width = useThree((s) => s.size.width);
   const wide = width >= 900;
+  const groupRef = useRef<Group>(null);
+  const [bounds, setBounds] = useState<SceneBounds | null>(null);
+
+  useLayoutEffect(() => {
+    if (!isMobile || !groupRef.current) return;
+    const box = new Box3().setFromObject(groupRef.current);
+    if (box.isEmpty()) return;
+    const center = box.getCenter(new Vector3());
+    const size = box.getSize(new Vector3());
+    setBounds({
+      center: [center.x, center.y, center.z],
+      size: [size.x, size.y, size.z],
+    });
+  }, [isMobile, tier, isRtl]);
 
   // Symmetrically mirror placement, rotation and drift across the YZ plane in RTL
   const flip = (v: [number, number, number]): [number, number, number] => (isRtl ? [-v[0], v[1], v[2]] : v);
@@ -61,11 +76,11 @@ function SceneContent() {
 
   return (
     <>
-      <CameraRig />
+      <CameraRig isMobile={isMobile} bounds={bounds} />
       <Lights />
       <Particles />
 
-      <group position={[groupX, groupY, 0]} scale={wide ? 1 : 0.7}>
+      <group ref={groupRef} position={[groupX, groupY, 0]} scale={wide ? 1 : 0.7}>
         <Orb />
 
         <TaskCard position={flip([-1.9, 1.3, 0.8])} rotation={flipRot([0.05, 0.35, -0.05])} delay={cards} done exit={flipExit([-3, 0.6, 0])} />
@@ -107,29 +122,31 @@ interface HeroSceneProps {
   onCreated: (canvas: HTMLCanvasElement) => void;
   onDecline: () => void;
   isRtl?: boolean;
+  isMobile?: boolean;
 }
 
 /** Owns the <Canvas>. Loaded lazily so three.js never blocks the first paint. */
-export default function HeroScene({ tier, instant, active, progress, onCreated, onDecline, isRtl = false }: HeroSceneProps) {
+export default function HeroScene({ tier, instant, active, progress, onCreated, onDecline, isRtl = false, isMobile = false }: HeroSceneProps) {
   const colors = useSceneColors();
-  const settings = QUALITY[tier];
+  const effectiveTier: QualityTier = isMobile ? 'high' : tier;
+  const settings = QUALITY[effectiveTier];
 
   const context = useMemo<SceneContextValue>(
-    () => ({ tier, instant, colors, progress, isRtl }),
-    [tier, instant, colors, progress, isRtl],
+    () => ({ tier: effectiveTier, instant, colors, progress, isRtl }),
+    [effectiveTier, instant, colors, progress, isRtl],
   );
 
   return (
     <Canvas
       frameloop={active ? 'always' : 'never'}
-      dpr={[1, settings.dpr]}
+      dpr={isMobile ? getMobileDpr() : [1, settings.dpr]}
       camera={{ position: [0, 0, 7.5], fov: 42, near: 0.1, far: 60 }}
-      gl={{ alpha: true, antialias: tier !== 'low', powerPreference: 'high-performance' }}
+      gl={{ alpha: true, antialias: isMobile ? true : tier !== 'low', powerPreference: 'high-performance' }}
       onCreated={({ gl }) => onCreated(gl.domElement)}
     >
       <SceneContext.Provider value={context}>
         <PerformanceMonitor onDecline={onDecline} />
-        <SceneContent />
+        <SceneContent isMobile={isMobile} />
       </SceneContext.Provider>
     </Canvas>
   );
