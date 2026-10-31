@@ -56,6 +56,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.demo, lazy: page(() => import('@/pages/auth/DemoEntryPage')) },
       ...(import.meta.env.DEV ? [{ path: ROUTES.foundation, lazy: page(() => import('@/pages/landing/FoundationPage')) }] : []),
       { path: ROUTES.login, lazy: page(() => import('@/pages/auth/LoginPage')) },
+      { path: ROUTES.acceptInvite, lazy: page(() => import('@/pages/auth/AcceptInvitePage')) },
       { path: ROUTES.register, lazy: page(() => import('@/pages/auth/RegisterPage')) },
       { path: ROUTES.forgotPassword, lazy: page(() => import('@/pages/auth/ForgotPasswordPage')) },
       { path: ROUTES.resetPassword, lazy: page(() => import('@/pages/auth/ResetPasswordPage')) },

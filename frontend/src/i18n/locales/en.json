@@ -152,6 +152,11 @@
       "session_expired": "Your session expired. Sign in again.",
       "unknown": "Something went wrong. Try again."
     },
+    "invitation": {
+      "notFound": "This invitation was not found.",
+      "expired": "This invitation has expired.",
+      "emailMismatch": "This invitation was sent to a different email address."
+    },
     "caughtError": "An error occurred: {{message}}",
     "unknown": "Unknown error",
     "forbiddenTitle": "Access denied",

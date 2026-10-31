@@ -31,10 +31,29 @@
   "ai": {
     "totalLabel": "Total AI tokens / usage",
     "chatCleared": "Chat history cleared",
-    "clearConfirmTitle": "Clear AI Conversation",
-    "clearConfirmDesc": "Are you sure you want to clear the current AI chat history?",
+    "clearConfirmTitle": "Clear chat history?",
+    "clearConfirmDesc": "This will remove all messages and return you to the start screen.",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "assistantName": "Madar AI",
+    "ready": "Ready",
+    "thinking": "Core thinking…",
+    "answering": "Core answering",
+    "startTitle": "How can I help you today?",
+    "startSubtitle": "Your intelligent partner for planning, breaking down tasks, and staying on track.",
+    "simPill": "Local assistant · simulated, provider integration later",
+    "clearChat": "Clear chat",
+    "core": {
+      "ready": "Ready",
+      "thinking": "Core thinking…",
+      "answering": "Core answering"
+    },
+    "suggestions": {
+      "card1": "Plan my day (3 hours)",
+      "card2": "What are my overdue tasks?",
+      "card3": "Break down a big task",
+      "card4": "Summarize my productivity"
+    }
   },
   "dashboard": {
     "stats": {
@@ -732,42 +751,6 @@
     "switchArabic": "Switch to Arabic",
     "switchEnglish": "Switch to English",
     "markAllRead": "Mark all notifications read"
-  },
-  "ai": {
-    "title": "AI Assistant",
-    "subtitle": "Simulated intelligence engine for task breakdown and scheduling.",
-    "simPill": "Local assistant · simulated, provider integration later",
-    "ready": "Core ready",
-    "thinking": "Core thinking…",
-    "answering": "Core answering",
-    "total": "Total {{time}}",
-    "buffer": "{{time}} buffer in your {{window}} window",
-    "overWindow": "{{time}} over your {{window}} window",
-    "regenerate": "Regenerate",
-    "addPlanToTasks": "Add Plan to My Tasks",
-    "added": "Added ✓",
-    "tasksAdded": "{{count}} task added to Today",
-    "tasksAdded_one": "{{count}} task added to Today",
-    "tasksAdded_plural": "{{count}} tasks added to Today",
-    "tasksAdded_other": "{{count}} tasks added to Today",
-    "regenerated": "Plan regenerated with new estimates",
-    "moveToTomorrow": "Move to tomorrow",
-    "movedToTomorrow": "“{{title}}” moved to tomorrow",
-    "applyAll": "Apply all",
-    "addSubtasks": "Add subtasks",
-    "subtasksAdded": "{{count}} subtasks added",
-    "placeholder": "Ask about your day, tasks, or plan…",
-    "send": "Send",
-    "dockTitle": "My tasks · Today",
-    "dockMeta": "{{count}} task · {{time}}",
-    "dockMeta_one": "{{count}} task · {{time}}",
-    "dockMeta_plural": "{{count}} tasks · {{time}}",
-    "dockMeta_other": "{{count}} tasks · {{time}}",
-    "chips": {
-      "plan": "I have 3 hours today and need to finish my Node.js API",
-      "overdue": "What is overdue?",
-      "breakdown": "Break down: Build authentication"
-    }
   },
   "hero": {
     "badge": "Task and project management for individuals and teams"
