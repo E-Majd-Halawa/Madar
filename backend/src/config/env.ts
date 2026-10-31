@@ -43,6 +43,11 @@ export const envSchema = z.object({
   THROTTLE_WRITE_LIMIT: z.coerce.number().int().positive().default(60),
   THROTTLE_READ_LIMIT: z.coerce.number().int().positive().default(300),
   PUBLIC_WEB_URL: z.string().default('http://localhost:5173'),
+  /**
+   * Phase 3 ships the `log` driver only. Add `smtp` here together with an
+   * SmtpEmailService implementation before using it in production.
+   */
+  EMAIL_DRIVER: z.enum(['log']).default('log'),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -63,6 +68,11 @@ export function validateEnv(
   if (env.NODE_ENV === 'production' && !env.JWT_ACCESS_SECRET) {
     throw new Error(
       'Invalid environment configuration:\n  - JWT_ACCESS_SECRET: required in production',
+    );
+  }
+  if (env.NODE_ENV === 'production' && env.EMAIL_DRIVER === 'log') {
+    throw new Error(
+      'Invalid environment configuration:\n  - EMAIL_DRIVER: log driver is not allowed in production',
     );
   }
   if (!env.JWT_ACCESS_SECRET) {

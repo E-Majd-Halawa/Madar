@@ -10,6 +10,8 @@ import {
 } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { EmailModule } from './common/email/email.module.js';
+import { DomainEventsModule } from './common/events/domain-events.module.js';
 import { PermissionsGuard } from './common/permissions/permissions.guard.js';
 import {
   RATE_LIMIT_KEY,
@@ -20,7 +22,14 @@ import { PrismaModule } from './database/prisma.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { CalendarModule } from './modules/calendar/calendar.module.js';
+import { ActivityModule } from './modules/activity/activity.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
+import { MembersModule } from './modules/members/members.module.js';
+import { ProjectsModule } from './modules/projects/projects.module.js';
+import { TasksModule } from './modules/tasks/tasks.module.js';
 import { UsersModule } from './modules/users/users.module.js';
+import { WorkspacesModule } from './modules/workspaces/workspaces.module.js';
 
 @Module({
   imports: [
@@ -145,8 +154,17 @@ import { UsersModule } from './modules/users/users.module.js';
       },
     }),
     PrismaModule,
+    EmailModule,
+    DomainEventsModule,
     AuthModule,
     UsersModule,
+    WorkspacesModule,
+    MembersModule,
+    ActivityModule,
+    NotificationsModule,
+    ProjectsModule,
+    TasksModule,
+    CalendarModule,
     HealthModule,
   ],
   providers: [

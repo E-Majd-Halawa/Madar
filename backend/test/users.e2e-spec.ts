@@ -153,12 +153,21 @@ describe('Users Module (e2e)', () => {
     expect(res.body.items[0].username).toBe(testUsername);
   });
 
-  it('GET /users rejects pageSize above 100', async () => {
-    const res = await request(app.getHttpServer())
-      .get('/api/v1/users?pageSize=101')
+  it('GET /users accepts pageSize=200 and rejects 201 with a pageSize field error', async () => {
+    const atLimit = await request(app.getHttpServer())
+      .get('/api/v1/users?pageSize=200')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    expect(atLimit.body.pageSize).toBe(200);
+
+    const overLimit = await request(app.getHttpServer())
+      .get('/api/v1/users?pageSize=201')
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(400);
-    expect(res.body.code).toBe('validation_error');
+    expect(overLimit.body.code).toBe('validation_error');
+    expect(overLimit.body.fieldErrors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: 'pageSize' })]),
+    );
   });
 
   it('GET /users/:id returns user without passwordHash', async () => {

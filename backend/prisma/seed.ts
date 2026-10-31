@@ -7,7 +7,7 @@
  * Run with: npx prisma db seed   (or npm run db:seed)
  */
 import 'dotenv/config';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { PrismaPg } from '@prisma/adapter-pg';
 import argon2 from 'argon2';
 import { PrismaClient } from '../src/generated/prisma/client.js';
@@ -48,12 +48,23 @@ interface SeedWorkspace {
   createdAt: Date;
 }
 
-// ─── dates (mirror frontend/src/data/users.ts:3-4) ───────────────────────────
+interface SeedInvitation {
+  id: string;
+  workspaceId: string;
+  email: string;
+  role: Exclude<SeedWorkspaceRole, 'owner'>;
+  department: string;
+  invitedById: string;
+  /** Hours before the seed run; mirrors memberStore.ts mock timestamps. */
+  hoursAgo: number;
+}
+
+// â”€â”€â”€ dates (mirror frontend/src/data/users.ts:3-4) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const BASE_TIME = Date.parse('2026-09-29T09:00:00Z');
 const hoursAgo = (hours: number): Date =>
   new Date(BASE_TIME - hours * 3_600_000);
 
-// ─── demo accounts (frontend/src/data/users.ts:7-48) ─────────────────────────
+// â”€â”€â”€ demo accounts (frontend/src/data/users.ts:7-48) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DEMO_ACCOUNTS: Array<SeedUser & { password: string }> = [
   {
     id: 'u-001',
@@ -90,7 +101,7 @@ const DEMO_ACCOUNTS: Array<SeedUser & { password: string }> = [
   },
 ];
 
-// ─── generated users (frontend/src/data/users.ts:50-91) ──────────────────────
+// â”€â”€â”€ generated users (frontend/src/data/users.ts:50-91) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type UserSeedRow = [
   fullName: string,
   username: string,
@@ -141,7 +152,7 @@ const GENERATED_USERS: SeedUser[] = USER_SEEDS.map(
   }),
 );
 
-// ─── workspaces (frontend/src/data/workspaces.ts:3-57) ───────────────────────
+// â”€â”€â”€ workspaces (frontend/src/data/workspaces.ts:3-57) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const range = (from: number, to: number): string[] =>
   Array.from(
     { length: to - from + 1 },
@@ -199,6 +210,30 @@ const WORKSPACES: SeedWorkspace[] = [
     memberIds: [...range(15, 30), 'u-003'],
     color: '#3b82f6',
     createdAt: new Date('2026-05-02T16:45:00Z'),
+  },
+];
+
+// â”€â”€â”€ pending invitations (frontend/src/store/memberStore.ts:38-55) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// These are demo rows only: the raw token is discarded, exactly as the API does.
+// The hash changes on every seed run, so no usable accept link is persisted.
+const SEED_INVITATIONS: SeedInvitation[] = [
+  {
+    id: 'inv-001',
+    workspaceId: 'ws-demo',
+    email: 'sarah.connor@example.com',
+    role: 'member',
+    department: 'Engineering',
+    invitedById: 'u-002',
+    hoursAgo: 36,
+  },
+  {
+    id: 'inv-002',
+    workspaceId: 'ws-demo',
+    email: 'alex.rivera@designstudio.io',
+    role: 'guest',
+    department: 'Design',
+    invitedById: 'u-001',
+    hoursAgo: 14,
   },
 ];
 
@@ -272,14 +307,48 @@ async function main(): Promise<void> {
     }
   }
 
-  const [users, workspaces, members] = await Promise.all([
-    prisma.user.count(),
-    prisma.workspace.count(),
-    prisma.workspaceMember.count(),
-  ]);
+  const now = Date.now();
+  for (const invitation of SEED_INVITATIONS) {
+    const invitedAt = new Date(now - invitation.hoursAgo * 3_600_000);
+    const expiresAt = new Date(now + 7 * 24 * 3_600_000);
+    const tokenHash = createHash('sha256')
+      .update(randomBytes(32))
+      .digest('hex');
+
+    const data = {
+      workspaceId: invitation.workspaceId,
+      email: invitation.email,
+      role: invitation.role,
+      department: invitation.department,
+      invitedById: invitation.invitedById,
+      tokenHash,
+      status: 'pending' as const,
+      invitedAt,
+      expiresAt,
+      acceptedAt: null,
+    };
+
+    await prisma.invitation.upsert({
+      where: { id: invitation.id },
+      update: data,
+      create: { id: invitation.id, ...data },
+    });
+  }
+
+  await seedPhase4();
+
+  const [users, workspaces, members, invitations, projects, tasks] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.workspace.count(),
+      prisma.workspaceMember.count(),
+      prisma.invitation.count(),
+      prisma.project.count(),
+      prisma.task.count(),
+    ]);
 
   console.log(
-    `Seed complete: ${users} users, ${workspaces} workspaces, ${members} workspace members.`,
+    `Seed complete: ${users} users, ${workspaces} workspaces, ${members} workspace members, ${invitations} invitations, ${projects} projects, ${tasks} tasks.`,
   );
 }
 
@@ -291,3 +360,283 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+async function seedPhase4(): Promise<void> {
+  const wsConst: Record<string, string> = {
+    D: 'ws-demo',
+    N: 'ws-nova',
+    G: 'ws-design',
+    O: 'ws-oss',
+    P: 'ws-personal-u-001',
+  };
+
+  const taskFile = fs.readFileSync(
+    path.resolve(process.cwd(), '../frontend/src/data/tasks.ts'),
+    'utf8',
+  );
+  const projectFile = fs.readFileSync(
+    path.resolve(process.cwd(), '../frontend/src/data/projects.ts'),
+    'utf8',
+  );
+
+  // Parse project rows: ['p-...', 'ws-...', name, description, status, color, 'u-...', [...], offset, offset|null]
+  const projects: Array<{
+    id: string;
+    workspaceId: string;
+    name: string;
+    description: string;
+    status: string;
+    color: string;
+    ownerId: string;
+    memberIds: string[];
+    startDate: Date;
+    dueDate: Date | null;
+    createdAt: Date;
+  }> = [];
+
+  const projectLineRe =
+    /^\s*\['(p-[^']+)',\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(u-\d{3})',\s*\[([^\]]*)\],\s*(-?\d+),\s*(-?\d+|null)\],?\s*$/;
+  for (const rawLine of projectFile.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    const m = projectLineRe.exec(line);
+    if (!m) continue;
+    const memberIds = (m[8].match(/'u-\d{3}'/g) ?? []).map((s) =>
+      s.replace(/'/g, ''),
+    );
+    const start = Number(m[9]);
+    const dueRaw = m[10];
+    const dayOffset = (off: number, hour: number) => {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + off);
+      d.setHours(hour, 0, 0, 0);
+      return d;
+    };
+    projects.push({
+      id: m[1],
+      workspaceId: m[2],
+      name: m[3],
+      description: m[4],
+      status: m[5],
+      color: m[6],
+      ownerId: m[7],
+      memberIds,
+      startDate: dayOffset(start, 9),
+      dueDate: dueRaw === 'null' ? null : dayOffset(Number(dueRaw), 17),
+      createdAt: dayOffset(start - 2, 9),
+    });
+  }
+
+  // Parse task rows
+  // That regex is too fragile for descriptions; fallback by evaluating each array line after replacing constants.
+  const taskRows: any[] = [];
+  for (const rawLine of taskFile.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!/^\[\d+,\s*[DN GOP]/.test(line)) continue;
+    const cleaned = line
+      .replace(/\b(D|N|G|O|P)\b/g, (v) => JSON.stringify(wsConst[v]))
+      .replace(/,$/, '')
+      .replace(/\/\/.*$/, '');
+    try {
+      const fn = new Function(`return ${cleaned};`);
+      taskRows.push(fn());
+    } catch {
+      console.warn('Could not parse task row:', line);
+    }
+  }
+
+  const categoryByProject: Record<string, string> = {
+    'p-101': 'Engineering',
+    'p-102': 'Engineering',
+    'p-103': 'Design',
+    'p-104': 'Security',
+    'p-105': 'Product',
+    'p-106': 'Documentation',
+    'p-201': 'Engineering',
+    'p-202': 'Product',
+    'p-203': 'Operations',
+    'p-204': 'Engineering',
+    'p-301': 'Design',
+    'p-302': 'Research',
+    'p-401': 'Engineering',
+    'p-402': 'Product',
+    'p-501': 'Learning',
+  };
+
+  const taskOwnersByWorkspace: Record<string, string> = {
+    'ws-demo': 'u-002',
+    'ws-nova': 'u-002',
+    'ws-design': 'u-009',
+    'ws-oss': 'u-003',
+    'ws-personal-u-001': 'u-001',
+  };
+
+  // Project upserts
+  for (const p of projects) {
+    await prisma.project.upsert({
+      where: { id: p.id },
+      update: {},
+      create: {
+        id: p.id,
+        workspaceId: p.workspaceId,
+        name: p.name,
+        description: p.description,
+        status: p.status as any,
+        color: p.color,
+        ownerId: p.ownerId,
+        startDate: p.startDate,
+        dueDate: p.dueDate,
+        createdAt: p.createdAt,
+      },
+    });
+    await prisma.projectMember.deleteMany({ where: { projectId: p.id } });
+    const activeMembers = await prisma.workspaceMember.findMany({
+      where: {
+        workspaceId: p.workspaceId,
+        userId: { in: p.memberIds },
+        status: 'active',
+      },
+      select: { userId: true },
+    });
+    const validMembers = activeMembers.map((m) => m.userId);
+    if (validMembers.length) {
+      await prisma.projectMember.createMany({
+        data: validMembers.map((userId) => ({ projectId: p.id, userId })),
+        skipDuplicates: true,
+      });
+    }
+  }
+
+  // Task upserts with affected-creator mapping (amendment 2)
+  const affectedCreators: string[] = [];
+  for (const row of taskRows) {
+    const [
+      n,
+      workspaceId,
+      projectId,
+      title,
+      status,
+      priority,
+      dueOffset,
+      assigneeId,
+      tags,
+      estimate,
+      tracked,
+      doneAgo,
+      description,
+    ] = row;
+    const id = `tsk-${String(n).padStart(3, '0')}`;
+    const spanDays = Math.max(1, Math.round(estimate / 240));
+    const dayOffset = (off: number, hour: number) => {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + off);
+      d.setHours(hour, 0, 0, 0);
+      return d;
+    };
+    const projectIdVal = projectId === null ? null : projectId;
+    const assigneeVal = assigneeId || null;
+    // creator mapping: frontend uses u-002 except personal; if u-002 is not
+    // an active member of the workspace, fall back to the workspace owner.
+    const frontendCreator =
+      workspaceId === 'ws-personal-u-001' ? assigneeId : 'u-002';
+    const wsOwner = taskOwnersByWorkspace[workspaceId] ?? 'u-001';
+    const active = await prisma.workspaceMember.findFirst({
+      where: { workspaceId, userId: frontendCreator, status: 'active' },
+    });
+    let creatorId = frontendCreator;
+    if (!active) {
+      creatorId = wsOwner;
+      affectedCreators.push(id);
+    }
+
+    const startDate =
+      dueOffset === null ? null : dayOffset(dueOffset - spanDays, 9);
+    const dueDate = dueOffset === null ? null : dayOffset(dueOffset, 17);
+    const completedAt = doneAgo === null ? null : dayOffset(-doneAgo, 14);
+    const createdAt = dayOffset(-(20 + (n % 15)), 10);
+    const updatedAt = dayOffset(doneAgo === null ? -(n % 4) : -doneAgo, 12);
+    const category = projectIdVal
+      ? (categoryByProject[projectIdVal] ?? 'General')
+      : workspaceId === 'ws-personal-u-001'
+        ? 'Personal'
+        : 'General';
+
+    await prisma.task.upsert({
+      where: { id },
+      update: {},
+      create: {
+        id,
+        workspaceId,
+        projectId: projectIdVal,
+        title,
+        description,
+        status,
+        priority,
+        category,
+        startDate,
+        dueDate,
+        assigneeId: assigneeVal,
+        creatorId,
+        tags,
+        estimateMinutes: estimate,
+        trackedMinutes: tracked,
+        recurrence: 'none',
+        completedAt,
+        createdAt,
+        updatedAt,
+      },
+    });
+
+    // subtasks
+    // Subtasks are computed in the frontend; recreate from SUBTASKS map parsed above? We cannot
+    // recover here, so delete/recreate none and rely on task.subtasks default [].
+    // To preserve demo richness, fetch the frontend constant by regex subtasks.
+  }
+
+  // Parse SUBTASKS from tasks.ts to attach to tasks.
+  const subtaskMap: Record<number, Array<[string, boolean]>> = {};
+  const subStart = taskFile.indexOf('const SUBTASKS');
+  const subBlock = taskFile.slice(
+    subStart,
+    taskFile.indexOf('const toSubtasks'),
+  );
+  const entryRe = /(\d+):\s*\[\s*([\s\S]*?)\s*\],/g;
+  let m: RegExpExecArray | null;
+  while ((m = entryRe.exec(subBlock)) !== null) {
+    const key = Number(m[1]);
+    const body = m[2];
+    const pairs: Array<[string, boolean]> = [];
+    const pairRe = /\['([^']*(?:''[^']*)*)',\s*(true|false)\]/g;
+    let pm: RegExpExecArray | null;
+    while ((pm = pairRe.exec(body)) !== null) {
+      pairs.push([pm[1], pm[2] === 'true']);
+    }
+    subtaskMap[key] = pairs;
+  }
+
+  for (const row of taskRows) {
+    const [n] = row;
+    const id = `tsk-${String(n).padStart(3, '0')}`;
+    const pairs = subtaskMap[n] ?? [];
+    await prisma.subtask.deleteMany({ where: { taskId: id } });
+    if (pairs.length) {
+      await prisma.subtask.createMany({
+        data: pairs.map(([title, done], index) => ({
+          id: `st-${n}-${index + 1}`,
+          taskId: id,
+          title,
+          done,
+          position: index,
+        })),
+      });
+    }
+  }
+
+  console.log(
+    `Phase 4 seed affected creators remapped: ${affectedCreators.length} (${affectedCreators.join(', ')})`,
+  );
+}
