@@ -1,5 +1,6 @@
 import type { CalendarService } from '@/api/contracts';
 import { mockCalendarService } from '@/api/mock/mockCalendarService';
+import { httpCalendarService } from '@/api/adapters/http/httpCalendarService';
 
-// Swap point: export a REST adapter built on '@/api/adapters/http/httpClient' when VITE_API_URL is set.
-export const calendarService: CalendarService = mockCalendarService;
+export const calendarService: CalendarService =
+  import.meta.env.VITE_API_URL ? httpCalendarService : mockCalendarService;

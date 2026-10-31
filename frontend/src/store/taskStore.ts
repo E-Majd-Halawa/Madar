@@ -29,13 +29,20 @@ interface TaskState {
   reset: () => void;
 }
 
+const useHttp = Boolean(import.meta.env.VITE_API_URL);
+
 export const useTaskStore = create<TaskState>()((set, get) => {
   /** Optimistic: the UI changes first, then the service confirms (or the change is rolled back). */
   const apply = async (id: string, patch: TaskPatch) => {
     const before = get().tasks;
     set({ tasks: before.map((t) => (t.id === id ? { ...t, ...patch, updatedAt: new Date().toISOString() } : t)) });
     try {
-      await taskService.update(id, patch);
+      const updated = await taskService.update(id, patch);
+      set((s) => {
+        let tasks = s.tasks.map((t) => (t.id === id ? updated : t));
+        if (updated.spawned) tasks = [updated.spawned as Task, ...tasks];
+        return { tasks };
+      });
     } catch {
       set({ tasks: before });
     }
@@ -118,7 +125,7 @@ export const useTaskStore = create<TaskState>()((set, get) => {
       const wasCompleted = task?.status === 'completed';
       const completedAt = status === 'completed' ? new Date().toISOString() : null;
       await apply(id, { status, completedAt });
-      if (status === 'completed' && !wasCompleted && task) {
+      if (!useHttp && status === 'completed' && !wasCompleted && task) {
         void handleRecurrence(task);
       }
     },
@@ -140,7 +147,10 @@ export const useTaskStore = create<TaskState>()((set, get) => {
       }
 
       try {
-        await taskService.update(id, { status: newStatus, completedAt });
+        const updated = await taskService.update(id, { status: newStatus, completedAt });
+        if (updated.spawned) {
+          set((s) => ({ tasks: [updated.spawned as Task, ...s.tasks] }));
+        }
         if (newStatus === 'completed' && task.status !== 'completed') {
           void activityService.record({
             workspaceId: task.workspaceId,
@@ -150,7 +160,7 @@ export const useTaskStore = create<TaskState>()((set, get) => {
             targetName: task.title,
           });
           void useNotificationStore.getState().refresh();
-          void handleRecurrence(task);
+          if (!useHttp) void handleRecurrence(task);
         }
       } catch {
         set({ tasks: before });
@@ -245,7 +255,7 @@ export const useTaskStore = create<TaskState>()((set, get) => {
           targetName: task.title,
         });
         void useNotificationStore.getState().refresh();
-        void handleRecurrence(task);
+        if (!useHttp) void handleRecurrence(task);
       }
     },
 

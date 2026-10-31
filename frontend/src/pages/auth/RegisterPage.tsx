@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { safeRedirect } from '@/utils/redirect';
 import { AuthShell } from '@/components/auth/AuthShell';
 import { SocialButtons } from '@/components/auth/SocialButtons';
 import { Button } from '@/components/ui/Button';
@@ -17,6 +18,8 @@ export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { session, status, error, register: signUp, clearError } = useAuthStore();
+  const [params] = useSearchParams();
+  const target = safeRedirect(params.get('redirect'), ROUTES.onboarding);
   const {
     register,
     handleSubmit,
@@ -28,13 +31,13 @@ export default function RegisterPage() {
     mode: 'onTouched',
   });
 
-  if (session && status !== 'loading') return <Navigate to={ROUTES.onboarding} replace />;
+  if (session && status !== 'loading') return <Navigate to={target} replace />;
 
   const submit = async (v: RegisterForm) => {
     const ok = await signUp({ fullName: v.fullName, username: v.username, email: v.email, password: v.password });
     if (ok) {
       toast.success(t('auth.register.success'));
-      navigate(ROUTES.onboarding, { replace: true });
+      navigate(target, { replace: true });
     }
   };
   const err = (key?: string) => (key ? t(key) : undefined);
@@ -48,7 +51,7 @@ export default function RegisterPage() {
       footer={
         <>
           {t('auth.register.haveAccount')}{' '}
-          <Link to={ROUTES.login} className="font-medium text-accent hover:underline">
+          <Link to={params.get('redirect') ? `${ROUTES.login}?redirect=${encodeURIComponent(params.get('redirect') as string)}` : ROUTES.login} className="font-medium text-accent hover:underline">
             {t('common.signIn')}
           </Link>
         </>

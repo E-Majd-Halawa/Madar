@@ -37,6 +37,8 @@ export interface Task {
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Present only when a recurrence spawn occurred (HTTP mode). */
+  spawned?: Task | null;
 }
 
 export type TaskPatch = Partial<Omit<Task, 'id' | 'workspaceId' | 'createdAt'>>;

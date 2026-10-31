@@ -1,6 +1,8 @@
 import type { WorkspaceService } from '@/api/contracts';
 import { mockWorkspaceService } from '@/api/mock/mockWorkspaceService';
+import { httpWorkspaceService } from '@/api/adapters/http/httpWorkspaceService';
 
-// Swap point: when VITE_API_URL is set, export a REST adapter built on
-// '@/api/adapters/http/httpClient' instead. UI code never changes.
-export const workspaceService: WorkspaceService = mockWorkspaceService;
+// VITE_API_URL unset keeps the offline mock path; set it to use the backend.
+export const workspaceService: WorkspaceService = import.meta.env.VITE_API_URL
+  ? httpWorkspaceService
+  : mockWorkspaceService;

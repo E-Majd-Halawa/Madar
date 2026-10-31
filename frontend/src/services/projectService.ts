@@ -1,5 +1,6 @@
 import type { ProjectService } from '@/api/contracts';
 import { mockProjectService } from '@/api/mock/mockProjectService';
+import { httpProjectService } from '@/api/adapters/http/httpProjectService';
 
-// Swap point: export a REST adapter built on '@/api/adapters/http/httpClient' when VITE_API_URL is set.
-export const projectService: ProjectService = mockProjectService;
+export const projectService: ProjectService =
+  import.meta.env.VITE_API_URL ? httpProjectService : mockProjectService;

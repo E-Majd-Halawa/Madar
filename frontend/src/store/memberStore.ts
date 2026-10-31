@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { httpMemberService } from '@/api/adapters/http/httpMemberService';
+import { HttpError } from '@/api/adapters/http/httpClient';
 import { safeStateStorage } from '@/services/storage/persistStorage';
+import { toast } from '@/store/toastStore';
+import i18n from '@/i18n';
 import { userService } from '@/services/userService';
 import type { MembersService } from '@/api/contracts/members';
 import type { PendingInvite, WorkspaceMemberItem, WorkspaceRole } from '@/types';
@@ -8,11 +12,14 @@ import type { PendingInvite, WorkspaceMemberItem, WorkspaceRole } from '@/types'
 interface MemberState extends MembersService {
   members: WorkspaceMemberItem[];
   pendingInvites: PendingInvite[];
+  currentWorkspaceId: string | null;
   isInviteModalOpen: boolean;
   loading: boolean;
 
   setIsInviteModalOpen: (open: boolean) => void;
 }
+
+const useHttpMembers = Boolean(import.meta.env.VITE_API_URL);
 
 const DEPARTMENTS = [
   'Engineering',
@@ -53,13 +60,33 @@ export const useMemberStore = create<MemberState>()(
           invitedAt: new Date(Date.now() - 14 * 3600 * 1000).toISOString(),
         },
       ],
+      currentWorkspaceId: null,
       isInviteModalOpen: false,
       loading: false,
 
-      load: async (_workspaceId: string) => {
-        if (get().members.length > 0) return;
-        set({ loading: true });
+      load: async (workspaceId: string) => {
+        if (get().currentWorkspaceId === workspaceId && get().members.length > 0) {
+          return;
+        }
+
+        set({
+          loading: true,
+          currentWorkspaceId: workspaceId,
+          members: [],
+          ...(useHttpMembers ? { pendingInvites: [] } : {}),
+        });
+
         try {
+          if (useHttpMembers) {
+            const remote = await httpMemberService.load(workspaceId);
+            set({
+              members: remote.members,
+              pendingInvites: remote.pendingInvites,
+              loading: false,
+            });
+            return;
+          }
+
           const { items } = await userService.list({ pageSize: 30 });
           // Map users to workspace members
           const mapped: WorkspaceMemberItem[] = items.slice(0, 14).map((u, index) => {
@@ -88,6 +115,19 @@ export const useMemberStore = create<MemberState>()(
       },
 
       inviteMember: async (email, role, department) => {
+        if (useHttpMembers) {
+          const workspaceId = get().currentWorkspaceId;
+          if (!workspaceId) throw new Error('No workspace loaded');
+          const newInvite = await httpMemberService.inviteMember(
+            workspaceId,
+            email,
+            role,
+            department,
+          );
+          set({ pendingInvites: [newInvite, ...get().pendingInvites] });
+          return;
+        }
+
         const newInvite: PendingInvite = {
           id: `inv-${Date.now()}`,
           email,
@@ -100,30 +140,92 @@ export const useMemberStore = create<MemberState>()(
       },
 
       updateRole: async (userId, newRole) => {
+        if (useHttpMembers) {
+          const workspaceId = get().currentWorkspaceId;
+          if (!workspaceId) throw new Error('No workspace loaded');
+          const updated = await httpMemberService.updateRole(
+            workspaceId,
+            userId,
+            newRole,
+          );
+          set({
+            members: get().members.map((m) => (m.id === userId ? updated : m)),
+          });
+          return;
+        }
+
         set({
           members: get().members.map((m) => (m.id === userId ? { ...m, role: newRole } : m)),
         });
       },
 
       removeMember: async (userId) => {
+        if (useHttpMembers) {
+          const workspaceId = get().currentWorkspaceId;
+          if (!workspaceId) throw new Error('No workspace loaded');
+          await httpMemberService.removeMember(workspaceId, userId);
+        }
+
         set({
           members: get().members.filter((m) => m.id !== userId),
         });
       },
 
       cancelInvite: (inviteId) => {
-        set({
-          pendingInvites: get().pendingInvites.filter((inv) => inv.id !== inviteId),
-        });
+        if (!useHttpMembers) {
+          set({
+            pendingInvites: get().pendingInvites.filter((inv) => inv.id !== inviteId),
+          });
+          return;
+        }
+
+        const workspaceId = get().currentWorkspaceId;
+        if (!workspaceId) return;
+        void httpMemberService
+          .cancelInvite(workspaceId, inviteId)
+          .then(() => {
+            set({
+              pendingInvites: get().pendingInvites.filter((inv) => inv.id !== inviteId),
+            });
+          })
+          .catch((err) => {
+            const message =
+              err instanceof HttpError && err.message
+                ? err.message
+                : i18n.t('errors.unknown', { defaultValue: 'Something went wrong' });
+            toast.error(message);
+          });
       },
 
-      resendInvite: (_inviteId) => {
-        // Updated timestamp
-        set({
-          pendingInvites: get().pendingInvites.map((inv) =>
-            inv.id === _inviteId ? { ...inv, invitedAt: new Date().toISOString() } : inv,
-          ),
-        });
+      resendInvite: (inviteId) => {
+        if (!useHttpMembers) {
+          // Updated timestamp
+          set({
+            pendingInvites: get().pendingInvites.map((inv) =>
+              inv.id === inviteId ? { ...inv, invitedAt: new Date().toISOString() } : inv,
+            ),
+          });
+          return;
+        }
+
+        const workspaceId = get().currentWorkspaceId;
+        if (!workspaceId) return;
+        void httpMemberService
+          .resendInvite(workspaceId, inviteId)
+          .then(() => {
+            set({
+              pendingInvites: get().pendingInvites.map((inv) =>
+                inv.id === inviteId ? { ...inv, invitedAt: new Date().toISOString() } : inv,
+              ),
+            });
+          })
+          .catch((err) => {
+            const message =
+              err instanceof HttpError && err.message
+                ? err.message
+                : i18n.t('errors.unknown', { defaultValue: 'Something went wrong' });
+            toast.error(message);
+          });
       },
 
       setIsInviteModalOpen: (isInviteModalOpen) => set({ isInviteModalOpen }),

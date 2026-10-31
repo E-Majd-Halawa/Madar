@@ -50,7 +50,7 @@ export default function LoginPage() {
       footer={
         <>
           {t('auth.login.noAccount')}{' '}
-          <Link to={ROUTES.register} className="font-medium text-accent hover:underline">
+          <Link to={params.get('redirect') ? `${ROUTES.register}?redirect=${encodeURIComponent(params.get('redirect') as string)}` : ROUTES.register} className="font-medium text-accent hover:underline">
             {t('auth.register.title')}
           </Link>
         </>
