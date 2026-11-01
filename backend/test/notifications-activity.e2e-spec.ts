@@ -186,12 +186,17 @@ describe('Notifications & Activity Comprehensive E2E (Phase 6)', () => {
     const httpServer = app.getHttpServer();
     const port = httpServer.address().port;
 
-    const badRes = await fetch(`http://localhost:${port}/api/v1/notifications/stream?ticket=invalid`);
+    const badRes = await fetch(
+      `http://localhost:${port}/api/v1/notifications/stream?ticket=invalid`,
+    );
     expect(badRes.status).toBeGreaterThanOrEqual(400);
 
-    const crossRes = await fetch(`http://localhost:${port}/api/v1/notifications/stream?ticket=${ticket}`, {
-      headers: { Authorization: `Bearer ${u2.token}` },
-    });
+    const crossRes = await fetch(
+      `http://localhost:${port}/api/v1/notifications/stream?ticket=${ticket}`,
+      {
+        headers: { Authorization: `Bearer ${u2.token}` },
+      },
+    );
     expect(crossRes.status).toBeGreaterThanOrEqual(400);
   });
 
@@ -223,7 +228,9 @@ describe('Notifications & Activity Comprehensive E2E (Phase 6)', () => {
       .set('Authorization', `Bearer ${u2.token}`)
       .expect(200);
 
-    expect(u2Notifs.body.some((n: any) => n.title.includes('assigned'))).toBe(true);
+    expect(u2Notifs.body.some((n: any) => n.title.includes('assigned'))).toBe(
+      true,
+    );
 
     const taskRes2 = await request(app.getHttpServer())
       .post('/api/v1/tasks')
@@ -240,7 +247,9 @@ describe('Notifications & Activity Comprehensive E2E (Phase 6)', () => {
       .set('Authorization', `Bearer ${u1.token}`)
       .expect(200);
 
-    const selfNotifs = u1Notifs.body.filter((n: any) => n.title.includes(taskRes2.body.id));
+    const selfNotifs = u1Notifs.body.filter((n: any) =>
+      n.title.includes(taskRes2.body.id),
+    );
     expect(selfNotifs.length).toBe(0);
   });
 });

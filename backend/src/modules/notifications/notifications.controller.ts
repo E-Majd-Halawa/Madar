@@ -66,7 +66,7 @@ export class NotificationsController {
       try {
         const payload = this.jwtService.verify(authHeader.slice(7));
         requestingUserId = payload.sub;
-      } catch (_err) {
+      } catch {
         throw new ForbiddenException({
           code: 'not_a_member',
           message: 'Invalid authorization token.',
