@@ -8,9 +8,12 @@ import { MessageBubble } from '@/features/ai/MessageBubble';
 import { useAssistant } from '@/features/ai/useAssistant';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { BRAND_NAME_EN, BRAND_NAME_AR } from '@/constants/brand';
 
 export default function AiPage() {
   const { t, i18n } = useTranslation();
+  const isMobile = useIsMobile();
   const {
     messages,
     mode,
@@ -128,10 +131,10 @@ export default function AiPage() {
   const sortedMessages = [...messages].reverse();
 
   const suggestionItems = [
-    t('ai.suggestions.card1', 'Plan my day (3 hours)'),
-    t('ai.suggestions.card2', 'What are my overdue tasks?'),
-    t('ai.suggestions.card3', 'Break down a big task'),
-    t('ai.suggestions.card4', 'Summarize my productivity'),
+    t('ai.suggestions.card1'),
+    t('ai.suggestions.card2'),
+    t('ai.suggestions.card3'),
+    t('ai.suggestions.card4'),
   ];
 
   const statusLabel =
@@ -140,6 +143,8 @@ export default function AiPage() {
       : mode === 'answering'
       ? t('ai.core.answering')
       : t('ai.core.ready');
+
+  const brandName = i18n.language === 'ar' ? `${BRAND_NAME_AR} AI` : `${BRAND_NAME_EN} AI`;
 
   return (
     <div className="relative h-[calc(100dvh-5.5rem)] sm:h-[calc(100dvh-5rem)] min-h-0 overflow-hidden flex flex-col -mx-4 -mt-6 -mb-28 sm:-mx-6 lg:-mb-10 bg-bg">
@@ -151,7 +156,7 @@ export default function AiPage() {
         {/* 1. LEFT PANEL (orb + suggestions): flex column, h-full min-h-0 overflow-hidden, p-4, gap-3 */}
         <div className="hidden lg:flex flex-none w-[42%] max-w-[560px] h-full min-h-0 overflow-hidden flex-col p-4 gap-3 relative bg-bg">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(var(--accent-rgb)/0.18),transparent_65%)]" />
-          
+
           {/* Orb area: flex-1 min-h-[140px] min-w-0 */}
           <div className="flex-1 min-h-[140px] min-w-0 relative flex items-center justify-center">
             <div className="w-full h-full max-h-[380px] aspect-square relative overflow-hidden rounded-full shadow-[0_0_60px_-10px_rgba(var(--accent-rgb)/0.35)] mx-auto flex items-center justify-center">
@@ -176,6 +181,7 @@ export default function AiPage() {
                 onClick={() => handleUserSend(itemText)}
                 disabled={loading}
                 className="w-full text-start rounded-xl border border-white/10 bg-fg/[0.03] px-4 py-2 text-sm text-text hover:bg-fg/10 focus-visible:ring-2 focus-visible:ring-accent transition-all disabled:opacity-50"
+                dir="auto"
               >
                 {itemText}
               </button>
@@ -194,10 +200,10 @@ export default function AiPage() {
                 </div>
               </div>
               <div>
-                <h2 className="font-display font-bold text-base text-text m-0">{t('ai.assistantName', 'TaskFlow AI')}</h2>
+                <h2 className="font-display font-bold text-base text-text m-0" dir="auto">{brandName}</h2>
                 <div className="lg:hidden flex items-center gap-1.5 mt-0.5">
                   <span className="size-1.5 rounded-full bg-accent animate-pulse" />
-                  <span className="text-xs text-muted font-normal">{statusLabel}</span>
+                  <span className="text-xs text-muted font-normal" dir="auto">{statusLabel}</span>
                 </div>
               </div>
             </div>
@@ -208,27 +214,55 @@ export default function AiPage() {
               size="sm"
               disabled={!hasStarted}
               onClick={() => setConfirmOpen(true)}
-              aria-label={t('ai.clearChat', 'Clear chat')}
+              aria-label={t('ai.clearChat')}
               className="rounded-xl text-[13px] gap-1.5 text-danger hover:bg-danger/10 hover:border-danger/35 h-7 px-2.5"
             >
               <Trash2 className="size-3.5" />
-              <span className="hidden sm:inline">{t('ai.clearChat', 'Clear chat')}</span>
+              <span className="hidden sm:inline" dir="auto">{t('ai.clearChat')}</span>
             </Button>
           </header>
 
           {/* Stage */}
           <div className="flex-1 min-h-0 relative overflow-hidden flex flex-col">
+            {isMobile && !hasStarted && (
+              <div className="px-4 pt-4 pb-2 flex flex-col items-center justify-center shrink-0">
+                <div style={{ height: 'clamp(200px, 32svh, 320px)', width: '100%', position: 'relative' }} className="overflow-hidden rounded-3xl mx-auto flex items-center justify-center shadow-glow">
+                  <AiOrbStage mode={mode} />
+                </div>
+                <div className="flex items-center gap-2 bg-surface/80 border border-border/30 px-3 py-1 rounded-full mt-3">
+                  <span className="size-2 rounded-full bg-accent animate-pulse" />
+                  <span className="text-xs text-muted font-normal" dir="auto">{statusLabel}</span>
+                </div>
+              </div>
+            )}
+
             {!hasStarted ? (
-              /* START state (no messages): title 28px, subtitle 15px, vertically centered, no suggestion chips inside chat */
-              <div className="flex-1 flex flex-col items-center justify-center text-center my-auto py-6 px-4 space-y-3 max-w-[720px] w-full mx-auto">
+              /* START state (no messages): title 28px, subtitle 15px, vertically centered */
+              <div className="flex-1 flex flex-col items-center justify-center text-center my-auto py-4 px-4 space-y-3 max-w-[720px] w-full mx-auto">
                 <div className="space-y-1.5 max-w-lg">
-                  <h1 className="font-display font-bold text-2xl sm:text-3xl text-text tracking-tight">
-                    {t('ai.startTitle', 'How can I help you today?')}
+                  <h1 className="font-display font-bold text-2xl sm:text-3xl text-text tracking-tight" dir="auto">
+                    {t('ai.startTitle')}
                   </h1>
-                  <p className="text-[15px] text-muted">
-                    {t('ai.startSubtitle', 'Your intelligent partner for planning, breaking down tasks, and staying on track.')}
+                  <p className="text-[15px] text-muted" dir="auto">
+                    {t('ai.startSubtitle')}
                   </p>
                 </div>
+                {isMobile && (
+                  <div className="w-full max-w-[340px] mx-auto flex flex-col gap-2 pt-2">
+                    {suggestionItems.map((itemText, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleUserSend(itemText)}
+                        disabled={loading}
+                        className="w-full text-start rounded-xl border border-white/10 bg-fg/[0.03] px-4 py-2.5 text-sm text-text hover:bg-fg/10 focus-visible:ring-2 focus-visible:ring-accent transition-all disabled:opacity-50"
+                        dir="auto"
+                      >
+                        {itemText}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <>
@@ -270,7 +304,7 @@ export default function AiPage() {
                       <div dir="auto" className="max-w-[90%] bg-surface/80 border border-border/30 backdrop-blur-xl text-text px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-[1.7] shadow-xl space-y-3 mr-auto">
                         <div className="flex items-center gap-2">
                           <div className="size-5 rounded-full bg-[radial-gradient(circle_at_35%_30%,#c9ffe8,var(--accent)_45%,#0a6b4a)] shadow-[0_0_12px_rgb(var(--accent-rgb)/0.6)] shrink-0" />
-                          <b className="font-display text-xs font-semibold text-text">{t('ai.assistantName', 'TaskFlow AI')}</b>
+                          <b className="font-display text-xs font-semibold text-text" dir="auto">{brandName}</b>
                         </div>
                         <div className="flex items-center gap-1.5 py-1 px-1">
                           <span className="size-2 rounded-full bg-accent animate-bounce [animation-delay:-0.3s]" />
@@ -287,12 +321,12 @@ export default function AiPage() {
             )}
           </div>
 
-          {/* Composer: height 52px, text 15px, send button 36px tall, note under it 12px (normal sans font, no mono, no uppercase, no tracking) */}
+          {/* Composer */}
           <div className="flex-none z-30 py-2.5 px-4 flex flex-col items-center space-y-1 bg-bg">
             <div className="max-w-[720px] w-full mx-auto flex flex-col items-center space-y-1">
               <AiComposer onSend={handleUserSend} loading={loading} />
-              <span className="text-xs text-muted font-normal">
-                {t('ai.simPill', 'Local assistant · simulated, provider integration later')}
+              <span className="text-xs text-muted font-normal" dir="auto">
+                {t('ai.simPill')}
               </span>
             </div>
           </div>
@@ -303,8 +337,8 @@ export default function AiPage() {
       <Modal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title={t('ai.clearConfirmTitle', 'Clear chat history?')}
-        description={t('ai.clearConfirmDesc', 'This will remove all messages and return you to the start screen.')}
+        title={t('ai.clearConfirmTitle')}
+        description={t('ai.clearConfirmDesc')}
       >
         <div className="flex justify-end gap-3 pt-2">
           <Button
@@ -313,8 +347,9 @@ export default function AiPage() {
             size="sm"
             onClick={() => setConfirmOpen(false)}
             className="rounded-xl"
+            dir="auto"
           >
-            {t('ai.cancel', 'Cancel')}
+            {t('ai.cancel')}
           </Button>
           <Button
             type="button"
@@ -325,8 +360,9 @@ export default function AiPage() {
               setConfirmOpen(false);
             }}
             className="rounded-xl bg-danger text-danger-fg hover:bg-danger/90"
+            dir="auto"
           >
-            {t('ai.confirm', 'Confirm')}
+            {t('ai.confirm')}
           </Button>
         </div>
       </Modal>

@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { useTranslation } from 'react-i18next';
 import { useSceneColors } from '@/components/3d/useSceneColors';
 import { detectTier, QUALITY } from '@/utils/quality';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import type { OrbMode } from './types';
 
 interface AiOrbStageProps {
@@ -193,6 +194,13 @@ export function AiOrbStage({ mode, compact }: AiOrbStageProps) {
   const [webglSupported, setWebglSupported] = useState(true);
   const [visible, setVisible] = useState(true);
   const reduce = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
+  const isMobile = useIsMobile();
+
+  const rawDpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+  const mobileDpr = rawDpr >= 1.5 ? Math.max(1.5, Math.min(rawDpr, 2)) : Math.min(rawDpr, 2);
+  const mem = typeof navigator !== 'undefined' ? ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) : 8;
+  const finalMobileDpr = mem <= 2 ? 1.25 : mobileDpr;
+  const dpr = isMobile ? [1, finalMobileDpr] : [1, 2];
 
   useEffect(() => {
     try {
@@ -226,7 +234,7 @@ export function AiOrbStage({ mode, compact }: AiOrbStageProps) {
       {webglSupported && !reduce ? (
         <Canvas
           flat
-          dpr={[1, 2]}
+          dpr={dpr as any}
           frameloop={visible ? 'always' : 'never'}
           camera={{ fov: 45, position: [0, 0, 5.8], near: 0.1, far: 50 }}
           gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
