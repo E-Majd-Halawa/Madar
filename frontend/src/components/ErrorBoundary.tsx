@@ -13,13 +13,14 @@ interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  t?: (key: string, options?: Record<string, unknown>) => string;
 }
 
 /**
  * Class-based error boundary for catching React component errors.
  * Logs errors and displays a user-friendly fallback UI.
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundaryImpl extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -41,7 +42,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback;
       }
 
-      const { t } = useTranslation();
+      const t = this.props.t ?? ((key: string) => key);
       return (
         <div className={cn('glass rounded-2xl p-6 text-center', 'min-h-[200px] flex flex-col items-center justify-center')}>
           <AlertTriangle className="size-12 text-danger/80 mb-4" aria-hidden />
@@ -59,6 +60,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     return this.props.children;
   }
+}
+
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  const { t } = useTranslation();
+  return <ErrorBoundaryImpl {...props} t={t} />;
 }
 
 export default ErrorBoundary;

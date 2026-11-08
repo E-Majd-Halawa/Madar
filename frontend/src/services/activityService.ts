@@ -1,5 +1,6 @@
 import type { ActivityService } from '@/api/contracts';
 import { mockActivityService } from '@/api/mock/mockActivityService';
+import { httpActivityService } from '@/api/adapters/http/httpActivityService';
 
-// Swap point: export a REST adapter built on '@/api/adapters/http/httpClient' when VITE_API_URL is set.
-export const activityService: ActivityService = mockActivityService;
+export const activityService: ActivityService =
+  import.meta.env.VITE_API_URL ? httpActivityService : mockActivityService;

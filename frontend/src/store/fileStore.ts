@@ -14,7 +14,11 @@ interface FileState {
   isUploadOpen: boolean;
 
   load: (workspaceId: string) => Promise<void>;
-  uploadFile: (file: Omit<WorkspaceFile, 'id' | 'uploadedAt' | 'downloadsCount'>, workspaceId: string) => Promise<WorkspaceFile>;
+  uploadFile: (
+    file: Omit<WorkspaceFile, 'id' | 'uploadedAt' | 'downloadsCount'> & { file?: File },
+    workspaceId: string,
+    onProgress?: (percent: number) => void,
+  ) => Promise<WorkspaceFile>;
   deleteFile: (id: string, workspaceId: string) => Promise<void>;
   setActiveFolder: (folder: string) => void;
   setSelectedType: (type: FileType | 'all') => void;
@@ -54,17 +58,26 @@ export const useFileStore = create<FileState>()((set, get) => ({
     }
   },
 
-  uploadFile: async (fileData, workspaceId) => {
-    const created = await fileService.upload(fileData);
+  uploadFile: async (fileData, workspaceId, onProgress) => {
+    const upload = fileService.upload as (
+      input: typeof fileData,
+      progress?: (percent: number) => void,
+    ) => Promise<WorkspaceFile>;
+    const created = await upload(fileData, onProgress);
     await get().load(workspaceId);
     return created;
   },
 
   deleteFile: async (id, workspaceId) => {
     await fileService.delete(id);
-    await get().load(workspaceId);
-    if (get().previewFile?.id === id) {
-      set({ previewFile: null });
+    set((state) => ({
+      files: state.files.filter((f) => f.id !== id),
+      previewFile: state.previewFile?.id === id ? null : state.previewFile,
+    }));
+    try {
+      await get().load(workspaceId);
+    } catch {
+      // ignore reload failures
     }
   },
 

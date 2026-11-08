@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Download, ExternalLink, FileArchive, FileCode, FileIcon, FileImage, FileText, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,8 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Modal } from '@/components/ui/Modal';
 import { useDirectoryStore } from '@/store/directoryStore';
 import { useFileStore } from '@/store/fileStore';
+import { downloadFile, fetchFileBlob } from '@/services/fileService';
+import { HttpError } from '@/api/adapters/http/httpClient';
 import { toast } from '@/store/toastStore';
 import { useWorkspaceStore, selectActiveWorkspace } from '@/store/workspaceStore';
 import type { FileType, WorkspaceFile } from '@/types';
@@ -48,16 +50,102 @@ export function FilePreviewModal({ file, onClose }: FilePreviewModalProps) {
   const deleteFile = useFileStore((s) => s.deleteFile);
   const activeWorkspace = useWorkspaceStore(selectActiveWorkspace);
   const directory = useDirectoryStore((s) => s.byId);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewText, setPreviewText] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<'none' | 'image' | 'text' | 'error' | 'unsupported'>('none');
+
+  useEffect(() => {
+    let objectUrl: string | null = null;
+    const controller = new AbortController();
+
+    const resetPreview = () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+      }
+      setPreviewUrl(null);
+      setPreviewText(null);
+      setPreviewError(null);
+      setPreviewMode('none');
+      setPreviewLoading(false);
+    };
+
+    if (!file) {
+      resetPreview();
+      controller.abort();
+      return;
+    }
+
+    const extension = file.extension.toLowerCase();
+    const imageExt = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(extension);
+    const textExt = ['txt', 'md', 'json', 'csv', 'log'].includes(extension);
+    if (!imageExt && !textExt) {
+      resetPreview();
+      setPreviewMode('unsupported');
+      return () => controller.abort();
+    }
+
+    resetPreview();
+    setPreviewLoading(true);
+
+    (async () => {
+      try {
+        const result = await fetchFileBlob(file.id, controller.signal);
+        if (!result) {
+          setPreviewMode('unsupported');
+          return;
+        }
+        if (imageExt) {
+          objectUrl = URL.createObjectURL(result.blob);
+          setPreviewUrl(objectUrl);
+          setPreviewMode('image');
+        } else {
+          const text = await result.blob.text();
+          setPreviewText(text.slice(0, 100000));
+          setPreviewMode('text');
+        }
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        const key = err instanceof HttpError ? err.message : 'files.preview.failed';
+        setPreviewError(t(key, t('files.preview.failed', 'Preview failed')));
+        setPreviewMode('error');
+      } finally {
+        if (!controller.signal.aborted) {
+          setPreviewLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      controller.abort();
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+      }
+    };
+  }, [file, t]);
 
   if (!file) return null;
 
   const Icon = FILE_ICONS[file.type] || FileIcon;
   const colorClass = FILE_COLORS[file.type] || FILE_COLORS.other;
   const uploader = directory[file.uploadedBy];
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const handleDownload = () => {
-    toast.success(`${t('files.downloading', 'Downloading')} ${file.name}`);
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      await downloadFile(file.id, file.name);
+      toast.success(t('files.download.success', 'Downloaded successfully'));
+    } catch (err) {
+      const key = err instanceof HttpError ? err.message : 'files.download.failed';
+      toast.error(t(key, t('files.download.failed', 'Download failed')));
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleDelete = () => {
@@ -67,9 +155,15 @@ export function FilePreviewModal({ file, onClose }: FilePreviewModalProps) {
   const confirmDelete = async () => {
     setShowDeleteConfirm(false);
     if (!activeWorkspace) return;
-    await deleteFile(file.id, activeWorkspace.id);
-    toast.success(t('files.deleted', 'File removed successfully'));
-    onClose();
+    try {
+      await deleteFile(file.id, activeWorkspace.id);
+      toast.success(t('files.deleted', 'File removed successfully'));
+      onClose();
+    } catch (error) {
+      toast.error(t(error instanceof Error ? error.message : 'files.errors.deleteFailed', t('files.errors.deleteFailed', 'Could not delete the file. Please try again.')));
+    } finally {
+      setShowDeleteConfirm(false);
+    }
   };
 
   const handleCopyLink = () => {
@@ -82,9 +176,28 @@ export function FilePreviewModal({ file, onClose }: FilePreviewModalProps) {
       <div className="space-y-6">
         {/* Preview Card */}
         <div className="flex flex-col items-center justify-center rounded-2xl border bg-surface-2/40 p-8 text-center">
-          <div className={`grid size-20 place-items-center rounded-2xl border shadow-lg ${colorClass}`}>
-            <Icon className="size-10" />
-          </div>
+          {previewLoading ? (
+            <div className="grid size-20 place-items-center rounded-2xl border border-border/20 bg-surface-2">
+              <div className="size-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+              <span className="sr-only">{t('files.preview.loading', 'Loading preview...')}</span>
+            </div>
+          ) : previewMode === 'image' && previewUrl ? (
+            <img src={previewUrl} alt={file.name} className="max-h-80 w-auto rounded-xl object-contain" />
+          ) : previewMode === 'text' && previewText !== null ? (
+            <pre className="max-h-80 w-full overflow-auto rounded-xl bg-surface-2 p-4 text-left text-xs text-fg whitespace-pre-wrap break-words">
+              {previewText}
+            </pre>
+          ) : (
+            <div className={`grid size-20 place-items-center rounded-2xl border shadow-lg ${colorClass}`}>
+              <Icon className="size-10" />
+            </div>
+          )}
+          {previewMode === 'error' && previewError && (
+            <p className="mt-3 text-sm text-danger">{previewError}</p>
+          )}
+          {previewMode === 'unsupported' && (
+            <p className="mt-3 text-xs text-muted">{t('files.preview.unsupported', 'Preview unavailable')}</p>
+          )}
           <p className="mt-4 font-semibold text-lg">{file.name}</p>
           <p className="mt-1 text-xs text-muted">.{file.extension.toUpperCase()} · {formatFileSize(file.size)}</p>
           {file.description && (
@@ -135,9 +248,9 @@ export function FilePreviewModal({ file, onClose }: FilePreviewModalProps) {
               <ExternalLink className="size-4" />
               {t('common.share', 'Copy Link')}
             </Button>
-            <Button variant="primary" size="sm" onClick={handleDownload} className="gap-1.5">
+            <Button variant="primary" size="sm" onClick={handleDownload} disabled={downloading} className="gap-1.5">
               <Download className="size-4" />
-              {t('files.download', 'Download')}
+              {t('files.download.label', 'Download')}
             </Button>
           </div>
         </div>

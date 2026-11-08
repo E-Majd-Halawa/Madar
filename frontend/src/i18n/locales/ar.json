@@ -837,7 +837,17 @@
     "general": "عام مساحة العمل",
     "uploadedBy": "رفع بواسطة",
     "uploadDate": "تاريخ الرفع",
-    "download": "تنزيل",
+    "preview": {
+      "label": "معاينة",
+      "loading": "جاري تحميل المعاينة...",
+      "failed": "فشل المعاينة",
+      "unsupported": "المعاينة غير متوفرة"
+    },
+    "download": {
+      "label": "تنزيل",
+      "success": "تم تنزيل الملف بنجاح",
+      "failed": "فشل تنزيل الملف"
+    },
     "deleteConfirmTitle": "حذف الملف",
     "deleteConfirm": "هل أنت متأكد من حذف هذا الملف؟",
     "nameRequired": "اسم الملف مطلوب",
@@ -857,7 +867,17 @@
     "noProject": "عام (بدون مشروع محدد)",
     "description": "الوصف (اختياري)",
     "descriptionPlaceholder": "ملاحظة مختصرة حول هذا الأصل...",
-    "upload": "رفع ملف"
+    "upload": "رفع ملف",
+    "errors": {
+      "quotaExceeded": "تم تجاوز حصة التخزين في مساحة العمل",
+      "fileTooLarge": "حجم الملف يتجاوز الحد المسموح",
+      "blockedType": "نوع الملف أو امتداده محظور",
+      "unauthorized": "يجب تسجيل الدخول لتنزيل هذا الملف",
+      "forbidden": "ليس لديك صلاحية للوصول إلى هذا الملف",
+      "network": "خطأ في الشبكة أثناء رفع الملف",
+      "uploadFailed": "فشل رفع الملف",
+      "deleteFailed": "تعذّر حذف الملف. حاول مرة أخرى."
+    }
   },
   "members": {
     "inviteLinkCopied": "تم نسخ رابط الدعوة إلى الحافظة",

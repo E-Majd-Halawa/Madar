@@ -837,7 +837,17 @@
     "general": "Workspace General",
     "uploadedBy": "Uploaded By",
     "uploadDate": "Uploaded Date",
-    "download": "Download",
+    "preview": {
+      "label": "Preview",
+      "loading": "Loading preview...",
+      "failed": "Preview failed",
+      "unsupported": "Preview unavailable"
+    },
+    "download": {
+      "label": "Download",
+      "success": "Downloaded successfully",
+      "failed": "Download failed"
+    },
     "deleteConfirmTitle": "Delete File",
     "deleteConfirm": "Are you sure you want to delete this file?",
     "nameRequired": "File name is required",
@@ -857,7 +867,17 @@
     "noProject": "General (No specific project)",
     "description": "Description (Optional)",
     "descriptionPlaceholder": "Brief note about this asset…",
-    "upload": "Upload File"
+    "upload": "Upload File",
+    "errors": {
+      "quotaExceeded": "Workspace storage quota exceeded",
+      "fileTooLarge": "File size exceeds the allowed limit",
+      "blockedType": "This file type or extension is blocked",
+      "unauthorized": "You must be signed in to download this file",
+      "forbidden": "You do not have permission to access this file",
+      "network": "Network error while uploading file",
+      "uploadFailed": "File upload failed",
+      "deleteFailed": "Could not delete the file. Please try again."
+    }
   },
   "members": {
     "inviteLinkCopied": "Invite link copied to clipboard",

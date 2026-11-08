@@ -33,6 +33,8 @@ import {
 import { FileUploadModal } from '@/features/files/FileUploadModal';
 import { useDirectoryStore } from '@/store/directoryStore';
 import { useFileStore } from '@/store/fileStore';
+import { downloadFile } from '@/services/fileService';
+import { HttpError } from '@/api/adapters/http/httpClient';
 import { useProjectStore } from '@/store/projectStore';
 import { toast } from '@/store/toastStore';
 import { selectActiveWorkspace, useWorkspaceStore } from '@/store/workspaceStore';
@@ -109,6 +111,7 @@ export default function FilesPage() {
     : 0;
 
   const [fileToDelete, setFileToDelete] = useState<WorkspaceFile | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const handleDelete = (file: WorkspaceFile, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -117,14 +120,29 @@ export default function FilesPage() {
 
   const confirmDelete = async () => {
     if (!fileToDelete || !activeWorkspace) return;
-    await deleteFile(fileToDelete.id, activeWorkspace.id);
-    toast.success(t('workspace.files.deleted', 'File removed successfully'));
-    setFileToDelete(null);
+    try {
+      await deleteFile(fileToDelete.id, activeWorkspace.id);
+      toast.success(t('workspace.files.deleted', 'File removed successfully'));
+    } catch (error) {
+      toast.error(t(error instanceof Error ? error.message : 'files.errors.deleteFailed', t('files.errors.deleteFailed', 'Could not delete the file. Please try again.')));
+    } finally {
+      setFileToDelete(null);
+    }
   };
 
-  const handleDownload = (file: WorkspaceFile, e: React.MouseEvent) => {
+  const handleDownload = async (file: WorkspaceFile, e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.success(`${t('workspace.files.download', 'Downloading')} ${file.name}`);
+    if (downloadingId) return;
+    setDownloadingId(file.id);
+    try {
+      await downloadFile(file.id, file.name);
+      toast.success(t('files.download.success', 'Downloaded successfully'));
+    } catch (err) {
+      const key = err instanceof HttpError ? err.message : 'files.download.failed';
+      toast.error(t(key, t('files.download.failed', 'Download failed')));
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   return (
@@ -416,6 +434,18 @@ export default function FilesPage() {
                       <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">
                         <button
                           type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewFile(file);
+                          }}
+                          title={t('files.preview.label', 'Preview')}
+                          aria-label={t('files.preview.label', 'Preview')}
+                          className="grid size-7 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-fg"
+                        >
+                          <Eye className="size-3.5" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={(e) => handleDownload(file, e)}
                           title={t('workspace.files.download', 'Download')}
                           className="grid size-7 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-fg"
@@ -494,7 +524,8 @@ export default function FilesPage() {
                               <button
                                 type="button"
                                 onClick={() => setPreviewFile(file)}
-                                title={t('workspace.files.preview', 'Preview')}
+                                title={t('files.preview.label', 'Preview')}
+                                aria-label={t('files.preview.label', 'Preview')}
                                 className="grid size-7 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-fg"
                               >
                                 <Eye className="size-3.5" />

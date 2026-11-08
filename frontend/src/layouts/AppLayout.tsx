@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Modal } from '@/components/ui/Modal';
@@ -35,13 +35,11 @@ export function AppLayout() {
         <div className="min-w-0 flex-1">
           <Topbar />
           <main id="main" className="mx-auto w-full max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-10">
-            <AnimatePresence mode="wait">
-              <motion.div key={location.pathname} variants={presets.pageTransition} initial="hidden" animate="visible" exit="exit">
-                <ErrorBoundary>
-                  <Outlet />
-                </ErrorBoundary>
-              </motion.div>
-            </AnimatePresence>
+            <motion.div key={location.pathname} variants={presets.pageTransition} initial="hidden" animate="visible">
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            </motion.div>
           </main>
         </div>
       </div>

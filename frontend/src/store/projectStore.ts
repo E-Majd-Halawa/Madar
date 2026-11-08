@@ -3,6 +3,8 @@ import { activityService } from '@/services/activityService';
 import { projectService } from '@/services/projectService';
 import type { Project, ProjectFile } from '@/types';
 
+const useHttp = Boolean(import.meta.env.VITE_API_URL);
+
 const INITIAL_PROJECT_FILES: Record<string, ProjectFile[]> = {
   'p-101': [
     {
@@ -118,14 +120,16 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
     try {
       const project = await projectService.create(input);
       set((s) => ({ projects: [project, ...s.projects] }));
-      void activityService.record({
-        workspaceId: project.workspaceId,
-        actorId,
-        action: 'project_created',
-        targetType: 'project',
-        targetName: project.name,
-        metadata: { projectId: project.id },
-      });
+      if (!useHttp) {
+        void activityService.record({
+          workspaceId: project.workspaceId,
+          actorId,
+          action: 'project_created',
+          targetType: 'project',
+          targetName: project.name,
+          metadata: { projectId: project.id },
+        });
+      }
       return project;
     } catch {
       return null;
@@ -145,7 +149,7 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
 
     try {
       const updated = await projectService.update(id, patch);
-      if (actorId) {
+      if (!useHttp && actorId) {
         void activityService.record({
           workspaceId: updated.workspaceId,
           actorId,
@@ -174,7 +178,7 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
 
     try {
       await projectService.remove(id);
-      if (actorId) {
+      if (!useHttp && actorId) {
         void activityService.record({
           workspaceId: target.workspaceId,
           actorId,

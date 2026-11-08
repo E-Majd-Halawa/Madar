@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import { Field, inputClass } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import { useAuthStore, selectUser } from '@/store/authStore';
+import { HttpError } from '@/api/adapters/http/httpClient';
 import { useFileStore } from '@/store/fileStore';
 import { useProjectStore } from '@/store/projectStore';
 import { toast } from '@/store/toastStore';
@@ -32,6 +34,8 @@ export function FileUploadModal({ open, onClose, defaultFolder }: FileUploadModa
   const projects = useProjectStore((s) => s.projects);
   const uploadFile = useFileStore((s) => s.uploadFile);
 
+  const [file, setFile] = useState<File | null>(null);
+  const [progress, setProgress] = useState(0);
   const [name, setName] = useState('');
   const [folder, setFolder] = useState(defaultFolder && defaultFolder !== 'all' ? defaultFolder : 'Design Assets');
   const [customFolder, setCustomFolder] = useState('');
@@ -47,39 +51,61 @@ export function FileUploadModal({ open, onClose, defaultFolder }: FileUploadModa
       toast.error(t('files.nameRequired', 'File name is required'));
       return;
     }
+    if (!file) {
+      toast.error(t('files.fileRequired', 'A file is required'));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t('files.errors.fileTooLarge', 'File size exceeds 5MB'));
+      return;
+    }
+    const blockedExt = ['.html', '.htm', '.svg', '.js', '.mjs', '.cjs', '.exe', '.bat', '.cmd', '.sh'];
+    const ext = file.name.includes('.') ? file.name.split('.').pop() || 'txt' : 'txt';
+    if (
+      blockedExt.includes(`.${ext.toLowerCase()}`) ||
+      ['text/html', 'image/svg+xml', 'application/javascript', 'text/javascript', 'application/x-msdownload'].includes(
+        file.type,
+      )
+    ) {
+      toast.error(t('files.errors.blockedType', 'This file type is blocked'));
+      return;
+    }
+
     if (!activeWorkspace || !user) return;
 
     setSubmitting(true);
+    setProgress(0);
     try {
       const selectedProject = projects.find((p) => p.id === projectId);
       const targetFolder = isCustomFolder && customFolder.trim() ? customFolder.trim() : folder;
-      const ext = name.includes('.') ? name.split('.').pop() || 'dat' : 'txt';
-
-      // Random realistic size between 500KB and 25MB
-      const randomSize = Math.floor(Math.random() * 24_500_000) + 500_000;
 
       await uploadFile(
         {
           workspaceId: activeWorkspace.id,
-          name: name.trim(),
+          name: name.trim() || file.name,
           folder: targetFolder,
           projectId: projectId === 'none' ? null : projectId,
           projectName: selectedProject?.name,
           type,
           extension: ext.toLowerCase(),
-          size: randomSize,
+          size: file.size,
           uploadedBy: user.id,
           description: description.trim() || undefined,
-        },
+          file,
+        } as any,
         activeWorkspace.id,
+        setProgress,
       );
 
       toast.success(t('files.uploadSuccess', 'File uploaded successfully'));
+      setFile(null);
+      setProgress(0);
       setName('');
       setDescription('');
       onClose();
-    } catch {
-      toast.error(t('common.error', 'Something went wrong'));
+    } catch (err) {
+      const key = err instanceof HttpError ? err.message : 'files.errors.uploadFailed';
+      toast.error(t(key, t('files.errors.uploadFailed', 'File upload failed')));
     } finally {
       setSubmitting(false);
     }
@@ -92,7 +118,28 @@ export function FileUploadModal({ open, onClose, defaultFolder }: FileUploadModa
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/40 bg-surface-2/30 p-6 text-center hover:border-accent/40 transition">
           <UploadCloud className="size-10 text-accent mb-2" />
           <p className="text-sm font-medium">{t('files.dropzoneTitle', 'Drag and drop files here, or click to browse')}</p>
-          <p className="mt-1 text-xs text-muted">Supports all major formats (PDF, Figma, Images, Zip, Code) up to 100MB</p>
+          <p className="mt-1 text-xs text-muted">Supports all major formats (PDF, Figma, Images, Zip, Code) up to 5MB</p>
+          <input
+            type="file"
+            className="mt-3 text-xs"
+            onChange={(e) => {
+              const selected = e.target.files?.[0] ?? null;
+              setFile(selected);
+              if (selected && !name.trim()) {
+                setName(selected.name);
+              }
+            }}
+          />
+          {file && (
+            <p className="mt-2 text-xs text-muted">
+              {file.name} ({file.size} bytes)
+            </p>
+          )}
+          {submitting && progress > 0 && (
+            <div className="mt-3 w-full">
+              <ProgressBar value={progress} label={t('files.uploadProgress', 'Upload progress')} />
+            </div>
+          )}
         </div>
 
         <Field label={t('files.fileName', 'File Name')} required>

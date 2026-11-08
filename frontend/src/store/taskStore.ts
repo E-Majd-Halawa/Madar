@@ -97,20 +97,22 @@ export const useTaskStore = create<TaskState>()((set, get) => {
       try {
         const task = await taskService.create(input);
         set((s) => ({ tasks: [task, ...s.tasks] }));
-        void activityService.record({
-          workspaceId: task.workspaceId,
-          actorId,
-          action: 'task_created',
-          targetType: 'task',
-          targetName: task.title,
-        });
-        if (task.assigneeId && task.assigneeId !== actorId) {
-          void notificationService.push({
-            userId: task.assigneeId,
-            type: 'task_assigned',
-            title: `You were assigned to ${task.title}`,
-            href: '/app/tasks',
+        if (!useHttp) {
+          void activityService.record({
+            workspaceId: task.workspaceId,
+            actorId,
+            action: 'task_created',
+            targetType: 'task',
+            targetName: task.title,
           });
+          if (task.assigneeId && task.assigneeId !== actorId) {
+            void notificationService.push({
+              userId: task.assigneeId,
+              type: 'task_assigned',
+              title: `You were assigned to ${task.title}`,
+              href: '/app/tasks',
+            });
+          }
         }
         return task;
       } catch {
@@ -152,13 +154,15 @@ export const useTaskStore = create<TaskState>()((set, get) => {
           set((s) => ({ tasks: [updated.spawned as Task, ...s.tasks] }));
         }
         if (newStatus === 'completed' && task.status !== 'completed') {
-          void activityService.record({
-            workspaceId: task.workspaceId,
-            actorId: task.assigneeId ?? task.creatorId,
-            action: 'task_completed',
-            targetType: 'task',
-            targetName: task.title,
-          });
+          if (!useHttp) {
+            void activityService.record({
+              workspaceId: task.workspaceId,
+              actorId: task.assigneeId ?? task.creatorId,
+              action: 'task_completed',
+              targetType: 'task',
+              targetName: task.title,
+            });
+          }
           void useNotificationStore.getState().refresh();
           if (!useHttp) void handleRecurrence(task);
         }
@@ -225,13 +229,15 @@ export const useTaskStore = create<TaskState>()((set, get) => {
       };
       const comments = [...(task.comments ?? []), newComment];
       await apply(taskId, { comments });
-      void activityService.record({
-        workspaceId: task.workspaceId,
-        actorId: authorId,
-        action: 'task_updated',
-        targetType: 'task',
-        targetName: task.title,
-      });
+      if (!useHttp) {
+        void activityService.record({
+          workspaceId: task.workspaceId,
+          actorId: authorId,
+          action: 'task_updated',
+          targetType: 'task',
+          targetName: task.title,
+        });
+      }
     },
 
     logTime: async (taskId, minutes) => {
@@ -247,13 +253,15 @@ export const useTaskStore = create<TaskState>()((set, get) => {
       const done = task.status === 'completed';
       await apply(id, { status: done ? 'todo' : 'completed', completedAt: done ? null : new Date().toISOString() });
       if (!done) {
-        void activityService.record({
-          workspaceId: task.workspaceId,
-          actorId: task.assigneeId ?? task.creatorId,
-          action: 'task_completed',
-          targetType: 'task',
-          targetName: task.title,
-        });
+        if (!useHttp) {
+          void activityService.record({
+            workspaceId: task.workspaceId,
+            actorId: task.assigneeId ?? task.creatorId,
+            action: 'task_completed',
+            targetType: 'task',
+            targetName: task.title,
+          });
+        }
         void useNotificationStore.getState().refresh();
         if (!useHttp) void handleRecurrence(task);
       }
