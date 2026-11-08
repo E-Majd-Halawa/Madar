@@ -1,33 +1,38 @@
-# Madar (مدار) — Backend Agent Context
+# Madar (مدار) — Agent Rules (read first, always)
 
 ## Project
-Monorepo at E:\projects\taskflow-3d: `frontend/` (React, mock-first, DO NOT MODIFY unless asked) and `backend/` (NestJS, to build).
-
-## Stack (fixed, do not substitute)
-Node 22, TypeScript, NestJS (Express), Prisma, PostgreSQL 16 (local on Windows), Zod, argon2, JWT.
-NO Docker. NO Redis. NO MinIO (use LocalDiskStorage). NO paid services.
+Monorepo E:\projects\taskflow-3d: `backend/` (NestJS + Prisma 7 + Postgres 16) and `frontend/` (React + Vite, mock-first).
+Roadmap numbering = frontend/docs/backend/06-roadmap.md ONLY. Code wins over docs; report conflicts.
 
 ## Environment
-- Windows + PowerShell. Use PowerShell-compatible commands.
-- DB: local PostgreSQL 16, database `madar`, port 5432.
-- `backend/.env` already exists with DATABASE_URL. NEVER read, print, edit, or commit it. Create `.env.example` with placeholders only.
-- Never put passwords/tokens in code, logs, or commits.
+- Windows + PowerShell. PATH is broken: run `$env:Path += ";C:\Windows\System32"` before commands. Prefer Select-String over findstr.
+- No Docker, Redis, MinIO, Mailpit, or paid services. Local Postgres, dev DB `madar`. Local file storage for dev; production will need an S3-compatible driver.
+- Repo root only has git. Never `git init` elsewhere.
 
-## Source of truth
-1. Actual frontend code in `frontend/src` (contracts in `src/api/contracts`, types in `src/types`, seed data in `src/data`, mocks in `src/api/mock`).
-2. Plan docs in `frontend/docs/backend/00..08-*.md`. Where docs conflict with code, CODE WINS and report the conflict.
-Do not invent fields or endpoints; cite the frontend file for every claim.
+## Hard rules
+- NEVER run: git add/commit/push/checkout/stash/reset/clean; prisma migrate reset; prisma db push; npm install of new packages (stop and ask).
+- NEVER read, print, or edit .env files, DATABASE_URL, tokens, passwords. `.env.example` placeholders are allowed.
+- Do not touch: frontend/src/features/ai/AiOrbStage.tsx, frontend/src/features/shell/MobileNav.tsx, frontend/src/pages/app/AiPage.tsx.
+- Edit frontend/ ONLY the files the prompt names. VITE_API_URL unset = mock mode must keep working.
+- Smallest change. No refactors. Never delete files outside what the prompt names.
+- Routes under /api/v1. Error envelope { code, message, fieldErrors?, requestId }.
+- One additive migration per phase; never edit applied migrations.
 
-## Rules
-- One phase at a time. Do only what the prompt asks.
-- Never modify `frontend/` unless explicitly told.
-- Never delete files outside `backend/`.
-- Routes under `/api/v1`. Error envelope: `{ code, message, fieldErrors?, requestId }`.
-- Each phase ends with runnable verification; run it and show real output.
-- Commit after each phase with a conventional message. Do not push.
-- If blocked or unsure, stop and ask instead of guessing.
-## Status
-- Phase 0-1 DONE (backend/: Nest, Prisma 7 with adapter-pg, health, seed, error envelope, Vitest).
-- Prisma 7: URL in prisma.config.ts, client generated to src/generated/prisma (git-ignored).
-- Testing uses Vitest. backend/.npmrc has legacy-peer-deps=true.
-- Git IS initialized at the repo root. Never run `git init` inside backend/. Do not push; I commit manually.
+## Workflow
+- New phase: DISCOVERY (read-only) -> stop and wait for "GO" -> implement -> tests -> report.
+- Tests are the acceptance gate: new behavior needs new tests; totals must increase. Never weaken or delete tests.
+- Every claim needs evidence (file:line or real command output). Otherwise write UNVERIFIED. Never infer "done" from earlier reports.
+- If unsure or blocked: stop and ask.
+
+## Gates (run and show real output)
+backend: npx tsc --noEmit; npm run lint; npm run format:check; npm test; npm run test:e2e
+frontend: npx tsc --noEmit; npm run build (VITE_API_URL unset, then set, then unset)
+
+## Report format
+Summary, git status before/after, files changed, test totals before->after, UNVERIFIED list, proposed commit messages (user commits manually).
+
+## Status (verify before trusting; update by the user only)
+- DONE: P0 skeleton, P1 auth, P2 users/RBAC, P3 workspaces/members/invitations, P4 projects/tasks/calendar.
+- P6 activity/notifications/SSE: code + tests done; live browser check pending.
+- P5 files: in progress (backend step first). Not started: P7 chat, P8 search/focus/analytics, P9 AI, P10 admin, P11 hardening, P12 deployment.
+- Baseline tests: unit 41, e2e 92 (11 files). Update when they change.
