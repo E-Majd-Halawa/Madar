@@ -83,6 +83,7 @@ model User {
   refreshTokens       RefreshToken[]
   passwordResetTokens PasswordResetToken[]
   securityEvents      SecurityEvent[]
+  uploadedFiles       File[]               @relation("FileUploader")
 
   @@map("users")
 }
@@ -96,13 +97,14 @@ model Workspace {
   color       String
   createdAt   DateTime      @default(now()) @map("created_at")
 
-  owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
-  members     WorkspaceMember[]
-  invitations Invitation[]
-  projects    Project[]
-  tasks       Task[]
+  owner          User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  members        WorkspaceMember[]
+  invitations    Invitation[]
+  projects       Project[]
+  tasks          Task[]
   activityEvents ActivityEvent[]
   focusSessions  FocusSession[]
+  files          File[]
 
   @@index([ownerId])
   @@map("workspaces")
@@ -254,6 +256,7 @@ model Project {
   owner       User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   members     ProjectMember[]
   tasks       Task[]
+  files       File[]
 
   @@index([workspaceId])
   @@map("projects")
@@ -446,3 +449,42 @@ model FocusSession {
   @@index([userId, startedAt(sort: Desc)])
   @@map("focus_sessions")
 }
+
+enum FileType {
+  document
+  design
+  image
+  archive
+  code
+  other
+
+  @@map("file_type")
+}
+
+model File {
+  id             String    @id @default(cuid())
+  workspaceId    String    @map("workspace_id")
+  projectId      String?   @map("project_id")
+  folder         String
+  name           String
+  extension      String
+  sizeBytes      BigInt    @map("size_bytes")
+  type           FileType
+  mimeType       String    @map("mime_type")
+  storageKey     String    @map("storage_key")
+  checksum       String?   @map("checksum")
+  uploadedById   String    @map("uploaded_by_id")
+  uploadedAt     DateTime  @default(now()) @map("uploaded_at")
+  downloadsCount Int       @default(0) @map("downloads_count")
+  description    String?
+  deletedAt      DateTime? @map("deleted_at")
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  project    Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  uploadedBy User      @relation("FileUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([projectId])
+  @@map("files")
+}
+

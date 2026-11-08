@@ -36,7 +36,7 @@ export const envSchema = z.object({
   JWT_ACCESS_TTL: z.string().default('15m'),
   REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
   CORS_ORIGINS: csv,
-  MAX_UPLOAD_MB: z.coerce.number().int().positive().default(25),
+  MAX_UPLOAD_MB: z.coerce.number().int().positive().default(5),
   ENABLE_DEMO_LOGIN: booleanValue.optional(),
   THROTTLE_ENABLED: booleanValue.optional(),
   THROTTLE_STRICT_LIMIT: z.coerce.number().int().positive().default(10),
@@ -48,6 +48,8 @@ export const envSchema = z.object({
    * SmtpEmailService implementation before using it in production.
    */
   EMAIL_DRIVER: z.enum(['log']).default('log'),
+  FILE_STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
+  WORKSPACE_QUOTA_MB: z.coerce.number().int().positive().default(100),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -73,6 +75,11 @@ export function validateEnv(
   if (env.NODE_ENV === 'production' && env.EMAIL_DRIVER === 'log') {
     throw new Error(
       'Invalid environment configuration:\n  - EMAIL_DRIVER: log driver is not allowed in production',
+    );
+  }
+  if (env.NODE_ENV === 'production' && env.FILE_STORAGE_DRIVER === 'local') {
+    throw new Error(
+      'Invalid environment configuration:\n  - FILE_STORAGE_DRIVER: local driver is not allowed in production',
     );
   }
   if (!env.JWT_ACCESS_SECRET) {

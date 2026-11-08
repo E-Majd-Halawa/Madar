@@ -366,6 +366,24 @@ export class TasksService {
         /* noop */
       }
     }
+    if (
+      patch.assigneeId !== undefined &&
+      patch.assigneeId !== task.assigneeId &&
+      patch.assigneeId &&
+      patch.assigneeId !== userId
+    ) {
+      try {
+        this.events.emit('task.assigned', {
+          workspaceId: task.workspaceId,
+          taskId: id,
+          actorId: userId,
+          title: updated!.title,
+          assigneeId: patch.assigneeId,
+        });
+      } catch {
+        /* noop */
+      }
+    }
     try {
       this.events.emit('task.updated', {
         workspaceId: task.workspaceId,
@@ -376,7 +394,6 @@ export class TasksService {
     } catch {
       /* noop */
     }
-    return toTaskDto(updated!, spawnedDto);
     return toTaskDto(updated!, spawnedDto);
   }
 
@@ -403,6 +420,16 @@ export class TasksService {
         message: 'Your workspace role cannot perform this action.',
       });
     await this.tasks.softDelete(id);
+    try {
+      this.events.emit('task.updated', {
+        workspaceId: task.workspaceId,
+        taskId: id,
+        actorId: userId,
+        title: task.title,
+      });
+    } catch {
+      /* noop */
+    }
   }
 
   async restore(id: string, userId: string) {
@@ -428,6 +455,16 @@ export class TasksService {
         message: 'Your workspace role cannot perform this action.',
       });
     await this.tasks.restore(id);
+    try {
+      this.events.emit('task.updated', {
+        workspaceId: task.workspaceId,
+        taskId: id,
+        actorId: userId,
+        title: task.title,
+      });
+    } catch {
+      /* noop */
+    }
   }
 
   async bulkStatus(ids: string[], status: string, userId: string) {
@@ -524,6 +561,16 @@ export class TasksService {
     await this.prisma.taskComment.create({
       data: { id: `cmt-${randomUUID()}`, taskId, authorId, content },
     });
+    try {
+      this.events.emit('task.comment_added', {
+        workspaceId: task.workspaceId,
+        taskId,
+        authorId,
+        title: task.title,
+      });
+    } catch {
+      /* noop */
+    }
     const updated = await this.tasks.findById(taskId);
     return toTaskDto(updated!);
   }
@@ -543,6 +590,16 @@ export class TasksService {
     const role = await this.workspaceRole(userId, task.workspaceId);
     this.ensureMember(role);
     const updated = await this.tasks.addTimeEntry(taskId, minutes, note);
+    try {
+      this.events.emit('task.updated', {
+        workspaceId: task.workspaceId,
+        taskId,
+        actorId: userId,
+        title: task.title,
+      });
+    } catch {
+      /* noop */
+    }
     return toTaskDto(updated!);
   }
 }

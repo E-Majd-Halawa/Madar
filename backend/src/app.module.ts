@@ -30,6 +30,7 @@ import { ProjectsModule } from './modules/projects/projects.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module.js';
+import { FilesModule } from './modules/files/files.module.js';
 
 @Module({
   imports: [
@@ -165,6 +166,7 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module.js';
     ProjectsModule,
     TasksModule,
     CalendarModule,
+    FilesModule,
     HealthModule,
   ],
   providers: [

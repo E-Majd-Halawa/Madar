@@ -122,5 +122,72 @@ export class ActivitySubscriber implements OnModuleInit {
         })
         .catch(() => undefined);
     });
+    this.events.on('task.assigned', (p) => {
+      this.activity
+        .record(p.workspaceId, p.actorId, {
+          action: 'task_updated',
+          targetType: 'task',
+          targetName: p.title,
+        })
+        .catch(() => undefined);
+      if (p.assigneeId && p.assigneeId !== p.actorId) {
+        this.notifications
+          .systemPush({
+            userId: p.assigneeId,
+            type: 'task_assigned',
+            title: `You were assigned to ${p.title}`,
+            href: '/app/tasks',
+          })
+          .catch(() => undefined);
+      }
+    });
+    this.events.on('member.removed', (p) => {
+      this.activity
+        .record(p.workspaceId, p.actorId, {
+          action: 'role_changed',
+          targetType: 'member',
+          targetName: p.userId,
+        })
+        .catch(() => undefined);
+    });
+    this.events.on('member.joined', (p) => {
+      this.activity
+        .record(p.workspaceId, p.userId, {
+          action: 'member_invited',
+          targetType: 'member',
+          targetName: p.userId,
+        })
+        .catch(() => undefined);
+    });
+    this.events.on('invitation.revoked', (p) => {
+      this.activity
+        .record(p.workspaceId, p.actorId, {
+          action: 'settings_changed',
+          targetType: 'member',
+          targetName: p.email,
+          metadata: { invitationId: p.invitationId },
+        })
+        .catch(() => undefined);
+    });
+    this.events.on('file.uploaded', (p) => {
+      this.activity
+        .record(p.workspaceId, p.actorId, {
+          action: 'file_uploaded',
+          targetType: 'file',
+          targetName: p.name,
+          metadata: { projectId: p.projectId },
+        })
+        .catch(() => undefined);
+    });
+    this.events.on('file.deleted', (p) => {
+      this.activity
+        .record(p.workspaceId, p.actorId, {
+          action: 'file_deleted',
+          targetType: 'file',
+          targetName: p.name,
+          metadata: { projectId: p.projectId },
+        })
+        .catch(() => undefined);
+    });
   }
 }

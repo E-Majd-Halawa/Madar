@@ -222,6 +222,7 @@ describe('Phase 4 projects and tasks (e2e)', () => {
         select: { id: true },
       });
       const ids = markerUsers.map((u) => u.id);
+      await prisma.workspace.deleteMany({ where: { ownerId: { in: ids } } });
       await prisma.refreshToken.deleteMany({ where: { userId: { in: ids } } });
       await prisma.workspaceMember.deleteMany({
         where: { userId: { in: ids } },

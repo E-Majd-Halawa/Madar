@@ -9,6 +9,9 @@ coverage/
 # Prisma generated client (recreated by `npx prisma generate`)
 src/generated/
 
+# local storage (anchored; backend/src/storage must stay tracked)
+/storage/
+
 # environment (never commit real secrets)
 .env
 .env.*

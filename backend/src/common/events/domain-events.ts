@@ -36,6 +36,13 @@ export interface DomainEventMap {
     title: string;
     assigneeId?: string | null;
   };
+  'task.assigned': {
+    workspaceId: string;
+    taskId: string;
+    actorId: string;
+    title: string;
+    assigneeId: string;
+  };
   'task.completed': {
     workspaceId: string;
     taskId: string;

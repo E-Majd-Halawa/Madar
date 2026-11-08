@@ -59,6 +59,7 @@ export class NotificationsController {
   streamEvents(
     @Query('ticket') ticket: string,
     @Headers() headers: Record<string, string>,
+    @Query('lastEventId') queryLastEventId?: string,
   ) {
     const authHeader = headers['authorization'] || headers['Authorization'];
     let requestingUserId: string | undefined = undefined;
@@ -80,7 +81,8 @@ export class NotificationsController {
         message: 'Invalid stream ticket or cross-user access.',
       });
     }
-    const lastEventId = headers['last-event-id'] || headers['Last-Event-ID'];
+    const lastEventId =
+      headers['last-event-id'] || headers['Last-Event-ID'] || queryLastEventId;
     return this.stream.subscribe(userId, lastEventId ?? null);
   }
 

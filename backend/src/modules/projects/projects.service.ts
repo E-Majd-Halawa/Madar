@@ -183,6 +183,16 @@ export class ProjectsService {
             : null,
     });
     const withMembers = await this.projects.findById(updated.id);
+    try {
+      this.events.emit('project.updated', {
+        workspaceId: row.workspaceId,
+        projectId: id,
+        actorId: userId,
+        name: updated.name,
+      });
+    } catch {
+      /* noop */
+    }
     return toProjectDto(withMembers!);
   }
 
@@ -205,6 +215,16 @@ export class ProjectsService {
         message: 'Your workspace role cannot perform this action.',
       });
     await this.projects.delete(id);
+    try {
+      this.events.emit('project.removed', {
+        workspaceId: row.workspaceId,
+        projectId: id,
+        actorId: userId,
+        name: row.name,
+      });
+    } catch {
+      /* noop */
+    }
     return;
   }
 }
