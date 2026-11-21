@@ -80,8 +80,8 @@ export function HeroSection() {
         </svg>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:py-16">
-        <div className="relative mx-auto mb-10 w-full max-w-[1200px] min-h-[420px] rounded-3xl border border-emerald-500/25 bg-[#0d1412]/90 p-6 text-slate-100 shadow-[0_30px_90px_-24px_rgba(16,185,129,0.35)] backdrop-blur-md sm:mb-14 sm:p-8 lg:p-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-2 pb-20 sm:pt-4 lg:pt-5 lg:pb-16">
+        <div className="relative mx-auto mb-6 w-full max-w-[1200px] rounded-3xl border border-emerald-500/20 bg-surface/95 p-5 text-fg shadow-[0_24px_70px_-24px_rgba(16,185,129,0.28)] backdrop-blur-md sm:mb-8 sm:p-7 lg:p-9">
           <div
             dir={isRtl ? 'rtl' : 'ltr'}
             className="grid grid-cols-1 gap-8 items-center lg:grid-cols-12 max-w-7xl mx-auto"
@@ -100,7 +100,7 @@ export function HeroSection() {
                   initial="hidden"
                   animate="visible"
                   custom={0.08}
-                  className="mt-5 text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl"
+                  className="mt-5 text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-fg sm:text-5xl lg:text-6xl"
                 >
                   {t('landing.hero.title')}
                 </motion.h1>
@@ -110,7 +110,7 @@ export function HeroSection() {
                   initial="hidden"
                   animate="visible"
                   custom={0.16}
-                  className="mt-5 max-w-lg text-base text-slate-200 sm:text-lg"
+                  className="mt-5 max-w-lg text-base text-muted sm:text-lg"
                 >
                   {t('landing.hero.subtitle')}
                 </motion.p>
@@ -132,7 +132,7 @@ export function HeroSection() {
                   initial="hidden"
                   animate="visible"
                   custom={0.32}
-                  className="mt-6 text-sm text-slate-300"
+                  className="mt-6 text-sm text-muted"
                 >
                   {t('landing.hero.indicator')}
                 </motion.p>
