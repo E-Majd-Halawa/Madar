@@ -5,6 +5,7 @@ import { HeroTaskIllustration } from '@/components/hero/HeroTaskIllustration';
 import { Badge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/ButtonLink';
 import { ROUTES } from '@/constants/routes';
+import { resolveDirection, useSettingsStore } from '@/store/settingsStore';
 
 const reveal: Variants = {
   hidden: { opacity: 0, y: 14 },
@@ -17,6 +18,9 @@ const reveal: Variants = {
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const language = useSettingsStore((s) => s.language);
+  const direction = useSettingsStore((s) => s.direction);
+  const isRtl = resolveDirection(language, direction) === 'rtl';
   const section = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({ target: section, offset: ['start start', 'end start'] });
@@ -32,8 +36,14 @@ export function HeroSection() {
   return (
     <section ref={section} className="relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-0">
-        <div className="grid grid-cols-1 gap-8 items-center lg:grid-cols-12 max-w-7xl mx-auto">
-          <motion.div style={{ opacity: textOpacity, y: textY }} className="lg:col-span-6">
+        <div
+          dir={isRtl ? 'rtl' : 'ltr'}
+          className="grid grid-cols-1 gap-8 items-center lg:grid-cols-12 max-w-7xl mx-auto"
+        >
+          <motion.div
+            style={{ opacity: textOpacity, y: textY }}
+            className="lg:col-span-6 lg:order-1"
+          >
             <div className="max-w-xl text-start">
               <motion.div variants={reveal} initial="hidden" animate="visible" custom={0}>
                 <Badge tone="accent">{t('landing.hero.badge')}</Badge>
@@ -87,7 +97,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="flex justify-center items-center lg:col-span-6"
+            className="flex justify-center items-center lg:col-span-6 lg:order-2"
           >
             <HeroTaskIllustration labels={labels} />
           </motion.div>
