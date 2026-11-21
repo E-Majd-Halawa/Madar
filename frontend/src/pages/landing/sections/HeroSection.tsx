@@ -36,11 +36,12 @@ export function HeroSection() {
   return (
     <section ref={section} className="relative overflow-hidden">
       {/* Ambient emerald backdrop accents behind the hero window (starfield stays visible) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.16),transparent_65%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-[radial-gradient(ellipse_at_bottom,rgba(5,150,105,0.14),transparent_65%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-visible">
+        <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.28),transparent_62%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-[radial-gradient(ellipse_at_bottom,rgba(5,150,105,0.24),transparent_62%)]" />
+        <div className="absolute left-1/2 top-1/2 h-72 w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(52,211,153,0.12),transparent_70%)] blur-2xl" />
         <svg
-          className="absolute left-1/2 top-6 w-[130%] -translate-x-1/2 opacity-40"
+          className="absolute left-1/2 top-4 w-[140%] -translate-x-1/2 opacity-70"
           viewBox="0 0 1200 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -48,18 +49,18 @@ export function HeroSection() {
           <path
             d="M0 120 C 200 40, 400 200, 600 100 S 1000 20, 1200 120"
             stroke="#10B981"
-            strokeWidth="1.5"
-            strokeOpacity="0.35"
+            strokeWidth="2"
+            strokeOpacity="0.6"
           />
           <path
             d="M0 160 C 250 90, 450 180, 650 130 S 950 60, 1200 150"
             stroke="#34D399"
-            strokeWidth="1"
-            strokeOpacity="0.2"
+            strokeWidth="1.5"
+            strokeOpacity="0.45"
           />
         </svg>
         <svg
-          className="absolute bottom-6 left-1/2 w-[130%] -translate-x-1/2 opacity-40"
+          className="absolute bottom-4 left-1/2 w-[140%] -translate-x-1/2 opacity-70"
           viewBox="0 0 1200 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -67,20 +68,20 @@ export function HeroSection() {
           <path
             d="M0 80 C 200 160, 400 0, 600 100 S 1000 180, 1200 80"
             stroke="#059669"
-            strokeWidth="1.5"
-            strokeOpacity="0.35"
+            strokeWidth="2"
+            strokeOpacity="0.6"
           />
           <path
             d="M0 40 C 250 110, 450 20, 650 70 S 950 140, 1200 50"
             stroke="#0D9488"
-            strokeWidth="1"
-            strokeOpacity="0.2"
+            strokeWidth="1.5"
+            strokeOpacity="0.45"
           />
         </svg>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:py-12">
-        <div className="relative rounded-3xl border border-emerald-500/20 bg-[#0d1412]/85 p-6 shadow-[0_24px_80px_-24px_rgba(16,185,129,0.25)] backdrop-blur-md lg:p-10">
+      <div className="mx-auto max-w-[90rem] px-6 py-20 lg:py-12">
+        <div className="relative min-h-[420px] rounded-3xl border border-emerald-500/25 bg-[#0d1412]/90 p-8 text-slate-100 shadow-[0_30px_90px_-24px_rgba(16,185,129,0.35)] backdrop-blur-md lg:p-12">
           <div
             dir={isRtl ? 'rtl' : 'ltr'}
             className="grid grid-cols-1 gap-8 items-center lg:grid-cols-12 max-w-7xl mx-auto"
@@ -99,7 +100,7 @@ export function HeroSection() {
                   initial="hidden"
                   animate="visible"
                   custom={0.08}
-                  className="mt-5 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
+                  className="mt-5 text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl"
                 >
                   {t('landing.hero.title')}
                 </motion.h1>
@@ -109,7 +110,7 @@ export function HeroSection() {
                   initial="hidden"
                   animate="visible"
                   custom={0.16}
-                  className="mt-5 max-w-lg text-base text-muted sm:text-lg"
+                  className="mt-5 max-w-lg text-base text-slate-200 sm:text-lg"
                 >
                   {t('landing.hero.subtitle')}
                 </motion.p>
@@ -131,7 +132,7 @@ export function HeroSection() {
                   initial="hidden"
                   animate="visible"
                   custom={0.32}
-                  className="mt-6 text-sm text-muted"
+                  className="mt-6 text-sm text-slate-300"
                 >
                   {t('landing.hero.indicator')}
                 </motion.p>
