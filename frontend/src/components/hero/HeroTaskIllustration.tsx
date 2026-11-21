@@ -169,9 +169,24 @@ export function HeroTaskIllustration({
                 const cx = x + TILE_W / 2;
                 const cy = y + TILE_H / 2;
                 return (
-                  <g key={i}>
+                  <g
+                    key={i}
+                    className="transition-transform duration-200 ease-out hover:scale-[1.04]"
+                    style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+                  >
                     <g filter="url(#mdr-glow-sm)">
-                      <rect x={x} y={y} width={TILE_W} height={TILE_H} rx="10" fill="#10B981" fillOpacity="0.22" stroke="#10B981" strokeWidth="1.5" />
+                      <rect
+                        x={x}
+                        y={y}
+                        width={TILE_W}
+                        height={TILE_H}
+                        rx="10"
+                        fill="#10B981"
+                        fillOpacity="0.22"
+                        stroke="#10B981"
+                        strokeWidth="1.5"
+                        className="transition-all duration-200 ease-out hover:stroke-emerald-400 hover:stroke-[2] hover:drop-shadow-[0_0_20px_rgba(16,185,129,0.35)]"
+                      />
                     </g>
                     <path
                       d={`M${cx - 12} ${cy + 1}l8 9 16-19`}
@@ -184,8 +199,22 @@ export function HeroTaskIllustration({
                 );
               }
               return (
-                <g key={i}>
-                  <rect x={x} y={y} width={TILE_W} height={TILE_H} rx="10" fill="#0f1614" stroke="#10B981" strokeOpacity="0.25" />
+                <g
+                  key={i}
+                  className="transition-transform duration-200 ease-out hover:scale-[1.04]"
+                  style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+                >
+                  <rect
+                    x={x}
+                    y={y}
+                    width={TILE_W}
+                    height={TILE_H}
+                    rx="10"
+                    fill="#0f1614"
+                    stroke="#10B981"
+                    strokeOpacity="0.25"
+                    className="transition-all duration-200 ease-out hover:stroke-emerald-400/70 hover:stroke-[2] hover:drop-shadow-[0_0_20px_rgba(16,185,129,0.35)]"
+                  />
                   <text x={x + 10} y={y + 19} fontSize="10" fill="#94A3B8" opacity="0.6" fontFamily="inherit">
                     {i + 12}
                   </text>
