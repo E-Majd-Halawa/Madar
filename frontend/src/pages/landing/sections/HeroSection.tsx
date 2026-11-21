@@ -34,14 +34,14 @@ export function HeroSection() {
   };
 
   return (
-    <section ref={section} className="relative overflow-hidden">
+    <section ref={section} className="relative">
       {/* Ambient emerald backdrop accents behind the hero window (starfield stays visible) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-visible">
-        <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.28),transparent_62%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-[radial-gradient(ellipse_at_bottom,rgba(5,150,105,0.24),transparent_62%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.35),transparent_62%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-[radial-gradient(ellipse_at_bottom,rgba(5,150,105,0.3),transparent_62%)]" />
         <div className="absolute left-1/2 top-1/2 h-72 w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(52,211,153,0.12),transparent_70%)] blur-2xl" />
         <svg
-          className="absolute left-1/2 top-4 w-[140%] -translate-x-1/2 opacity-70"
+          className="absolute left-1/2 top-4 w-[140%] -translate-x-1/2 opacity-80"
           viewBox="0 0 1200 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +60,7 @@ export function HeroSection() {
           />
         </svg>
         <svg
-          className="absolute bottom-4 left-1/2 w-[140%] -translate-x-1/2 opacity-70"
+          className="absolute bottom-4 left-1/2 w-[140%] -translate-x-1/2 opacity-80"
           viewBox="0 0 1200 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -80,8 +80,8 @@ export function HeroSection() {
         </svg>
       </div>
 
-      <div className="mx-auto max-w-[90rem] px-6 py-20 lg:py-12">
-        <div className="relative min-h-[420px] rounded-3xl border border-emerald-500/25 bg-[#0d1412]/90 p-8 text-slate-100 shadow-[0_30px_90px_-24px_rgba(16,185,129,0.35)] backdrop-blur-md lg:p-12">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:py-16">
+        <div className="relative mx-auto mb-10 w-full max-w-[1200px] min-h-[420px] rounded-3xl border border-emerald-500/25 bg-[#0d1412]/90 p-6 text-slate-100 shadow-[0_30px_90px_-24px_rgba(16,185,129,0.35)] backdrop-blur-md sm:mb-14 sm:p-8 lg:p-10">
           <div
             dir={isRtl ? 'rtl' : 'ltr'}
             className="grid grid-cols-1 gap-8 items-center lg:grid-cols-12 max-w-7xl mx-auto"
