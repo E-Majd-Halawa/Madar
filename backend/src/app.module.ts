@@ -17,6 +17,7 @@ import {
 } from './common/rate-limit/rate-limit.decorator.js';
 import { validateEnv } from './config/env.js';
 import { PrismaModule } from './database/prisma.module.js';
+import { StorageModule } from './common/storage/storage.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard.js';
 import { HealthModule } from './modules/health/health.module.js';
@@ -145,6 +146,7 @@ import { UsersModule } from './modules/users/users.module.js';
       },
     }),
     PrismaModule,
+    StorageModule,
     AuthModule,
     UsersModule,
     HealthModule,

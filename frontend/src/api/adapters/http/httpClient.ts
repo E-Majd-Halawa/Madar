@@ -2,7 +2,7 @@
  * Foundation for REST adapters (NestJS / Express).
  * Attaches the JWT and retries once after a refresh on 401.
  */
-const BASE_URL = import.meta.env.VITE_API_URL ?? '';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
 
 export interface FieldError {
   field: string;

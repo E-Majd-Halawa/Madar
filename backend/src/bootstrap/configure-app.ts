@@ -11,9 +11,26 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
  */
 export function configureApp(app: INestApplication): void {
   const config = app.get(ConfigService);
-  const corsOrigins = config.get<string[]>('CORS_ORIGINS') ?? [
-    'http://localhost:5173',
-  ];
+
+  const origins = new Set<string>();
+  const configuredCors = config.get<string[]>('CORS_ORIGINS');
+  if (Array.isArray(configuredCors)) {
+    configuredCors.forEach((origin) => {
+      if (origin) origins.add(origin);
+    });
+  }
+  const frontendUrl = config.get<string>('FRONTEND_URL');
+  if (frontendUrl) {
+    frontendUrl
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .forEach((origin) => origins.add(origin));
+  }
+  // Local development origins are always allowed.
+  origins.add('http://localhost:5173');
+  origins.add('http://localhost:3000');
+  const corsOrigins = [...origins];
 
   app.use(helmet());
   app.enableCors({ origin: corsOrigins, credentials: true });
