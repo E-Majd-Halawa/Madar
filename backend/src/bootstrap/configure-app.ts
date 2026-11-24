@@ -27,9 +27,21 @@ export function configureApp(app: INestApplication): void {
       .filter(Boolean)
       .forEach((origin) => origins.add(origin));
   }
-  // Local development origins are always allowed.
-  origins.add('http://localhost:5173');
-  origins.add('http://localhost:3000');
+
+  const isProduction = config.get<string>('NODE_ENV') === 'production';
+
+  // Local development origins are allowed only outside production.
+  if (!isProduction) {
+    origins.add('http://localhost:5173');
+    origins.add('http://localhost:3000');
+  }
+
+  if (isProduction && origins.size === 0) {
+    throw new Error(
+      'CORS configuration missing: set CORS_ORIGINS or FRONTEND_URL in production.',
+    );
+  }
+
   const corsOrigins = [...origins];
 
   app.use(helmet());

@@ -43,6 +43,7 @@ export const envSchema = z.object({
   CLOUDINARY_API_SECRET: z.string().optional(),
   MAX_UPLOAD_MB: z.coerce.number().int().positive().default(25),
   ENABLE_DEMO_LOGIN: booleanValue.optional(),
+  ALLOW_DEMO_LOGIN_IN_PRODUCTION: booleanValue.optional(),
   THROTTLE_ENABLED: booleanValue.optional(),
   THROTTLE_STRICT_LIMIT: z.coerce.number().int().positive().default(10),
   THROTTLE_WRITE_LIMIT: z.coerce.number().int().positive().default(60),
@@ -68,6 +69,11 @@ export function validateEnv(
   if (env.NODE_ENV === 'production' && !env.JWT_ACCESS_SECRET) {
     throw new Error(
       'Invalid environment configuration:\n  - JWT_ACCESS_SECRET: required in production',
+    );
+  }
+  if (env.NODE_ENV === 'production' && !env.CORS_ORIGINS && !env.FRONTEND_URL) {
+    throw new Error(
+      'Invalid environment configuration:\n  - CORS_ORIGINS or FRONTEND_URL: required in production',
     );
   }
   if (!env.JWT_ACCESS_SECRET) {

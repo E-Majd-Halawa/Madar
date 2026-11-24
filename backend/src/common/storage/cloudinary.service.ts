@@ -20,6 +20,21 @@ export interface CloudinaryUploadResult {
   publicId: string;
 }
 
+const ALLOWED_MIME_TYPES = new Set<string>([
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'application/pdf',
+  'text/plain',
+  'application/json',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
+
 /**
  * Buffer-based Cloudinary uploader. No local disk storage is used: files are
  * received by multer in memory (memoryStorage) and streamed straight to
@@ -51,6 +66,17 @@ export class CloudinaryService {
     }
   }
 
+  private sanitizeFolder(folder: string): string {
+    const trimmed = (folder || 'madar').trim();
+    if (!/^[a-zA-Z0-9/_-]+$/.test(trimmed) || trimmed.includes('..')) {
+      throw new BadRequestException({
+        code: 'invalid_folder',
+        message: 'Invalid upload folder.',
+      });
+    }
+    return trimmed.replace(/^\/+|\/+$/g, '') || 'madar';
+  }
+
   async uploadFile(
     file: UploadedFile,
     folder = 'madar',
@@ -69,40 +95,60 @@ export class CloudinaryService {
       });
     }
 
-    if (file.size > this.maxBytes) {
+    // Trust the actual buffer size, not the client-reported size.
+    if (file.buffer.length > this.maxBytes) {
       throw new BadRequestException({
         code: 'file_too_large',
         message: `File exceeds the maximum allowed size of ${this.maxBytes} bytes.`,
       });
     }
 
+    if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
+      throw new BadRequestException({
+        code: 'unsupported_file_type',
+        message: 'This file type is not allowed.',
+      });
+    }
+
     this.ensureConfigured();
+    const safeFolder = this.sanitizeFolder(folder);
 
-    return new Promise<CloudinaryUploadResult>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder, resource_type: 'auto' },
-        (error, result) => {
-          if (error || !result) {
-            this.logger.error(
-              `Cloudinary upload failed: ${error?.message ?? 'unknown error'}`,
-            );
-            reject(
-              new InternalServerErrorException({
-                code: 'upload_failed',
-                message: 'Failed to upload file to cloud storage.',
-              }),
-            );
-            return;
-          }
-          resolve({
-            url: result.secure_url,
-            publicId: result.public_id,
-          });
-        },
-      );
+    let publicId: string | undefined;
+    try {
+      const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: safeFolder, resource_type: 'auto' },
+          (error, uploaded) => {
+            if (error || !uploaded) {
+              this.logger.error(
+                `Cloudinary upload failed: ${error?.message ?? 'unknown error'}`,
+              );
+              reject(
+                new InternalServerErrorException({
+                  code: 'upload_failed',
+                  message: 'Failed to upload file to cloud storage.',
+                }),
+              );
+              return;
+            }
+            publicId = uploaded.public_id;
+            resolve({
+              url: uploaded.secure_url,
+              publicId: uploaded.public_id,
+            });
+          },
+        );
 
-      streamifier.createReadStream(file.buffer).pipe(stream);
-    });
+        streamifier.createReadStream(file.buffer).pipe(stream);
+      });
+
+      return result;
+    } catch (error) {
+      if (publicId) {
+        await this.deleteFile(publicId);
+      }
+      throw error;
+    }
   }
 
   async deleteFile(publicId: string): Promise<void> {
