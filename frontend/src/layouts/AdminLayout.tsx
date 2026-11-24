@@ -30,20 +30,20 @@ export function AdminLayout() {
     minRole?: Role;
   }> = [
     { label: t('admin.nav.overview', 'Overview'), to: ROUTES.admin.root, icon: LayoutDashboard, exact: true },
-    { label: t('admin.nav.users', 'Users'), to: ROUTES.admin.users, icon: Users },
-    { label: t('admin.nav.workspaces', 'Workspaces'), to: ROUTES.admin.workspaces, icon: Building2 },
-    { label: t('admin.nav.tasks', 'Tasks'), to: ROUTES.admin.tasks, icon: CheckSquare },
-    { label: t('admin.nav.projects', 'Projects'), to: ROUTES.admin.projects, icon: FolderKanban },
+    { label: t('admin.nav.users', 'Users'), to: ROUTES.admin.users, icon: Users, minRole: 'admin' },
+    { label: t('admin.nav.workspaces', 'Workspaces'), to: ROUTES.admin.workspaces, icon: Building2, minRole: 'admin' },
+    { label: t('admin.nav.tasks', 'Tasks'), to: ROUTES.admin.tasks, icon: CheckSquare, minRole: 'admin' },
+    { label: t('admin.nav.projects', 'Projects'), to: ROUTES.admin.projects, icon: FolderKanban, minRole: 'admin' },
     { label: t('admin.nav.messages', 'Messages'), to: ROUTES.admin.messages, icon: MessageSquare, minRole: 'moderator' },
     { label: t('admin.nav.reports', 'Reports'), to: ROUTES.admin.reports, icon: ShieldAlert, minRole: 'moderator' },
-    { label: t('admin.nav.analytics', 'Analytics'), to: ROUTES.admin.analytics, icon: BarChart3 },
-    { label: t('admin.nav.logs', 'Audit Logs'), to: ROUTES.admin.logs, icon: FileText },
-    { label: t('admin.nav.security', 'Security'), to: ROUTES.admin.security, icon: Lock },
+    { label: t('admin.nav.analytics', 'Analytics'), to: ROUTES.admin.analytics, icon: BarChart3, minRole: 'admin' },
+    { label: t('admin.nav.logs', 'Audit Logs'), to: ROUTES.admin.logs, icon: FileText, minRole: 'admin' },
+    { label: t('admin.nav.security', 'Security'), to: ROUTES.admin.security, icon: Lock, minRole: 'super_admin' },
     { label: t('admin.nav.settings', 'System Settings'), to: ROUTES.admin.settings, icon: Settings, minRole: 'super_admin' },
   ];
 
   const visibleNav = navItems.filter((item) => !item.minRole || hasRole(role, item.minRole));
-  const activeNav = navItems.find((item) => item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to));
+  const activeNav = visibleNav.find((item) => item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to));
   const pageTitle = activeNav ? activeNav.label : t('admin.title', 'Admin Suite');
 
   return (

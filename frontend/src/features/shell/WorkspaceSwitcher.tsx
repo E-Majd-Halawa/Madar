@@ -81,7 +81,7 @@ export function WorkspaceSwitcher() {
               }}
               className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-start text-sm text-accent hover:bg-surface-2"
             >
-              + {t('workspaces.create', 'New Workspace / Team')}
+              + {t('workspaces.new')}
             </button>
           </li>
         </ul>

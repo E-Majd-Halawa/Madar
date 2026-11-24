@@ -224,6 +224,39 @@
     "comingSoon": "{{feature}} arrives in phase {{phase}}.",
     "comingSoonBody": "This area is already wired into navigation, guards and the shared stores; the full interface is built in phase {{phase}}."
   },
+  "workspaces": {
+    "new": "New workspace / team",
+    "createTitle": "New workspace",
+    "createSubtitle": "Create a private space for yourself or a shared space for your team.",
+    "name": "Workspace name",
+    "namePlaceholder": "e.g. Product Team",
+    "nameRequired": "Please enter a workspace name.",
+    "nameShort": "Workspace name must be at least 2 characters.",
+    "nameLong": "Keep the workspace name under 80 characters.",
+    "type": "Workspace type",
+    "typeOptions": {
+      "personal": {
+        "label": "Personal",
+        "hint": "A private space for your own tasks and notes."
+      },
+      "team": {
+        "label": "Team",
+        "hint": "Share projects, tasks and files with your team."
+      }
+    },
+    "description": "Description",
+    "descriptionPlaceholder": "What is this workspace for? (optional)",
+    "color": "Workspace color",
+    "colorHint": "Pick a preset or choose a custom color.",
+    "customColor": "Custom color",
+    "initialMembers": "Invite members",
+    "initialMembersPlaceholder": "name@company.com, username",
+    "initialMembersHint": "Separate emails or usernames with commas. You can invite more people later.",
+    "createAction": "Create workspace",
+    "creating": "Creating…",
+    "created": "Workspace “{{name}}” created.",
+    "createFailed": "Could not create the workspace. Please try again."
+  },
   "dashboard": {
     "greeting": "Good {{part}}, {{name}}",
     "morning": "morning",
