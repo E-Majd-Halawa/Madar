@@ -45,6 +45,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         message: 'This account is suspended.',
       });
     }
+    if (user.status === 'banned') {
+      throw new UnauthorizedException({
+        code: 'account_banned',
+        message: 'This account is banned.',
+      });
+    }
     return {
       id: user.id,
       email: user.email,

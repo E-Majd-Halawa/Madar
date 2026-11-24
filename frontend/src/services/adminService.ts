@@ -1,2 +1,4 @@
 import { mockAdminService } from '@/api/mock/mockAdminService';
-export const adminService = mockAdminService;
+import { useMocks } from '@/services/serviceMode';
+import { unimplementedService } from '@/services/unimplementedService';
+export const adminService = useMocks() ? mockAdminService : unimplementedService('adminService');

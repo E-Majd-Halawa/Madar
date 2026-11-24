@@ -24,6 +24,7 @@ enum UserStatus {
   active
   suspended
   invited
+  banned
 }
 
 enum WorkspaceType {

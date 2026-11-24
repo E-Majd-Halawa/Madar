@@ -144,6 +144,12 @@ export class AuthService {
         message: 'This account is suspended.',
       });
     }
+    if (user.status === 'banned') {
+      throw new ForbiddenException({
+        code: 'account_banned',
+        message: 'This account is banned.',
+      });
+    }
 
     await this.lockout.reset(email, ipKey);
 
@@ -288,8 +294,19 @@ export class AuthService {
   }
 
   async loginAsDemo(ip?: string, userAgent?: string): Promise<AuthSession> {
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
     const demoLoginEnabled =
-      this.configService.get<boolean>('ENABLE_DEMO_LOGIN') ?? true;
+      this.configService.get<boolean>('ENABLE_DEMO_LOGIN') ?? !isProduction;
+    const allowDemoInProduction =
+      this.configService.get<boolean>('ALLOW_DEMO_LOGIN_IN_PRODUCTION') ?? false;
+
+    if (isProduction && !allowDemoInProduction) {
+      throw new ForbiddenException({
+        code: 'demo_login_disabled',
+        message: 'Demo login is disabled in production.',
+      });
+    }
     if (!demoLoginEnabled) {
       throw new ForbiddenException({
         code: 'invalid_credentials',
@@ -307,6 +324,13 @@ export class AuthService {
       });
     }
 
+    if (demoUser.status === 'suspended' || demoUser.status === 'banned') {
+      throw new ForbiddenException({
+        code: 'account_suspended',
+        message: 'This account is suspended.',
+      });
+    }
+
     const familyId = randomUUID();
     const ipKey = ip ?? 'unknown';
     const tokens = await this.issueTokens(
@@ -316,6 +340,16 @@ export class AuthService {
       ipKey,
       userAgent,
     );
+
+    await this.prisma.securityEvent.create({
+      data: {
+        type: 'session',
+        descriptionKey: 'security.demo_login',
+        userId: demoUser.id,
+        ip: ipKey,
+        device: userAgent,
+      },
+    });
 
     return {
       user: toUserDto(demoUser),
@@ -375,6 +409,12 @@ export class AuthService {
       throw new ForbiddenException({
         code: 'account_suspended',
         message: 'This account is suspended.',
+      });
+    }
+    if (user.status === 'banned') {
+      throw new ForbiddenException({
+        code: 'account_banned',
+        message: 'This account is banned.',
       });
     }
 

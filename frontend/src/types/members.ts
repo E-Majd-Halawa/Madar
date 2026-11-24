@@ -10,7 +10,7 @@ export interface WorkspaceMemberItem {
   avatarUrl?: string;
   joinedAt: string;
   lastActiveAt: string;
-  status: 'active' | 'invited' | 'suspended';
+  status: 'active' | 'invited' | 'suspended' | 'banned';
 }
 
 export interface PendingInvite {

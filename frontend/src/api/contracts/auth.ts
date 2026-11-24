@@ -3,6 +3,7 @@ import type { AuthSession, AuthTokens } from '@/types';
 export type AuthErrorCode =
   | 'invalid_credentials'
   | 'account_suspended'
+  | 'account_banned'
   | 'email_taken'
   | 'username_taken'
   | 'session_expired'

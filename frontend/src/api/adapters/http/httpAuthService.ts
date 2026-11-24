@@ -9,6 +9,7 @@ function mapAuthError(error: unknown): never {
     let mappedCode: AuthErrorCode = 'unknown';
     if (backendCode === 'invalid_credentials') mappedCode = 'invalid_credentials';
     else if (backendCode === 'account_suspended') mappedCode = 'account_suspended';
+    else if (backendCode === 'account_banned') mappedCode = 'account_banned';
     else if (backendCode === 'email_taken') mappedCode = 'email_taken';
     else if (backendCode === 'username_taken') mappedCode = 'username_taken';
     else if (backendCode === 'session_expired') mappedCode = 'session_expired';
