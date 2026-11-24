@@ -27,4 +27,59 @@ export const mockWorkspaceService: WorkspaceService = {
     await delay(150);
     return SEED_WORKSPACES.find((w) => w.id === id) ?? null;
   },
+
+  async create(input) {
+    await delay();
+    const workspace: Workspace = {
+      id: `ws-${Date.now()}`,
+      name: input.name,
+      description: input.description ?? '',
+      type: input.type,
+      ownerId: 'u-001',
+      memberIds: ['u-001', ...(input.initialMembers ?? [])],
+      color: input.color ?? '#10b981',
+      createdAt: new Date().toISOString(),
+    };
+    SEED_WORKSPACES.push(workspace as any);
+    return workspace;
+  },
+
+  async listMembers(workspaceId) {
+    await delay();
+    return [];
+  },
+
+  async addMember(_workspaceId, input) {
+    await delay();
+    return {
+      id: `u-${Date.now()}`,
+      fullName: input.identifier,
+      username: input.identifier,
+      email: input.identifier.includes('@') ? input.identifier : `${input.identifier}@example.com`,
+      role: input.role,
+      department: input.department ?? 'General',
+      joinedAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString(),
+      status: 'active',
+    };
+  },
+
+  async updateMember(_workspaceId, memberId, input) {
+    await delay();
+    return {
+      id: memberId,
+      fullName: memberId,
+      username: memberId,
+      email: `${memberId}@example.com`,
+      role: input.role ?? 'member',
+      department: input.department ?? 'General',
+      joinedAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString(),
+      status: 'active',
+    };
+  },
+
+  async removeMember() {
+    await delay();
+  },
 };

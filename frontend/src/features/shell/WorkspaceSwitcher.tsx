@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { selectActiveWorkspace, useWorkspaceStore } from '@/store/workspaceStore';
 import { toast } from '@/store/toastStore';
+import { CreateWorkspaceModal } from '@/features/workspaces/CreateWorkspaceModal';
 import { cn } from '@/utils/cn';
 
 /** Accessible listbox-style menu for switching between the user's workspaces. */
@@ -12,6 +13,7 @@ export function WorkspaceSwitcher() {
   const active = useWorkspaceStore(selectActiveWorkspace);
   const setActive = useWorkspaceStore((s) => s.setActive);
   const [open, setOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -70,8 +72,21 @@ export function WorkspaceSwitcher() {
               </li>
             );
           })}
+          <li className="mt-1 border-t border-border/30 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setCreateOpen(true);
+              }}
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-start text-sm text-accent hover:bg-surface-2"
+            >
+              + {t('workspaces.create', 'New Workspace / Team')}
+            </button>
+          </li>
         </ul>
       )}
+      <CreateWorkspaceModal open={createOpen} onClose={() => setCreateOpen(false)} />
     </div>
   );
 }

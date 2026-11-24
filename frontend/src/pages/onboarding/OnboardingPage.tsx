@@ -19,6 +19,7 @@ import {
 import { useMotion } from '@/hooks/useMotion';
 import { useAuthStore } from '@/store/authStore';
 import { usePreferencesStore } from '@/store/preferencesStore';
+import { useWorkspaceStore } from '@/store/workspaceStore';
 import type { UserPreferences } from '@/types';
 
 type StepId = 'welcome' | 'usage' | 'workspace' | 'theme' | 'language' | 'timezone' | 'hours' | 'notifications' | 'done';
@@ -59,6 +60,19 @@ export default function OnboardingPage() {
 
   const finish = async () => {
     await save(user.id, { ...draft, onboardingCompleted: true });
+    const finalPrefs = { ...stored, ...draft };
+    if (finalPrefs.workspaceType === 'team') {
+      try {
+        await useWorkspaceStore.getState().createWorkspace({
+          name: 'Team Workspace',
+          description: 'Created during onboarding.',
+          type: 'team',
+          color: '#22d3ee',
+        });
+      } catch {
+        // Keep onboarding completion even if workspace creation fails.
+      }
+    }
     navigate(ROUTES.app.dashboard, { replace: true });
   };
 

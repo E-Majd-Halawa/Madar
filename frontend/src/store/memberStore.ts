@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { safeStateStorage } from '@/services/storage/persistStorage';
 import { userService } from '@/services/userService';
+import { workspaceService } from '@/services/workspaceService';
+import { useMocks } from '@/services/serviceMode';
+import { useWorkspaceStore } from '@/store/workspaceStore';
 import type { MembersService } from '@/api/contracts/members';
 import type { PendingInvite, WorkspaceMemberItem, WorkspaceRole } from '@/types';
 
@@ -56,56 +59,87 @@ export const useMemberStore = create<MemberState>()(
       isInviteModalOpen: false,
       loading: false,
 
-      load: async (_workspaceId: string) => {
-        if (get().members.length > 0) return;
+      load: async (workspaceId: string) => {
+        if (useMocks() && get().members.length > 0) return;
         set({ loading: true });
         try {
-          const { items } = await userService.list({ pageSize: 30 });
-          // Map users to workspace members
-          const mapped: WorkspaceMemberItem[] = items.slice(0, 14).map((u, index) => {
-            const role: WorkspaceRole =
-              index === 0 ? 'owner' : index === 1 || index === 2 ? 'admin' : index > 11 ? 'guest' : 'member';
-            const department = DEPARTMENTS[index % DEPARTMENTS.length];
-
-            return {
-              id: u.id,
-              fullName: u.fullName,
-              username: u.username,
-              email: u.email,
-              role,
-              department,
-              avatarUrl: u.avatarUrl,
-              joinedAt: u.createdAt,
-              lastActiveAt: u.lastActiveAt,
-              status: u.status,
-            };
-          });
-
-          set({ members: mapped, loading: false });
+          if (useMocks()) {
+            const { items } = await userService.list({ pageSize: 30 });
+            const mapped: WorkspaceMemberItem[] = items.slice(0, 14).map((u, index) => {
+              const role: WorkspaceRole =
+                index === 0 ? 'owner' : index === 1 || index === 2 ? 'admin' : index > 11 ? 'guest' : 'member';
+              const department = DEPARTMENTS[index % DEPARTMENTS.length];
+              return {
+                id: u.id,
+                fullName: u.fullName,
+                username: u.username,
+                email: u.email,
+                role,
+                department,
+                avatarUrl: u.avatarUrl,
+                joinedAt: u.createdAt,
+                lastActiveAt: u.lastActiveAt,
+                status: u.status,
+              };
+            });
+            set({ members: mapped, loading: false });
+          } else {
+            const members = await workspaceService.listMembers(workspaceId);
+            set({ members, loading: false });
+          }
         } catch {
           set({ loading: false });
         }
       },
 
       inviteMember: async (email, role, department) => {
-        const newInvite: PendingInvite = {
-          id: `inv-${Date.now()}`,
-          email,
-          role,
+        if (useMocks()) {
+          const newInvite: PendingInvite = {
+            id: `inv-${Date.now()}`,
+            email,
+            role,
+            department,
+            invitedBy: 'u-001',
+            invitedAt: new Date().toISOString(),
+          };
+          set({ pendingInvites: [newInvite, ...get().pendingInvites] });
+          return;
+        }
+        const workspaceId = useWorkspaceStore.getState().activeWorkspaceId;
+        if (!workspaceId) throw new Error('No active workspace');
+        const member = await workspaceService.addMember(workspaceId, {
+          identifier: email,
+          role: role as 'admin' | 'member' | 'guest',
           department,
-          invitedBy: 'u-001',
-          invitedAt: new Date().toISOString(),
-        };
-        set({ pendingInvites: [newInvite, ...get().pendingInvites] });
+        });
+        set({ members: [...get().members, member] });
       },
 
       updateRole: async (userId, newRole) => {
+        if (useMocks()) {
+          set({
+            members: get().members.map((m) => (m.id === userId ? { ...m, role: newRole } : m)),
+          });
+          return;
+        }
+        const workspaceId = useWorkspaceStore.getState().activeWorkspaceId;
+        if (!workspaceId) throw new Error('No active workspace');
+        const updated = await workspaceService.updateMember(workspaceId, userId, { role: newRole as 'admin' | 'member' | 'guest' });
         set({
-          members: get().members.map((m) => (m.id === userId ? { ...m, role: newRole } : m)),
+          members: get().members.map((m) => (m.id === userId ? updated : m)),
         });
       },
 
       removeMember: async (userId) => {
+        if (useMocks()) {
+          set({
+            members: get().members.filter((m) => m.id !== userId),
+          });
+          return;
+        }
+        const workspaceId = useWorkspaceStore.getState().activeWorkspaceId;
+        if (!workspaceId) throw new Error('No active workspace');
+        await workspaceService.removeMember(workspaceId, userId);
         set({
           members: get().members.filter((m) => m.id !== userId),
         });

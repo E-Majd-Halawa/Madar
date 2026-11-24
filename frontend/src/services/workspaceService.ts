@@ -1,8 +1,8 @@
 import type { WorkspaceService } from '@/api/contracts';
 import { mockWorkspaceService } from '@/api/mock/mockWorkspaceService';
+import { httpWorkspaceService } from '@/api/adapters/http/httpWorkspaceService';
 import { useMocks } from '@/services/serviceMode';
-import { unimplementedService } from '@/services/unimplementedService';
 
-// Swap point: when VITE_API_URL is set, export a REST adapter built on
-// '@/api/adapters/http/httpClient' instead. UI code never changes.
-export const workspaceService: WorkspaceService = useMocks() ? mockWorkspaceService : unimplementedService<WorkspaceService>('workspaceService');
+export const workspaceService: WorkspaceService = useMocks()
+  ? mockWorkspaceService
+  : httpWorkspaceService;
