@@ -4,6 +4,8 @@
  */
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
 
+const DEFAULT_TIMEOUT_MS = 15000;
+
 export interface FieldError {
   field: string;
   message: string;
@@ -59,31 +61,47 @@ function isRefreshRequest(path: string): boolean {
 }
 
 export async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+
   const send = (token: string | null) => {
     const headers = new Headers(init.headers);
     headers.set('Content-Type', 'application/json');
     if (token) headers.set('Authorization', `Bearer ${token}`);
-    return fetch(`${BASE_URL}${path}`, { ...init, headers });
+    return fetch(`${BASE_URL}${path}`, {
+      ...init,
+      headers,
+      signal: controller.signal,
+    });
   };
 
-  let response = await send(tokenProvider?.getAccessToken() ?? null);
-  if (response.status === 401 && tokenProvider && !isRefreshRequest(path)) {
-    const token = await runRefresh();
-    if (token) response = await send(token);
-  }
-
-  if (!response.ok) {
-    let errorData: any = null;
-    try {
-      errorData = await response.json();
-    } catch {
-      // ignore non-json response
+  try {
+    let response = await send(tokenProvider?.getAccessToken() ?? null);
+    if (response.status === 401 && tokenProvider && !isRefreshRequest(path)) {
+      const token = await runRefresh();
+      if (token) response = await send(token);
     }
-    const message = errorData?.message || response.statusText;
-    const code = errorData?.code;
-    const fieldErrors = errorData?.fieldErrors;
-    throw new HttpError(response.status, message, code, fieldErrors);
-  }
 
-  return (response.status === 204 ? undefined : await response.json()) as T;
+    if (!response.ok) {
+      let errorData: any = null;
+      try {
+        errorData = await response.json();
+      } catch {
+        // ignore non-json response
+      }
+      const message = errorData?.message || response.statusText;
+      const code = errorData?.code;
+      const fieldErrors = errorData?.fieldErrors;
+      throw new HttpError(response.status, message, code, fieldErrors);
+    }
+
+    return (response.status === 204 ? undefined : await response.json()) as T;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new HttpError(0, 'Request timed out', 'request_timeout');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

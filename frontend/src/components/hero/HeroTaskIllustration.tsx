@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { animate, motion, useMotionValue, useReducedMotion, type MotionValue } from 'framer-motion';
+import { animate, motion, useInView, useMotionValue, useReducedMotion, type MotionValue } from 'framer-motion';
 
 /**
  * Madar hero illustration — emerald re-colour of the "Task Manager" landing reference.
@@ -271,7 +271,7 @@ function Plant() {
 const CX = 745;
 const CY = 130;
 
-function Clock() {
+function Clock({ running }: { running: boolean }) {
   const reduce = useReducedMotion();
   const outer = useRef<SVGGElement>(null);
   const hourRef = useRef<SVGGElement>(null);
@@ -293,6 +293,7 @@ function Clock() {
       secRef.current?.setAttribute('transform', `rotate(${s * 6} ${CX} ${CY})`);
     };
     set();
+    if (!running) return;
     if (reduce) {
       const id = setInterval(set, 1000);
       return () => clearInterval(id);
@@ -304,7 +305,7 @@ function Clock() {
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [reduce]);
+  }, [reduce, running]);
 
   return (
     <g
@@ -380,9 +381,11 @@ export function HeroTaskIllustration({
   labels?: LabelProps;
 }) {
   const reduce = useReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { margin: '200px' });
 
   const float = (delay: number, distance = 5, duration = 5) =>
-    reduce
+    reduce || !inView
       ? {}
       : {
           animate: { y: [0, -distance, 0] },
@@ -391,6 +394,7 @@ export function HeroTaskIllustration({
 
   return (
     <div
+      ref={containerRef}
       className={`relative isolate mx-auto w-full max-w-[600px] select-none ${className}`}
       dir="ltr"
       aria-hidden
@@ -441,7 +445,7 @@ export function HeroTaskIllustration({
         <ellipse cx="520" cy="672" rx="400" ry="52" fill={EM} opacity="0.07" />
 
         {/* ---------- WALL CLOCK ---------- */}
-        <Clock />
+        <Clock running={inView && !reduce} />
 
         {/* ---------- FLOATING STICKY NOTES ---------- */}
         <motion.g {...float(0, 5, 5)}>
