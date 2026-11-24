@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { isSessionValid, useAuthStore } from '@/store/authStore';
 import { workspaceService } from '@/services/workspaceService';
 import { safeStateStorage } from '@/services/storage/persistStorage';
 import type { Workspace } from '@/types';
@@ -15,6 +16,12 @@ interface WorkspaceState {
   reset: () => void;
 }
 
+/**
+ * Invalidates in-flight list requests when a newer action wins, so a slow
+ * `/workspaces` response can never overwrite a just-created workspace or a reset.
+ */
+let loadSequence = 0;
+
 export const useWorkspaceStore = create<WorkspaceState>()(
   persist(
     (set, get) => ({
@@ -22,34 +29,58 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       activeWorkspaceId: null,
       status: 'idle',
       load: async (userId, { preferDemo = false } = {}) => {
+        // Never call authenticated endpoints with an expired/absent session.
+        if (!isSessionValid(useAuthStore.getState().session)) {
+          set({ workspaces: [], activeWorkspaceId: null, status: 'idle' });
+          return;
+        }
         set({ status: 'loading' });
+        const sequence = ++loadSequence;
         try {
           const workspaces = await workspaceService.listForUser(userId);
+          if (sequence !== loadSequence) return;
+          if (!isSessionValid(useAuthStore.getState().session)) {
+            set({ workspaces: [], activeWorkspaceId: null, status: 'idle' });
+            return;
+          }
           const remembered = workspaces.find((w) => w.id === get().activeWorkspaceId);
           const demo = preferDemo ? workspaces.find((w) => w.id === 'ws-demo') : undefined;
           const active = remembered ?? demo ?? workspaces[0] ?? null;
           set({ workspaces, activeWorkspaceId: active?.id ?? null, status: 'ready' });
         } catch {
-          set({ status: 'error' });
+          if (sequence !== loadSequence) return;
+          if (!isSessionValid(useAuthStore.getState().session)) {
+            set({ workspaces: [], activeWorkspaceId: null, status: 'idle' });
+          } else {
+            set({ status: 'error' });
+          }
         }
       },
       setActive: (activeWorkspaceId) => set({ activeWorkspaceId }),
       createWorkspace: async (input) => {
-        set({ status: 'loading' });
+        if (!isSessionValid(useAuthStore.getState().session)) return null;
         try {
           const created = await workspaceService.create(input);
+          if (!isSessionValid(useAuthStore.getState().session)) return null;
+          loadSequence += 1; // any in-flight list is now stale
+          // One atomic update: the guard must never observe the new id without its workspace.
           set((state) => ({
-            workspaces: [...state.workspaces, created],
+            workspaces: state.workspaces.some((w) => w.id === created.id)
+              ? state.workspaces.map((w) => (w.id === created.id ? created : w))
+              : [...state.workspaces, created],
             activeWorkspaceId: created.id,
             status: 'ready',
           }));
           return created;
         } catch {
-          set({ status: 'error' });
+          // Creation errors are reported by the caller; leave the current workspace intact.
           return null;
         }
       },
-      reset: () => set({ workspaces: [], activeWorkspaceId: null, status: 'idle' }),
+      reset: () => {
+        loadSequence += 1;
+        set({ workspaces: [], activeWorkspaceId: null, status: 'idle' });
+      },
     }),
     {
       name: 'tf3d.workspace',

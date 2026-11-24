@@ -1,5 +1,6 @@
 import type { WorkspaceService } from '@/api/contracts';
 import { SEED_WORKSPACES } from '@/data/workspaces';
+import { useAuthStore } from '@/store/authStore';
 import type { Workspace } from '@/types';
 import { delay } from './delay';
 
@@ -30,13 +31,14 @@ export const mockWorkspaceService: WorkspaceService = {
 
   async create(input) {
     await delay();
+    const ownerId = useAuthStore.getState().session?.user.id ?? 'u-001';
     const workspace: Workspace = {
       id: `ws-${Date.now()}`,
       name: input.name,
       description: input.description ?? '',
       type: input.type,
-      ownerId: 'u-001',
-      memberIds: ['u-001', ...(input.initialMembers ?? [])],
+      ownerId,
+      memberIds: [ownerId, ...(input.initialMembers ?? [])],
       color: input.color ?? '#10b981',
       createdAt: new Date().toISOString(),
     };

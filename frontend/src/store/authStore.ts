@@ -15,7 +15,14 @@ interface AuthState {
   register: (input: RegisterInput) => Promise<boolean>;
   enterDemo: () => Promise<boolean>;
   logout: () => Promise<void>;
+  /** Drops a session whose access token has expired, without calling the API. */
+  expireSession: () => void;
   clearError: () => void;
+}
+
+/** A session is usable only while its access token is still valid. */
+export function isSessionValid(session: AuthSession | null | undefined): session is AuthSession {
+  return !!session && session.tokens.expiresAt > Date.now();
 }
 
 /** Marks this browser tab as having signed in, so "remember me" off can end the session when the tab closes. */
@@ -28,16 +35,22 @@ function markTabAlive(): void {
   }
 }
 
-/** Called once at startup: drops a non-remembered session left over from a previous browser session. */
+/**
+ * Called once at startup: drops a non-remembered session left over from a previous browser
+ * session, and any session whose token already expired.
+ */
 export function enforceRememberMe(): void {
   const { session, remember } = useAuthStore.getState();
+  if (!session) return;
   let alive = false;
   try {
     alive = window.sessionStorage.getItem(TAB_KEY) === '1';
   } catch {
     alive = true;
   }
-  if (session && !remember && !alive) useAuthStore.setState({ session: null });
+  if (!isSessionValid(session) || (!remember && !alive)) {
+    useAuthStore.setState({ session: null });
+  }
 }
 
 const toCode = (error: unknown): AuthErrorCode => (error instanceof AuthError ? error.code : 'unknown');
@@ -80,6 +93,7 @@ export const useAuthStore = create<AuthState>()(
           set({ session: null, error: null });
           await authService.logout(refreshToken).catch(() => undefined);
         },
+        expireSession: () => set({ session: null, error: null }),
         clearError: () => set({ error: null }),
       };
     },

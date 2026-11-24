@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
-import { useAuthStore } from '@/store/authStore';
+import { isSessionValid, useAuthStore } from '@/store/authStore';
 import { useWorkspaceStore } from '@/store/workspaceStore';
 
-/** Loads the signed-in user's workspaces, and clears them on sign-out. */
+/** Loads the signed-in user's workspaces, and clears them on sign-out or session expiry. */
 export function useWorkspaceBootstrap(): void {
-  const userId = useAuthStore((s) => s.session?.user.id);
-  const isDemo = useAuthStore((s) => s.session?.isDemo ?? false);
+  const session = useAuthStore((s) => s.session);
+  const validSession = isSessionValid(session) ? session : null;
+  const userId = validSession?.user.id;
+  const isDemo = validSession?.isDemo ?? false;
 
   useEffect(() => {
     const { load, reset } = useWorkspaceStore.getState();

@@ -27,7 +27,9 @@ export function setupTokenProvider(): void {
           return tokens.accessToken;
         }
       } catch {
-        await useAuthStore.getState().logout();
+        // The refresh token is dead: drop the session locally. Calling the logout
+        // endpoint here would issue another request that waits on this same refresh.
+        useAuthStore.getState().expireSession();
       }
       return null;
     },

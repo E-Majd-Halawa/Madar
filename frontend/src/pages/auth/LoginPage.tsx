@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
@@ -11,15 +12,16 @@ import { PasswordField } from '@/components/ui/PasswordField';
 import { ROUTES } from '@/constants/routes';
 import { DEMO_ACCOUNTS } from '@/data/users';
 import { loginSchema, type LoginForm } from '@/schemas/auth';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore, isSessionValid } from '@/store/authStore';
 import { safeRedirect } from '@/utils/redirect';
 
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const { session, status, error, login, clearError } = useAuthStore();
+  const { session, status, error, login, clearError, expireSession } = useAuthStore();
   const target = safeRedirect(params.get('redirect'));
+  const sessionExpired = !!session && !isSessionValid(session);
 
   const {
     register,
@@ -28,7 +30,12 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginForm>({ resolver: zodResolver(loginSchema), defaultValues: { remember: true } });
 
-  if (session) return <Navigate to={target} replace />;
+  // An expired token must not bounce the visitor back into the app (redirect loop).
+  useEffect(() => {
+    if (sessionExpired) expireSession();
+  }, [sessionExpired, expireSession]);
+
+  if (isSessionValid(session)) return <Navigate to={target} replace />;
 
   const loading = status === 'loading';
   const submit = async (values: LoginForm) => {
