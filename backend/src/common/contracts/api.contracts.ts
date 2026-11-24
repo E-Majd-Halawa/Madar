@@ -11,7 +11,7 @@
  */
 import type { Role } from '../permissions/permissions.js';
 
-export type UserStatus = 'active' | 'suspended' | 'invited';
+export type UserStatus = 'active' | 'suspended' | 'invited' | 'banned';
 
 /** frontend/src/types/index.ts:4-14 */
 export interface User {

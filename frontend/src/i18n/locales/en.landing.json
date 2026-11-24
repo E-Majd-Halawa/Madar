@@ -14,7 +14,12 @@
     "title": "Keep your work in orbit.",
     "subtitle": "One workspace for tasks, projects, calendar, and focus.",
     "primary": "Get started",
-    "indicator": "Built for focused individuals and modern teams."
+    "indicator": "Built for focused individuals and modern teams.",
+    "illustration": {
+      "sprintPlanning": "Sprint planning",
+      "designReview": "Design review",
+      "calendarTitle": "Oct 2026"
+    }
   },
   "preview": {
     "title": "See a day in Madar",

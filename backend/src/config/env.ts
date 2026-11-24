@@ -3,13 +3,14 @@ import { z } from 'zod';
 
 const csv = z
   .string()
-  .default('http://localhost:5173')
-  .transform((value) =>
-    value
+  .optional()
+  .transform((value) => {
+    if (!value) return undefined;
+    return value
       .split(',')
       .map((item) => item.trim())
-      .filter(Boolean),
-  );
+      .filter(Boolean);
+  });
 
 /** Accepts true/false, 1/0, yes/no, on/off (dotenv gives us strings). */
 const booleanValue = z.preprocess((value) => {
@@ -36,6 +37,10 @@ export const envSchema = z.object({
   JWT_ACCESS_TTL: z.string().default('15m'),
   REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
   CORS_ORIGINS: csv,
+  FRONTEND_URL: z.string().optional(),
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
   MAX_UPLOAD_MB: z.coerce.number().int().positive().default(25),
   ENABLE_DEMO_LOGIN: booleanValue.optional(),
   THROTTLE_ENABLED: booleanValue.optional(),

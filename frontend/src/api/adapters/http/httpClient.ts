@@ -2,7 +2,7 @@
  * Foundation for REST adapters (NestJS / Express).
  * Attaches the JWT and retries once after a refresh on 401.
  */
-const BASE_URL = import.meta.env.VITE_API_URL ?? '';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
 
 export interface FieldError {
   field: string;
@@ -35,6 +35,29 @@ export function setTokenProvider(provider: TokenProvider | null): void {
   tokenProvider = provider;
 }
 
+// Deduplicates concurrent refresh attempts so multiple parallel 401s share a
+// single refresh request (and a single token rotation) instead of racing.
+let refreshInFlight: Promise<string | null> | null = null;
+
+function runRefresh(): Promise<string | null> {
+  if (!tokenProvider) return Promise.resolve(null);
+  if (refreshInFlight) return refreshInFlight;
+  refreshInFlight = (async () => {
+    try {
+      return await tokenProvider!.refresh();
+    } finally {
+      refreshInFlight = null;
+    }
+  })();
+  return refreshInFlight;
+}
+
+// Refresh requests must never go through the auto-refresh retry loop, otherwise
+// a failed refresh triggers another refresh (infinite recursion).
+function isRefreshRequest(path: string): boolean {
+  return path === '/auth/refresh' || path.startsWith('/auth/refresh?') || path.startsWith('/auth/refresh/');
+}
+
 export async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
   const send = (token: string | null) => {
     const headers = new Headers(init.headers);
@@ -44,8 +67,8 @@ export async function http<T>(path: string, init: RequestInit = {}): Promise<T> 
   };
 
   let response = await send(tokenProvider?.getAccessToken() ?? null);
-  if (response.status === 401 && tokenProvider) {
-    const token = await tokenProvider.refresh();
+  if (response.status === 401 && tokenProvider && !isRefreshRequest(path)) {
+    const token = await runRefresh();
     if (token) response = await send(token);
   }
 
