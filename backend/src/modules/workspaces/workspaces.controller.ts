@@ -6,12 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import {
   AddMemberDto,
+  CandidateUsersQueryDto,
   CreateWorkspaceDto,
   UpdateMemberDto,
 } from './dto/workspaces.dto.js';
@@ -42,6 +44,18 @@ export class WorkspacesController {
     @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.workspacesService.create(dto as any, user);
+  }
+
+  @Get(':id/candidate-users')
+  @ApiOperation({
+    summary: 'Search users who can be added to a workspace (owner/admin only)',
+  })
+  searchCandidateUsers(
+    @Param('id') id: string,
+    @Query() query: CandidateUsersQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.workspacesService.searchCandidateUsers(id, query, user);
   }
 
   @Get(':id/members')

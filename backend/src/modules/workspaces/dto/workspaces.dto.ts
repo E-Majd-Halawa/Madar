@@ -20,7 +20,7 @@ export const createWorkspaceSchema = z.object({
 export class CreateWorkspaceDto extends createZodDto(createWorkspaceSchema) {}
 
 export const addMemberSchema = z.object({
-  identifier: z.string().trim().min(1, 'Identifier is required'),
+  username: z.string().trim().min(1, 'Username is required').max(40),
   role: memberRoleSchema.default('member'),
   department: z.string().trim().max(100).optional().default('General'),
 });
@@ -34,6 +34,15 @@ export const updateMemberSchema = z.object({
 
 export class UpdateMemberDto extends createZodDto(updateMemberSchema) {}
 
+export const candidateUsersQuerySchema = z.object({
+  q: z.string().trim().max(80).default(''),
+});
+
+export class CandidateUsersQueryDto extends createZodDto(
+  candidateUsersQuerySchema,
+) {}
+
 export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>;
 export type AddMemberInput = z.infer<typeof addMemberSchema>;
 export type UpdateMemberInput = z.infer<typeof updateMemberSchema>;
+export type CandidateUsersQuery = z.infer<typeof candidateUsersQuerySchema>;

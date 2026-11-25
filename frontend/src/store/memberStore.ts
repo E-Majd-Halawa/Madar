@@ -6,15 +6,14 @@ import { workspaceService } from '@/services/workspaceService';
 import { useMocks } from '@/services/serviceMode';
 import { useWorkspaceStore } from '@/store/workspaceStore';
 import type { MembersService } from '@/api/contracts/members';
-import type { PendingInvite, WorkspaceMemberItem, WorkspaceRole } from '@/types';
+import type { WorkspaceMemberItem, WorkspaceRole } from '@/types';
 
 interface MemberState extends MembersService {
   members: WorkspaceMemberItem[];
-  pendingInvites: PendingInvite[];
-  isInviteModalOpen: boolean;
+  isAddMemberModalOpen: boolean;
   loading: boolean;
 
-  setIsInviteModalOpen: (open: boolean) => void;
+  setAddMemberModalOpen: (open: boolean) => void;
 }
 
 const DEPARTMENTS = [
@@ -41,25 +40,7 @@ export const useMemberStore = create<MemberState>()(
   persist(
     (set, get) => ({
       members: [],
-      pendingInvites: [
-        {
-          id: 'inv-001',
-          email: 'sarah.connor@example.com',
-          role: 'member',
-          department: 'Engineering',
-          invitedBy: 'u-002',
-          invitedAt: new Date(Date.now() - 36 * 3600 * 1000).toISOString(),
-        },
-        {
-          id: 'inv-002',
-          email: 'alex.rivera@designstudio.io',
-          role: 'guest',
-          department: 'Design',
-          invitedBy: 'u-001',
-          invitedAt: new Date(Date.now() - 14 * 3600 * 1000).toISOString(),
-        },
-      ],
-      isInviteModalOpen: false,
+      isAddMemberModalOpen: false,
       loading: false,
 
       load: async (workspaceId: string) => {
@@ -72,7 +53,7 @@ export const useMemberStore = create<MemberState>()(
             const scoped = workspace?.memberIds.length
               ? items.filter((u) => workspace.memberIds.includes(u.id))
               : items;
-            const mapped: WorkspaceMemberItem[] = scoped.slice(0, 14).map((u, index) => {
+            const mapped: WorkspaceMemberItem[] = scoped.map((u, index) => {
               const role: WorkspaceRole =
                 u.id === workspace?.ownerId
                   ? 'owner'
@@ -107,27 +88,30 @@ export const useMemberStore = create<MemberState>()(
         }
       },
 
-      inviteMember: async (email, role, department) => {
-        if (useMocks()) {
-          const newInvite: PendingInvite = {
-            id: `inv-${Date.now()}`,
-            email,
-            role,
-            department,
-            invitedBy: 'u-001',
-            invitedAt: new Date().toISOString(),
-          };
-          set({ pendingInvites: [newInvite, ...get().pendingInvites] });
-          return;
-        }
+      addMember: async (username, role, department) => {
         const workspaceId = useWorkspaceStore.getState().activeWorkspaceId;
         if (!workspaceId) throw new Error('No active workspace');
+
         const member = await workspaceService.addMember(workspaceId, {
-          identifier: email,
+          username,
           role: role as 'admin' | 'member' | 'guest',
           department,
         });
-        set({ members: [...get().members, member] });
+
+        if (useMocks()) {
+          set({ members: [...get().members.filter((m) => m.id !== member.id), member] });
+          // Keep the mock workspace in sync so a later load() still includes the member.
+          useWorkspaceStore.setState((state) => ({
+            workspaces: state.workspaces.map((w) =>
+              w.id === workspaceId && !w.memberIds.includes(member.id)
+                ? { ...w, memberIds: [...w.memberIds, member.id] }
+                : w,
+            ),
+          }));
+        } else {
+          // Re-read from the server so the list reflects what was actually stored.
+          await get().load(workspaceId);
+        }
       },
 
       updateRole: async (userId, newRole) => {
@@ -160,28 +144,13 @@ export const useMemberStore = create<MemberState>()(
         });
       },
 
-      cancelInvite: (inviteId) => {
-        set({
-          pendingInvites: get().pendingInvites.filter((inv) => inv.id !== inviteId),
-        });
-      },
-
-      resendInvite: (_inviteId) => {
-        // Updated timestamp
-        set({
-          pendingInvites: get().pendingInvites.map((inv) =>
-            inv.id === _inviteId ? { ...inv, invitedAt: new Date().toISOString() } : inv,
-          ),
-        });
-      },
-
-      setIsInviteModalOpen: (isInviteModalOpen) => set({ isInviteModalOpen }),
+      setAddMemberModalOpen: (isAddMemberModalOpen) => set({ isAddMemberModalOpen }),
     }),
     {
       name: 'tf3d.members',
       version: 1,
       storage: createJSONStorage(() => safeStateStorage),
-      partialize: (state) => ({ members: state.members, pendingInvites: state.pendingInvites }),
+      partialize: (state) => ({ members: state.members }),
     },
   ),
 );

@@ -5,7 +5,8 @@ import { PRIMARY_NAV, type NavItem } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/store/authStore';
 import { selectUnreadCount, useNotificationStore } from '@/store/notificationStore';
-import { hasRole } from '@/utils/permissions';
+import { selectActiveWorkspace, useWorkspaceStore } from '@/store/workspaceStore';
+import { canManageWorkspaceMembers, hasRole } from '@/utils/permissions';
 import { cn } from '@/utils/cn';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 
@@ -33,7 +34,9 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
   const session = useAuthStore((s) => s.session);
+  const activeWorkspace = useWorkspaceStore(selectActiveWorkspace);
   const showAdmin = session && !session.isDemo && hasRole(session.user.role, 'moderator');
+  const canManageMembers = canManageWorkspaceMembers(activeWorkspace, session?.user.id);
   const unread = useNotificationStore(selectUnreadCount);
 
   const bottom: NavItem[] = [
@@ -49,7 +52,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
       <WorkspaceSwitcher />
       <nav aria-label={t('nav.primary')} className="-mx-1 flex-1 space-y-0.5 overflow-y-auto px-1">
-        {PRIMARY_NAV.map((item) => (
+        {PRIMARY_NAV.filter((item) => !item.ownerOnly || canManageMembers).map((item) => (
           <Item key={item.to} item={item} badge={item.to === ROUTES.app.notifications ? unread : undefined} />
         ))}
       </nav>

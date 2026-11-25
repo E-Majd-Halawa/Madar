@@ -8,6 +8,8 @@ export interface NavItem {
   to: string;
   labelKey: string;
   icon: LucideIcon;
+  /** Only shown when the active team workspace belongs to the current user. */
+  ownerOnly?: boolean;
 }
 
 /** Sidebar order follows the product spec. */
@@ -19,7 +21,7 @@ export const PRIMARY_NAV: NavItem[] = [
   { to: ROUTES.app.calendar, labelKey: 'nav.calendar', icon: CalendarDays },
   { to: ROUTES.app.kanban, labelKey: 'nav.kanban', icon: KanbanSquare },
   { to: ROUTES.app.projects, labelKey: 'nav.projects', icon: FolderKanban },
-  { to: ROUTES.app.members, labelKey: 'nav.members', icon: Users },
+  { to: ROUTES.app.members, labelKey: 'nav.members', icon: Users, ownerOnly: true },
   { to: ROUTES.app.focus, labelKey: 'nav.focus', icon: Timer },
   { to: ROUTES.app.chat, labelKey: 'nav.chat', icon: MessageCircle },
   { to: ROUTES.app.messages, labelKey: 'nav.messages', icon: MessagesSquare },

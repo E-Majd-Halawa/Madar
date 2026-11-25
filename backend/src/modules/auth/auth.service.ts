@@ -194,7 +194,9 @@ export class AuthService {
     userAgent?: string,
   ): Promise<AuthSession> {
     const email = input.email.trim().toLowerCase();
-    const username = input.username.trim();
+    // Usernames are canonical in lowercase; this keeps exact lookups and the
+    // database's case-sensitive unique index case-insensitive in practice.
+    const username = input.username.trim().toLowerCase();
 
     const existingEmail = await this.prisma.user.findUnique({
       where: { email },
@@ -212,7 +214,7 @@ export class AuthService {
     if (existingUsername) {
       throw new ConflictException({
         code: 'username_taken',
-        message: 'Username is taken.',
+        message: 'This username is already taken. Usernames are case-insensitive.',
       });
     }
 
@@ -224,19 +226,50 @@ export class AuthService {
     const userId = `u-${randomUUID()}`;
     const now = new Date();
 
-    const user = await this.prisma.user.create({
-      data: {
-        id: userId,
-        fullName: input.fullName.trim(),
-        username,
-        email,
-        role: 'user', // Forced role
-        status: 'active', // Forced status
-        passwordHash,
-        createdAt: now,
-        lastActiveAt: now,
-      },
-    });
+    const user = await this.prisma.user
+      .create({
+        data: {
+          id: userId,
+          fullName: input.fullName.trim(),
+          username,
+          email,
+          role: 'user', // Forced role
+          status: 'active', // Forced status
+          passwordHash,
+          createdAt: now,
+          lastActiveAt: now,
+        },
+      })
+      .catch((error: unknown) => {
+        // The pre-checks above handle normal requests; this covers concurrent
+        // registrations racing for the same email/username.
+        const { code, meta } = error as {
+          code?: string;
+          meta?: { target?: unknown };
+        };
+        if (code === 'P2002') {
+          const target = meta?.target;
+          const fields = Array.isArray(target)
+            ? target.map(String)
+            : typeof target === 'string'
+              ? [target]
+              : [];
+          if (fields.some((field) => field.includes('username'))) {
+            throw new ConflictException({
+              code: 'username_taken',
+              message:
+                'This username is already taken. Usernames are case-insensitive.',
+            });
+          }
+          if (fields.some((field) => field.includes('email'))) {
+            throw new ConflictException({
+              code: 'email_taken',
+              message: 'Email is already registered.',
+            });
+          }
+        }
+        throw error;
+      });
 
     // Create personal workspace as in mockWorkspaceService.ts
     const workspaceId = `ws-personal-${userId}`;

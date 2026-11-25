@@ -1,5 +1,6 @@
 import type { Workspace } from '@/types';
 import type {
+  CandidateUser,
   WorkspaceMemberItem,
 } from '@/types/members';
 import type {
@@ -93,11 +94,18 @@ export const httpWorkspaceService: WorkspaceService = {
     return data.map(mapMember);
   },
 
+  async searchCandidateUsers(workspaceId: string, query: string): Promise<CandidateUser[]> {
+    const params = new URLSearchParams({ q: query });
+    return http<CandidateUser[]>(
+      `/workspaces/${workspaceId}/candidate-users?${params.toString()}`,
+    );
+  },
+
   async addMember(workspaceId: string, input: AddWorkspaceMemberInput): Promise<WorkspaceMemberItem> {
     const data = await http<BackendMember>(`/workspaces/${workspaceId}/members`, {
       method: 'POST',
       body: JSON.stringify({
-        identifier: input.identifier,
+        username: input.username,
         role: input.role,
         department: input.department,
       }),

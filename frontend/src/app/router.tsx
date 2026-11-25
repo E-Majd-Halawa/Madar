@@ -4,6 +4,7 @@ import { RequireAuth } from '@/components/guards/RequireAuth';
 import { RequireOnboarded } from '@/components/guards/RequireOnboarded';
 import { RequireRole } from '@/components/guards/RequireRole';
 import { RequireWorkspace } from '@/components/guards/RequireWorkspace';
+import { RequireWorkspaceOwner } from '@/components/guards/RequireWorkspaceOwner';
 import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import { ROUTES } from '@/constants/routes';
 import { AppLayout } from '@/layouts/AppLayout';
@@ -85,7 +86,12 @@ export const router = createBrowserRouter([
                       { path: ROUTES.app.project, lazy: page(() => import('@/pages/app/ProjectDetailPage')) },
                       { path: ROUTES.app.files, element: <FilesPage /> },
                       { path: ROUTES.app.activity, element: <ActivityPage /> },
-                      { path: ROUTES.app.members, element: <MembersPage /> },
+                      {
+                        element: <RequireWorkspaceOwner />,
+                        children: [
+                          { path: ROUTES.app.members, element: <MembersPage /> },
+                        ],
+                      },
                       { path: ROUTES.app.chat, lazy: page(() => import('@/pages/app/ChatPage')) },
                       { path: ROUTES.app.messages, lazy: page(() => import('@/pages/app/MessagesPage')) },
                       { path: ROUTES.app.notifications, lazy: page(() => import('@/pages/app/NotificationsPage')) },

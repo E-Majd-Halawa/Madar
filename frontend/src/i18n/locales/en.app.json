@@ -23,6 +23,36 @@
     "attachFile": "Attach File",
     "conversations": "Conversations"
   },
+  "errors": {
+    "auth": {
+      "email_taken": "That email is already registered. Try signing in instead.",
+      "username_taken": "That username is already taken. Usernames are case-insensitive."
+    }
+  },
+  "members": {
+    "subtitle": "Manage your team members, roles, and departments.",
+    "addMember": "Add Member",
+    "addMemberTitle": "Add Member",
+    "addMemberSubtitle": "Add an existing teammate to this workspace by username.",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "e.g. sarah.chen",
+    "usernameHint": "Choose a suggestion or submit the username directly.",
+    "usernameRequired": "Enter a username.",
+    "searchResults": "Matching users",
+    "searchingUsers": "Searching…",
+    "noUsersFound": "No matching users.",
+    "memberAdded": "{{username}} was added to the workspace.",
+    "memberAddFailed": "Could not add the member. Try again.",
+    "userNotFound": "No user found with username @{{username}}.",
+    "alreadyMember": "@{{username}} is already a member of this workspace.",
+    "adding": "Adding…",
+    "inviteTitle": "Add Member",
+    "inviteSubtitle": "Add an existing teammate to this workspace by username.",
+    "invite": "Add Member",
+    "sendInvite": "Add Member",
+    "inviteSent": "{{username}} was added to the workspace.",
+    "emailAddress": "Username"
+  },
   "chat": {
     "emoji": "Emoji",
     "attach": "Attach",

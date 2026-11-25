@@ -23,6 +23,36 @@
     "attachFile": "إرفاق ملف",
     "conversations": "المحادثات"
   },
+  "errors": {
+    "auth": {
+      "email_taken": "هذا البريد الإلكتروني مسجل بالفعل. جرّب تسجيل الدخول بدلًا من ذلك.",
+      "username_taken": "اسم المستخدم هذا مستخدم بالفعل. أسماء المستخدمين غير حساسة لحالة الأحرف."
+    }
+  },
+  "members": {
+    "subtitle": "إدارة أعضاء فريقك، الأدوار، والأقسام.",
+    "addMember": "إضافة عضو",
+    "addMemberTitle": "إضافة عضو",
+    "addMemberSubtitle": "أضف زميلًا موجودًا إلى مساحة العمل باستخدام اسم المستخدم.",
+    "usernameLabel": "اسم المستخدم",
+    "usernamePlaceholder": "مثال: sarah.chen",
+    "usernameHint": "اختر اقتراحًا أو أرسل اسم المستخدم مباشرة.",
+    "usernameRequired": "أدخل اسم المستخدم.",
+    "searchResults": "المستخدمون المطابقون",
+    "searchingUsers": "جارٍ البحث…",
+    "noUsersFound": "لا يوجد مستخدمون مطابقون.",
+    "memberAdded": "تمت إضافة {{username}} إلى مساحة العمل.",
+    "memberAddFailed": "تعذّرت إضافة العضو. حاول مرة أخرى.",
+    "userNotFound": "لا يوجد مستخدم باسم @{{username}}.",
+    "alreadyMember": "@{{username}} عضو بالفعل في مساحة العمل هذه.",
+    "adding": "جارٍ الإضافة…",
+    "inviteTitle": "إضافة عضو",
+    "inviteSubtitle": "أضف زميلًا موجودًا إلى مساحة العمل باستخدام اسم المستخدم.",
+    "invite": "إضافة عضو",
+    "sendInvite": "إضافة عضو",
+    "inviteSent": "تمت إضافة {{username}} إلى مساحة العمل.",
+    "emailAddress": "اسم المستخدم"
+  },
   "chat": {
     "emoji": "رموز تعبيرية",
     "attach": "إرفاق",

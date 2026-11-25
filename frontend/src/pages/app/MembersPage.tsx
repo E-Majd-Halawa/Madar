@@ -3,23 +3,13 @@ import { format, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 import {
   Check,
-  Clock,
-  Copy,
-  ExternalLink,
   FolderKanban,
   LayoutGrid,
   List as ListIcon,
-  Mail,
-  MoreVertical,
-  Plus,
-  RefreshCw,
   Search,
-  Shield,
   Trash2,
-  UserCheck,
   UserPlus,
   Users,
-  X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Avatar } from '@/components/ui/Avatar';
@@ -49,14 +39,11 @@ export default function MembersPage() {
 
   const {
     members,
-    pendingInvites,
-    isInviteModalOpen,
+    isAddMemberModalOpen,
     load,
     updateRole,
     removeMember,
-    cancelInvite,
-    resendInvite,
-    setIsInviteModalOpen,
+    setAddMemberModalOpen,
   } = useMemberStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -75,9 +62,8 @@ export default function MembersPage() {
     const total = members.length;
     const admins = members.filter((m) => m.role === 'admin' || m.role === 'owner').length;
     const active = members.filter((m) => m.status === 'active').length;
-    const pending = pendingInvites.length;
-    return { total, admins, active, pending };
-  }, [members, pendingInvites]);
+    return { total, admins, active };
+  }, [members]);
 
   // Department list
   const departments = useMemo(() => {
@@ -152,24 +138,24 @@ export default function MembersPage() {
             {t('nav.members', 'Workspace Members')}
           </h1>
           <p className="mt-1 text-sm text-muted">
-            {t('members.subtitle', 'Manage your team members, permissions, departments, and active invitations.')}
+            {t('members.subtitle', 'Manage your team members, roles, and departments.')}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Button
             variant="primary"
-            onClick={() => setIsInviteModalOpen(true)}
+            onClick={() => setAddMemberModalOpen(true)}
             className="gap-2"
           >
             <UserPlus className="size-4" />
-            {t('members.invite', 'Invite Member')}
+            {t('members.addMember', 'Add Member')}
           </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         <div className="glass rounded-2xl p-4 border shadow-sm">
           <span className="block text-xs font-medium text-muted">{t('members.totalMembers', 'Total Members')}</span>
           <span className="mt-1 block text-2xl font-bold text-fg">{stats.total}</span>
@@ -181,10 +167,6 @@ export default function MembersPage() {
         <div className="glass rounded-2xl p-4 border shadow-sm">
           <span className="block text-xs font-medium text-muted">{t('members.adminCount', 'Admins & Leads')}</span>
           <span className="mt-1 block text-2xl font-bold text-accent">{stats.admins}</span>
-        </div>
-        <div className="glass rounded-2xl p-4 border shadow-sm">
-          <span className="block text-xs font-medium text-muted">{t('members.pendingInvites', 'Pending Invites')}</span>
-          <span className="mt-1 block text-2xl font-bold text-purple-400">{stats.pending}</span>
         </div>
       </div>
 
@@ -440,72 +422,10 @@ export default function MembersPage() {
         </div>
       )}
 
-      {/* Pending Invitations Section */}
-      {pendingInvites.length > 0 && (
-        <div className="space-y-3 pt-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted">
-              {t('members.pendingInvitesHeading', 'Pending Invitations')} ({pendingInvites.length})
-            </span>
-          </div>
-
-          <div className="glass overflow-hidden rounded-2xl border divide-y divide-border/10">
-            {pendingInvites.map((invite) => (
-              <div
-                key={invite.id}
-                className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between text-sm hover:bg-surface-2/30 transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="grid size-9 place-items-center rounded-xl border bg-surface-2/60 text-muted">
-                    <Mail className="size-4" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-fg">{invite.email}</p>
-                    <p className="text-xs text-muted">
-                      {invite.department} · {t('members.invited', 'Invited')} {format(parseISO(invite.invitedAt), 'MMM dd, yyyy')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-end sm:self-auto">
-                  <Badge tone="neutral" className="capitalize text-[11px]">
-                    {invite.role}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      resendInvite(invite.id);
-                      toast.success(t('members.inviteResent', 'Invitation resent to {{email}}', { email: invite.email }));
-                    }}
-                    className="gap-1.5 text-xs"
-                  >
-                    <RefreshCw className="size-3" />
-                    {t('members.resend', 'Resend')}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      cancelInvite(invite.id);
-                      toast.info(t('members.inviteCancelled', 'Invitation cancelled'));
-                    }}
-                    className="gap-1.5 text-xs text-rose-400 hover:text-rose-300"
-                  >
-                    <X className="size-3" />
-                    {t('common.cancel', 'Cancel')}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Invite Modal */}
+      {/* Add Member modal */}
       <InviteMemberModal
-        open={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
+        open={isAddMemberModalOpen}
+        onClose={() => setAddMemberModalOpen(false)}
       />
 
       <ConfirmDialog

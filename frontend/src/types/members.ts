@@ -13,11 +13,10 @@ export interface WorkspaceMemberItem {
   status: 'active' | 'invited' | 'suspended' | 'banned';
 }
 
-export interface PendingInvite {
+/** Minimal user projection returned by the workspace candidate search. */
+export interface CandidateUser {
   id: string;
-  email: string;
-  role: WorkspaceRole;
-  department: string;
-  invitedBy: string;
-  invitedAt: string;
+  username: string;
+  name: string;
+  avatar: string | null;
 }

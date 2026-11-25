@@ -8,9 +8,17 @@ import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy.js';
 import { PrismaService } from '../../database/prisma.service.js';
 import type {
   AddMemberInput,
+  CandidateUsersQuery,
   CreateWorkspaceInput,
   UpdateMemberInput,
 } from './dto/workspaces.dto.js';
+
+export interface CandidateUserView {
+  id: string;
+  username: string;
+  name: string;
+  avatar: string | null;
+}
 
 export interface MemberView {
   id: string;
@@ -136,7 +144,10 @@ export class WorkspacesService {
       ? await this.prisma.user.findMany({
           where: {
             OR: input.initialMembers.map((value) => ({
-              OR: [{ email: value.toLowerCase() }, { username: value }],
+              OR: [
+                { email: { equals: value, mode: 'insensitive' as const } },
+                { username: { equals: value, mode: 'insensitive' as const } },
+              ],
             })),
           },
           select: { id: true },
@@ -213,6 +224,38 @@ export class WorkspacesService {
     }));
   }
 
+  async searchCandidateUsers(
+    workspaceId: string,
+    query: CandidateUsersQuery,
+    user: AuthenticatedUser,
+  ): Promise<CandidateUserView[]> {
+    await this.assertManager(workspaceId, user);
+
+    const needle = query.q.trim();
+    if (!needle) return [];
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        status: 'active',
+        OR: [
+          { username: { contains: needle, mode: 'insensitive' } },
+          { fullName: { contains: needle, mode: 'insensitive' } },
+        ],
+        NOT: { memberships: { some: { workspaceId } } },
+      },
+      select: { id: true, username: true, fullName: true, avatarUrl: true },
+      orderBy: { username: 'asc' },
+      take: 8,
+    });
+
+    return users.map((candidate) => ({
+      id: candidate.id,
+      username: candidate.username,
+      name: candidate.fullName,
+      avatar: candidate.avatarUrl,
+    }));
+  }
+
   async addMember(
     workspaceId: string,
     input: AddMemberInput,
@@ -220,34 +263,48 @@ export class WorkspacesService {
   ): Promise<MemberView> {
     await this.assertManager(workspaceId, user);
 
+    const username = input.username.trim();
     const target = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: input.identifier.toLowerCase() },
-          { username: input.identifier },
-        ],
-      },
+      where: { username: { equals: username, mode: 'insensitive' } },
     });
     if (!target) {
-      throw new NotFoundException({ code: 'not_found', message: 'User not found.' });
+      throw new NotFoundException({
+        code: 'user_not_found',
+        message: `No user found with username @${username}.`,
+      });
     }
 
     const existing = await this.getMembership(workspaceId, target.id);
     if (existing) {
-      throw new ConflictException({ code: 'conflict', message: 'User is already a member.' });
+      throw new ConflictException({
+        code: 'member_exists',
+        message: `@${username} is already a member of this workspace.`,
+      });
     }
 
-    const member = await this.prisma.workspaceMember.create({
-      data: {
-        workspaceId,
-        userId: target.id,
-        role: input.role,
-        department: input.department,
-        status: 'active',
-        joinedAt: new Date(),
-      },
-      include: { user: true },
-    });
+    const member = await this.prisma.workspaceMember
+      .create({
+        data: {
+          workspaceId,
+          userId: target.id,
+          role: input.role,
+          department: input.department,
+          status: 'active',
+          joinedAt: new Date(),
+        },
+        include: { user: true },
+      })
+      .catch((error: unknown) => {
+        // Two concurrent requests can pass the check above; the unique
+        // (workspace_id, user_id) index is the final authority.
+        if ((error as { code?: string }).code === 'P2002') {
+          throw new ConflictException({
+            code: 'member_exists',
+            message: `@${username} is already a member of this workspace.`,
+          });
+        }
+        throw error;
+      });
 
     return {
       id: member.user.id,

@@ -49,7 +49,7 @@ export const mockAuthService: AuthService = {
     const user: User = {
       id: `u-${Date.now().toString(36)}`,
       fullName: fullName.trim(),
-      username: username.trim(),
+      username: username.trim().toLowerCase(),
       email: email.trim().toLowerCase(),
       role: 'user',
       status: 'active',
