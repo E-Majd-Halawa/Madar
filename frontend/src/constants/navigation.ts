@@ -1,6 +1,6 @@
 import {
   BarChart3, Bot, CalendarDays, CheckSquare, FolderKanban, FolderOpen, Home, KanbanSquare, MessageCircle,
-  MessagesSquare, Bell, Sun, CalendarClock, Timer, type LucideIcon,
+  MessagesSquare, Bell, Sun, CalendarClock, Timer, Users, type LucideIcon,
 } from 'lucide-react';
 import { ROUTES } from './routes';
 
@@ -19,6 +19,7 @@ export const PRIMARY_NAV: NavItem[] = [
   { to: ROUTES.app.calendar, labelKey: 'nav.calendar', icon: CalendarDays },
   { to: ROUTES.app.kanban, labelKey: 'nav.kanban', icon: KanbanSquare },
   { to: ROUTES.app.projects, labelKey: 'nav.projects', icon: FolderKanban },
+  { to: ROUTES.app.members, labelKey: 'nav.members', icon: Users },
   { to: ROUTES.app.focus, labelKey: 'nav.focus', icon: Timer },
   { to: ROUTES.app.chat, labelKey: 'nav.chat', icon: MessageCircle },
   { to: ROUTES.app.messages, labelKey: 'nav.messages', icon: MessagesSquare },

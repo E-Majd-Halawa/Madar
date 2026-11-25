@@ -323,14 +323,20 @@ export function KanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-6 pt-1 select-none scrollbar-thin" role="list" aria-label={t('tasks.kanban.board')}>
-          {COLUMNS.map((status) => (
-            <KanbanColumn
-              key={status}
-              status={status}
-              tasks={columnTasks[status] || []}
-            />
-          ))}
+        <div className="overflow-x-auto py-1 scrollbar-thin">
+          <div
+            className="grid h-[calc(100dvh-22rem)] min-h-[20rem] min-w-[51rem] grid-cols-5 grid-rows-1 gap-3 lg:h-[calc(100dvh-18rem)] lg:min-h-[26rem] xl:gap-4"
+            role="list"
+            aria-label={t('tasks.kanban.board')}
+          >
+            {COLUMNS.map((status) => (
+              <KanbanColumn
+                key={status}
+                status={status}
+                tasks={columnTasks[status] || []}
+              />
+            ))}
+          </div>
         </div>
 
         <DragOverlay>

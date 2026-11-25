@@ -34,6 +34,9 @@ const DEPARTMENTS = [
   'Product',
 ];
 
+/** Prevents a slower response for a previous workspace from overwriting the current one. */
+let loadSequence = 0;
+
 export const useMemberStore = create<MemberState>()(
   persist(
     (set, get) => ({
@@ -60,14 +63,24 @@ export const useMemberStore = create<MemberState>()(
       loading: false,
 
       load: async (workspaceId: string) => {
-        if (useMocks() && get().members.length > 0) return;
+        const sequence = ++loadSequence;
         set({ loading: true });
         try {
           if (useMocks()) {
-            const { items } = await userService.list({ pageSize: 30 });
-            const mapped: WorkspaceMemberItem[] = items.slice(0, 14).map((u, index) => {
+            const workspace = useWorkspaceStore.getState().workspaces.find((w) => w.id === workspaceId);
+            const { items } = await userService.list({ pageSize: 100 });
+            const scoped = workspace?.memberIds.length
+              ? items.filter((u) => workspace.memberIds.includes(u.id))
+              : items;
+            const mapped: WorkspaceMemberItem[] = scoped.slice(0, 14).map((u, index) => {
               const role: WorkspaceRole =
-                index === 0 ? 'owner' : index === 1 || index === 2 ? 'admin' : index > 11 ? 'guest' : 'member';
+                u.id === workspace?.ownerId
+                  ? 'owner'
+                  : index === 1 || index === 2
+                    ? 'admin'
+                    : index > 11
+                      ? 'guest'
+                      : 'member';
               const department = DEPARTMENTS[index % DEPARTMENTS.length];
               return {
                 id: u.id,
@@ -82,13 +95,15 @@ export const useMemberStore = create<MemberState>()(
                 status: u.status,
               };
             });
+            if (sequence !== loadSequence) return;
             set({ members: mapped, loading: false });
           } else {
             const members = await workspaceService.listMembers(workspaceId);
+            if (sequence !== loadSequence) return;
             set({ members, loading: false });
           }
         } catch {
-          set({ loading: false });
+          if (sequence === loadSequence) set({ loading: false });
         }
       },
 

@@ -3,6 +3,7 @@ import { SEED_WORKSPACES } from '@/data/workspaces';
 import { useAuthStore } from '@/store/authStore';
 import type { Workspace } from '@/types';
 import { delay } from './delay';
+import { getAllUsers } from './userRegistry';
 
 /** Every account owns a personal workspace, even ones created at registration. */
 const personalWorkspaceFor = (userId: string): Workspace => ({
@@ -32,13 +33,20 @@ export const mockWorkspaceService: WorkspaceService = {
   async create(input) {
     await delay();
     const ownerId = useAuthStore.getState().session?.user.id ?? 'u-001';
+    const users = getAllUsers();
+    const invitedIds = (input.initialMembers ?? [])
+      .map((value) => {
+        const needle = value.trim().toLowerCase();
+        return users.find((u) => u.email.toLowerCase() === needle || u.username.toLowerCase() === needle)?.id;
+      })
+      .filter((id): id is string => !!id && id !== ownerId);
     const workspace: Workspace = {
       id: `ws-${Date.now()}`,
       name: input.name,
       description: input.description ?? '',
       type: input.type,
       ownerId,
-      memberIds: [ownerId, ...(input.initialMembers ?? [])],
+      memberIds: Array.from(new Set([ownerId, ...invitedIds])),
       color: input.color ?? '#10b981',
       createdAt: new Date().toISOString(),
     };

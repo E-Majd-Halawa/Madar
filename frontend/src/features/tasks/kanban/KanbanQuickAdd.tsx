@@ -94,12 +94,12 @@ export function KanbanQuickAdd({ status }: KanbanQuickAddProps) {
         className="w-full bg-transparent text-xs text-fg placeholder:text-muted focus:outline-none"
       />
 
-      <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/10">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/10">
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value as TaskPriority)}
           aria-label={t('tasks.priority')}
-          className="rounded-md bg-surface-2 border border-border/20 px-2 py-1 text-[11px] font-medium text-fg focus:outline-none"
+          className="min-w-0 max-w-full rounded-md bg-surface-2 border border-border/20 px-2 py-1 text-[11px] font-medium text-fg focus:outline-none"
         >
           <option value="low">{t('tasks.priorities.low')}</option>
           <option value="medium">{t('tasks.priorities.medium')}</option>
@@ -107,7 +107,7 @@ export function KanbanQuickAdd({ status }: KanbanQuickAddProps) {
           <option value="urgent">{t('tasks.priorities.urgent')}</option>
         </select>
 
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"
             onClick={() => {

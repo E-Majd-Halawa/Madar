@@ -86,8 +86,9 @@ export const KanbanColumn = React.memo(function KanbanColumn({ status, tasks }: 
   return (
     <div
       ref={setNodeRef}
+      role="listitem"
       className={cn(
-        'flex flex-col h-full min-h-[500px] w-80 shrink-0 rounded-2xl border bg-surface/50 p-3.5 backdrop-blur-sm transition-colors duration-200',
+        'flex h-full min-h-0 w-full min-w-0 flex-col rounded-2xl border bg-surface/50 p-3 backdrop-blur-sm transition-colors duration-200',
         colors.border,
         isOver
           ? 'bg-surface-2/80 ring-2 ring-accent/40 border-accent/40'
@@ -97,14 +98,14 @@ export const KanbanColumn = React.memo(function KanbanColumn({ status, tasks }: 
     >
       {/* Column Header */}
       <div className="flex items-center justify-between gap-2 px-1 pb-3 mb-2 border-b border-border/10">
-        <div className="flex items-center gap-2">
-          <span className={cn('size-2.5 rounded-full', colors.dot)} aria-hidden />
-          <h3 className="text-sm font-semibold text-fg tracking-tight" id={`col-${status}-header`}>
+        <div className="flex min-w-0 items-center gap-2">
+          <span className={cn('size-2.5 shrink-0 rounded-full', colors.dot)} aria-hidden />
+          <h3 className="truncate text-sm font-semibold text-fg tracking-tight" id={`col-${status}-header`}>
             {t(`tasks.kanban.columns.${status}`)}
           </h3>
           <span
             className={cn(
-              'px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide',
+              'shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide',
               colors.badge,
             )}
             aria-label={t('tasks.count', { count: tasks.length })}
@@ -115,7 +116,7 @@ export const KanbanColumn = React.memo(function KanbanColumn({ status, tasks }: 
       </div>
 
       {/* Droppable and Sortable card container */}
-      <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-0.5 pb-2" role="list" aria-labelledby={`col-${status}-header`}>
+      <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-0.5 pb-2" role="list" aria-labelledby={`col-${status}-header`}>
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
             <KanbanCard key={task.id} task={task} />
@@ -126,7 +127,7 @@ export const KanbanColumn = React.memo(function KanbanColumn({ status, tasks }: 
       </div>
 
       {/* Quick Add Form at Column Footer */}
-      <div className="pt-2 mt-auto border-t border-border/10">
+      <div className="shrink-0 pt-2 mt-auto border-t border-border/10">
         <KanbanQuickAdd status={status} />
       </div>
     </div>
